@@ -14,7 +14,6 @@ Revision 4 11.06.2016
 
 /*==================================================================*/
   //IMU constants
-  #define GYRO_SENSITIVITY 1  //Used to cut sensor noise
   #define GYRORANGE 2
   #define INTMAX 32768        //16 bit Integer
   #define COMPLEMENTARY_WEIGHT 0.98
@@ -32,11 +31,14 @@ Revision 4 11.06.2016
       Compass com;
       float rot[3];
       float rot_vel[3];
-      int raw_Accel[3];
-
       void startAndCalibrate();
       void update(float looptime);
       void sendSerial(void);
+      void debug(void);
+
+    private:
+      int raw_Accel[3];
+      int raw_Gyro[3];
   };
 
 /*==================================================================*/
@@ -46,35 +48,14 @@ void IMU::startAndCalibrate(){
   //Initialize IMU
   CurieIMU.begin();
   // verify connection
-  /*Serial.println("Testing device connections...");
+  Serial.println("Testing device connections...");
   if (CurieIMU.begin()) {
     Serial.println("CurieIMU connection successful");
   } else {
     Serial.println("CurieIMU connection failed");
-  }*/
-  //
-  Serial.println("Initializing calibration...");
-  /*Serial.println("Internal sensor offsets BEFORE calibration...");
-  Serial.print(CurieIMU.getAccelerometerOffset(X_AXIS));
-  Serial.print("\t"); // -76
-  Serial.print(CurieIMU.getAccelerometerOffset(Y_AXIS));
-  Serial.print("\t"); // -235
-  Serial.print(CurieIMU.getAccelerometerOffset(Z_AXIS));
-  Serial.print("\t"); // 168
-  Serial.print(CurieIMU.getGyroOffset(X_AXIS));
-  Serial.print("\t"); // 0
-  Serial.print(CurieIMU.getGyroOffset(Y_AXIS));
-  Serial.print("\t"); // 0
-  Serial.println(CurieIMU.getGyroOffset(Z_AXIS));*/
+  }
 
-  // To manually configure offset compensation values,
-  // use the following methods instead of the autoCalibrate...() methods below
-  //CurieIMU.setAccelerometerOffset(X_AXIS,495.3);
-  //CurieIMU.setAccelerometerOffset(Y_AXIS,-15.6);
-  //CurieIMU.setAccelerometerOffset(Z_AXIS,491.4);
-  //CurieIMU.setGyroOffset(X_AXIS,7.869);
-  //CurieIMU.setGyroOffset(Y_AXIS,-0.061);
-  //CurieIMU.setGyroOffset(Z_AXIS,15.494);
+  Serial.println("Initializing calibration...");
 
   Serial.println("Calibration starts in 5 sec. Make sure your board is stable and upright");
   delay(5000);
@@ -108,21 +89,18 @@ void IMU::startAndCalibrate(){
 
   //Compass initialisation
   com.initialize(GAIN_1_3,MAG_X_OFFSET,MAG_Y_OFFSET,MAG_Z_OFFSET,DECLINATION_ANGLE_RADIAN);
-  IMU::com.readHeading();
-  IMU::com.fixHeading=com.heading;
 }
 
 void IMU::update(float looptime){
-  int raw_Gyro[3];  //Raw gyro data 0:x 1:y 2:z
 
-  CurieIMU.readGyro(raw_Gyro[0],raw_Gyro[1],raw_Gyro[2]);
+  CurieIMU.readGyro(IMU::raw_Gyro[0],IMU::raw_Gyro[1],IMU::raw_Gyro[2]);
   CurieIMU.readAccelerometer(IMU::raw_Accel[0],IMU::raw_Accel[1],IMU::raw_Accel[2]);
 
   //I.Calculating Angulars solo based on gyroscope's data
   //((float)looptime / 1000) converts SAMPLE_RATE into seconds
-    IMU::rot_vel[0] = ((float)raw_Gyro[0] / INTMAX) * GYRORANGE / GYRO_SENSITIVITY;
-    IMU::rot_vel[1] = ((float)raw_Gyro[1] / INTMAX) * GYRORANGE / GYRO_SENSITIVITY;
-    IMU::rot_vel[2] = ((float)raw_Gyro[2] / INTMAX) * GYRORANGE / GYRO_SENSITIVITY;
+    IMU::rot_vel[0] = ((float)IMU::raw_Gyro[0] / INTMAX) * GYRORANGE ;
+    IMU::rot_vel[1] = ((float)IMU::raw_Gyro[1] / INTMAX) * GYRORANGE ;
+    IMU::rot_vel[2] = ((float)IMU::raw_Gyro[2] / INTMAX) * GYRORANGE ;
 
     IMU::rot[0] += IMU::rot_vel[0]*((float)looptime / 1000) * (180/PI);
     IMU::rot[1] += IMU::rot_vel[1]*((float)looptime / 1000) * (180/PI);
@@ -135,19 +113,17 @@ void IMU::update(float looptime){
     int accel_magnitude_approx = abs(IMU::raw_Accel[0]) +abs(IMU::raw_Accel[1]) +abs(IMU::raw_Accel[2]);
     if(accel_magnitude_approx > lowpass && accel_magnitude_approx < highpass){
         //Turning around the X axis results in a vector on the Y-axis PITCH
-        //1 2
-        //0 2
         float acc_rot_x = atan2f((float)IMU::raw_Accel[1], (float)IMU::raw_Accel[2]) * 180 / PI;
         IMU::rot[0] = COMPLEMENTARY_WEIGHT * IMU::rot[0] + (1-COMPLEMENTARY_WEIGHT) * acc_rot_x;
 
         //Turning around the Y axis results in a vector on the X-axis ROLL
         float acc_rot_y = atan2f((float)IMU::raw_Accel[0], (float)IMU::raw_Accel[2]) * 180 / PI;
-        IMU::rot[1] = COMPLEMENTARY_WEIGHT * IMU::rot[1] + (1-COMPLEMENTARY_WEIGHT) * acc_rot_y;
+        IMU::rot[1] = COMPLEMENTARY_WEIGHT * IMU::rot[1] - (1-COMPLEMENTARY_WEIGHT) * acc_rot_y;
     }
 
   //III. Compensate JAW Gyro drift via Compass
-    /*com.readTiltHeading(IMU::rot);
-    if(IMU::rot[0]<3.0 && IMU::rot[1]<3.0){
+    com.readTiltHeading(IMU::rot);
+    /*if(IMU::rot[0]<3.0 && IMU::rot[1]<3.0){
       IMU::rot[2] = COMPLEMENTARY_WEIGHT * IMU::rot[2] + (1-COMPLEMENTARY_WEIGHT) * (IMU::com.heading-IMU::com.fixHeading);
     }
     //Compensate sign reversing of JAW
@@ -167,6 +143,33 @@ void IMU::sendSerial(void){
     Serial.print(" Jaw ");
     Serial.print(IMU::rot[2]);
     Serial.println();
+}
+
+void IMU::debug(void){
+  Serial.print(IMU::raw_Accel[0]);
+  Serial.print(",");
+  Serial.print(IMU::raw_Accel[1]);
+  Serial.print(",");
+  Serial.print(IMU::raw_Accel[2]);
+  Serial.print(",");
+  Serial.print(IMU::com.rawMag[0]);
+  Serial.print(",");
+  Serial.print(IMU::com.rawMag[1]);
+  Serial.print(",");
+  Serial.print(IMU::com.rawMag[2]);
+  Serial.print(",");
+  Serial.print(IMU::rot[0]);
+  Serial.print(",");
+  Serial.print(IMU::rot[1]);
+  Serial.print(",");
+  Serial.print(IMU::rot[2]);
+  Serial.print(",");
+  Serial.print(IMU::raw_Gyro[0]);
+  Serial.print(",");
+  Serial.print(IMU::raw_Gyro[1]);
+  Serial.print(",");
+  Serial.print(IMU::raw_Gyro[2]);
+  Serial.println(";");
 }
 
 #endif

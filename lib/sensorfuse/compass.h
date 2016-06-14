@@ -56,7 +56,6 @@ class Compass{
     short rawMag[3];            //raw
     float heading;              //degree
     float declinationAngle;     //radian
-    float fixHeading;           //degree
 
     void  write(MagRegister_t reg, unsigned char hex);
     void  read(void);
@@ -66,6 +65,8 @@ class Compass{
     void  debug(void);
     void sendSerial(void);
 
+  private:
+    float fixHeading;           //degree
 };
 
 /*==================================================================*/
@@ -124,7 +125,9 @@ void Compass::initialize(sensorGain_t gain,short offsetX,short offsetY,short off
   //Skip first readings and set fixpoint
   Compass::read();
   delay(30);
-  Compass::read();
+
+  Compass::readHeading();
+  Compass::fixHeading=Compass::heading;
 
   if(Serial){
     Serial.println("  Done");
@@ -143,28 +146,43 @@ void Compass::readHeading(){
 }
 
 void Compass::readTiltHeading(float rot[3]){
-  //This functions needs rotation input!
+  /*This function needs to know the current roll and pitch of the sensor!
+  */
+
+  //Read raw Magnetometer values
   Compass::read();
 
   //rot[0]:=Roll theta x, rot[1]:=Pitch phi y
   float roll=rot[0]; // +0
-  float pitch=-rot[1]; // -1
+  float pitch=rot[1]; // +0
   //Precompute sin cos
   float sinRoll=sin(roll/180*PI);
   float cosRoll=cos(roll/180*PI);
   float sinPitch=sin(pitch/180*PI);
   float cosPitch=cos(pitch/180*PI);
 
-  //Calculate tilt compensated heading
-  float num=(float)Compass::rawMag[0]*cosRoll - (float)Compass::rawMag[2]*sinRoll;
-  float den=(float)Compass::rawMag[0]*cosPitch + (float)Compass::rawMag[1]*sinPitch*sinRoll + (float)Compass::rawMag[2]*sinPitch*cosRoll;
+  //Calculate tilt compensated magnetometer values
+  float y_comp=(float)Compass::rawMag[1]*sinRoll*sinPitch + (float)Compass::rawMag[1]*cosRoll - (float)Compass::rawMag[2]*sinRoll;
+  float x_comp=(float)Compass::rawMag[0]*cosPitch + (float)Compass::rawMag[1]*sinRoll*sinPitch + (float)Compass::rawMag[2]*cosRoll*sinPitch;
 
-  Compass::heading=atan2f(num,den)+declinationAngle;
+  //Calculate new heading
+  Compass::heading=atan2f(y_comp,x_comp);
+  /*
+  if(x_comp>0 && y_comp>0)        Compass::heading=atan2f(y_comp,x_comp);
+  else if(x_comp<0)               Compass::heading=PI+atan2f(y_comp,x_comp);
+  else if(x_comp>0 && y_comp<=0)  Compass::heading=2*PI+atan2f(y_comp,x_comp);
+  else if(x_comp==0)              Compass::heading=PI/2;
+  */
+
+  //Add magnetic declination
+  Compass::heading+=declinationAngle;
+
   //Compensate sign reversing
-  if(Compass::heading<0) Compass::heading +=2*PI;
-  else if(Compass::heading>2*PI) Compass::heading -=2*PI;
+  if(Compass::heading<0) Compass::heading+=2*PI;
+  else if(Compass::heading>2*PI) Compass::heading-=2*PI;
+
   //Convert heading to degrees
-  Compass::heading *=180/PI;
+  Compass::heading*=180/PI;
 }
 
 void Compass::debug(void){
@@ -227,13 +245,13 @@ void Compass::debug(void){
 
 void Compass::sendSerial(void){
     //Prints the time and angle data to serial
-    Serial.print(" X ");
-    Serial.print(Compass::rawMag[0]);
-    Serial.print(" Y ");
-    Serial.print(Compass::rawMag[1]);
-    Serial.print(" Z ");
-    Serial.print(Compass::rawMag[2]);
-    Serial.println();
+    Serial.print("Fixed Heading ");
+    Serial.print(Compass::fixHeading);
+    Serial.print(" Tilt Compensated Heading ");
+    Serial.print(Compass::heading);
+    Serial.print(" Bias ");
+    Serial.print(Compass::heading-Compass::fixHeading);
+    //Serial.println();
 }
 
 #endif
