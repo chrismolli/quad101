@@ -6,7 +6,7 @@ gyroscope input of the Arduino 101.
 
 #include "Arduino.h"
 #include <Timer.h>
-#include "../../lib/sensorfuse/sensorfuse.h"
+#include "sensorfuse.h"
 #include "PIDControl.h"
 #include "RotorControl.h"
 #include "HeightControl.h"
@@ -38,9 +38,12 @@ void setup(){
    //calibrate sensors
   imu.startAndCalibrate();
   pidController.set(); //calibrate PID_Regler to forget integrated sum (I)
-  pidController.initializeSerialConnection();
   rotors.initialize(); //set Rotors and ESCs to PINs and initialize
   rotors.start();
+  Serial.println("What would you like to update?");
+  Serial.println("controller: 'c'");
+  Serial.println("height: 'h'");
+  Serial.println("angle: 'a'");
 
   //Set timer event, that calls updateIMU every SAMPLE_RATE milliseconds
   t.every(SAMPLE_RATE,timerUpdate);
@@ -51,5 +54,26 @@ void loop(){
 }
 
 void serialEvent(){
-  pidController.setConstantsViaSerial();
+  if (Serial.available() > 0){
+    char firstInput = (char)Serial.read();
+    //while(Serial.available()) Serial.read();
+    switch (firstInput) {
+      case 99: // compares firstInput to 'c'
+        pidController.setConstantsViaSerial();
+        break;
+      case 104: //compares firstInput to 'h'
+        break;
+      case 97: //compares firstInput to 'a'
+        //change angle here!
+        break;
+      default:
+        Serial.println("Your first Input could not be recognized. Try again");
+        //while(Serial.available()) Serial.read();
+        break;
+    }
+    Serial.println("What would you like to update?");
+    Serial.println("controller: 'c'");
+    Serial.println("height: 'h'");
+    Serial.println("angle: 'a'");
+  }
 }

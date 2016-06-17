@@ -34,8 +34,8 @@ void RotorControl::start(void){
   while (s < TAKE_OFF_SIGNAL){
     esc1.write(s);
     esc2.write(s);
-    s = s + 5;
-    delay(500);
+    s = s + 2;
+    delay(200);
   }
 
   esc1.write(TAKE_OFF_SIGNAL);
