@@ -13,6 +13,7 @@ public:
   void initialize(void);
   void update(void);
   void start(void); //mit Serial abfrage??
+  void setRotorSignalViaSerial(void);
 };
 
 
@@ -34,7 +35,7 @@ void RotorControl::start(void){
   while (s < TAKE_OFF_SIGNAL){
     esc1.write(s);
     esc2.write(s);
-    s = s + 2;
+    s = s + 1;
     delay(200);
   }
 
@@ -72,6 +73,19 @@ void RotorControl::update(void){
 //write RotorSignal too ESCs
   esc1.write((int)RotorSignal[0]);
   esc2.write((int)RotorSignal[1]);
+}
+
+void RotorControl::setRotorSignalViaSerial(void){
+  Serial.print("The maximum Signal you can send to the Rotors is: ");
+  Serial.println(MAX_ROTOR_SIGNAL);
+  Serial.println("Always use 3 digits --> Example: 090");
+  Serial.println("Tell me which Signal you want to send to both Rotors. ");
+  while (Serial.available()<3) {} //wating for Serial to have three digits
+  int signalInput = Serial.parseInt();
+  if(signalInput <= MAX_ROTOR_SIGNAL){  //if you want the regulation to be steady
+    RotorSignal[0] = signalInput;      //you would need to safe the original RotorSignal and compare them
+    RotorSignal[1] = signalInput;      //then you could add the difference!
+  }
 }
 
 

@@ -6,10 +6,10 @@ gyroscope input of the Arduino 101.
 
 #include "Arduino.h"
 #include <Timer.h>
-#include "sensorfuse.h"
-#include "PIDControl.h"
-#include "RotorControl.h"
-#include "HeightControl.h"
+#include "../lib/sensorfuse/sensorfuse.h"
+#include "../lib/PIDControl.h"
+#include "../lib/RotorControl.h"
+#include "../lib/HeightControl.h"
 #include "ConstantData.h"
 
 //declare Timer object
@@ -62,9 +62,17 @@ void serialEvent(){
         pidController.setConstantsViaSerial();
         break;
       case 104: //compares firstInput to 'h'
+        rotors.setRotorSignalViaSerial();
         break;
       case 97: //compares firstInput to 'a'
-        //change angle here!
+        Serial.println("Enter a 2-digit number! Maximum angle is 40°.");
+        Serial.println("What angle would you like to see? ");
+        while (Serial.available()<2) {} //wating for Serial to have two digits
+        int angleInput;
+        angleInput = Serial.parseInt();
+        if(angleInput <= 40){
+          targetPosition[0] = angleInput;
+        }
         break;
       default:
         Serial.println("Your first Input could not be recognized. Try again");
