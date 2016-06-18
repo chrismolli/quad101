@@ -7,7 +7,7 @@
 class PIDControl{
 private:
   float K_P = 0.00009; //0.00009
-  float K_I = 0.0000005; //0.0000005
+  float K_I = 0.000005; //0.0000005
   float K_D = 0.0095; //0.0085 (Filtered derivative and 100Hz)
 
   float K_P_Jaw = 0.1;
@@ -27,7 +27,6 @@ public:
   void update(float RotorSignal[4], float Y[3], float dE[3], float W[3], float looptime);
   void sendToSerial(float RotorSignal[4]);
   void setConstantsViaSerial(void);
-  void initializeSerialConnection(void);
 };
 
 // functions for each individual regulation
@@ -117,6 +116,8 @@ void PIDControl::sendToSerial(float RotorSignal[4]){
   }
 
 void PIDControl::setConstantsViaSerial(void){
+  Serial.println("Tell me which k_Value you want to update ");
+  while (!Serial.available()) {}
   String kString = "";
   char inChar = (char)Serial.read();
   switch (inChar) {
@@ -140,7 +141,6 @@ void PIDControl::setConstantsViaSerial(void){
         Serial.print("Your new K_P value is: ");
         K_P = kString.toFloat();
         Serial.println(kString);
-        Serial.println("Tell me which k_Value you want to update ");
         break;
       case 105: // compares input to 'i'
         Serial.println("Set new K_I value: ");
@@ -162,7 +162,6 @@ void PIDControl::setConstantsViaSerial(void){
         Serial.print("Your new K_I value is: ");
         K_I = kString.toFloat();
         Serial.println(kString);
-        Serial.println("Tell me which k_Value you want to update ");
         break;
       case 100: // compares input to 'd'
       Serial.println("Set new K_D value: ");
@@ -184,17 +183,12 @@ void PIDControl::setConstantsViaSerial(void){
         Serial.print("Your new K_D value is: ");
         K_D = kString.toFloat();
         Serial.println(kString);
-        Serial.println("Tell me which k_Value you want to update ");
         break;
       default:
-        Serial.println("Wrong input letter! Start over again");
+        Serial.println("This constant doesn't exist. Start over again");
         //while(Serial.available()) Serial.read();
         break;
     }
-  }
-
-  void PIDControl::initializeSerialConnection(void){
-    Serial.println("Tell me which k_Value you want to update ");
   }
 
 #endif
