@@ -2,7 +2,7 @@
 #define ROTORCONTROL_H
 
 #include "Servo.h"
-#include "ConstantData.h"
+#include "../params.h"
 
 
 class RotorControl{
@@ -12,7 +12,7 @@ public:
   float RotorSignal[4] = {0,0,0,0};
   void initialize(void);
   void update(void);
-  void start(void); //mit Serial abfrage??
+  void begin(void); //mit Serial abfrage??
   void setRotorSignalViaSerial(void);
 };
 
@@ -29,7 +29,7 @@ void RotorControl::initialize(void){
 
 }
 
-void RotorControl::start(void){
+void RotorControl::begin(void){
   //Startvorgang Teststand
   int s = MIN_ROTOR_SIGNAL;
   while (s < TAKE_OFF_SIGNAL){

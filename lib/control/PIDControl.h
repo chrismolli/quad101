@@ -1,32 +1,33 @@
 #ifndef PIDCONTROL_H
 #define PIDCONTROL_H
 
-#include "ConstantData.h"
+#include "../params.h"
 
 
 class PIDControl{
-private:
-  float K_P = 0.00009; //0.00009
-  float K_I = 0.000005; //0.0000005
-  float K_D = 0.0095; //0.0085 (Filtered derivative and 100Hz)
+  private:
+    float K_P = 0.00009; //0.00009
+    float K_I = 0.000005; //0.0000005
+    float K_D = 0.0095; //0.0085 (Filtered derivative and 100Hz)
 
-  float K_P_Jaw = 0.1;
-  float K_I_Jaw = 0.05;
-  float K_D_Jaw = 0.1;
+    float K_P_Jaw = 0.1;
+    float K_I_Jaw = 0.05;
+    float K_D_Jaw = 0.1;
 
-  float U[3]; //controlled variable (CV)
-  float iSum[3]; //controlled integral variabel
-  float e[3]; //control difference (W_Y)
-  //W = Sollwert
-  //Y = Istwert
-public:
-  float PController(float e, float k);
-  float IController(float e, float k, int i, float looptime);
-  float DController(float dE, float k);
-  void set(void);
-  void update(float RotorSignal[4], float Y[3], float dE[3], float W[3], float looptime);
-  void sendToSerial(float RotorSignal[4]);
-  void setConstantsViaSerial(void);
+    float U[3]; //controlled variable (CV)
+    float iSum[3]; //controlled integral variabel
+    float e[3]; //control difference (W_Y)
+    //W = Sollwert
+    //Y = Istwert
+  public:
+    float PController(float e, float k);
+    float IController(float e, float k, int i, float looptime);
+    float DController(float dE, float k);
+
+    void set(void);
+    void update(float RotorSignal[4], float Y[3], float dE[3], float W[3], float looptime);
+    void sendSerial(float RotorSignal[4]);
+    void setConstantsViaSerial(void);
 };
 
 // functions for each individual regulation
@@ -101,7 +102,7 @@ void PIDControl::update(float RotorSignal[4], float Y[3], float dE[3], float W[3
   //RotorSignal[3] = RotorSignal[3] - U[2];
 }
 
-void PIDControl::sendToSerial(float RotorSignal[4]){
+void PIDControl::sendSerial(float RotorSignal[4]){
     //Prints the time and RotorSignals to serial
     Serial.println("Time: ");
     Serial.print(millis());

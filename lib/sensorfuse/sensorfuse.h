@@ -11,18 +11,19 @@ Revision 4 11.06.2016
   //Extern librarys
   #include "CurieIMU.h"
   #include "compass.h"
+  #include "../params.h"
 
 /*==================================================================*/
   //IMU constants
-  #define GYRORANGE 2
+  //#define GYRORANGE 2
   #define INTMAX 32768        //16 bit Integer
-  #define COMPLEMENTARY_WEIGHT 0.98
+  //#define COMPLEMENTARY_WEIGHT 0.98
 
   //COMPASS contants
-  #define MAG_X_OFFSET 8.7539       //From calibration tool
-  #define MAG_Y_OFFSET -442.0650    //From calibration tool
-  #define MAG_Z_OFFSET -52.7955     //From calibration tool
-  #define DECLINATION_ANGLE_RADIAN 0
+  //#define MAG_X_OFFSET 8.7539       //From calibration tool
+  //#define MAG_Y_OFFSET -442.0650    //From calibration tool
+  //#define MAG_Z_OFFSET -52.7955     //From calibration tool
+  //#define DECLINATION_ANGLE_RADIAN 0
 
 /*==================================================================*/
   //Class definition
@@ -31,7 +32,7 @@ Revision 4 11.06.2016
       Compass com;
       float rot[3];
       float rot_vel[3];
-      void startAndCalibrate();
+      void begin();
       void update(float looptime);
       void sendSerial(void);
       void debug(void);
@@ -44,7 +45,7 @@ Revision 4 11.06.2016
 /*==================================================================*/
   //Functions
 
-void IMU::startAndCalibrate(){
+void IMU::begin(){
   //Initialize IMU
   CurieIMU.begin();
   // verify connection
