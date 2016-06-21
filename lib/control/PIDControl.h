@@ -2,32 +2,33 @@
 #define PIDCONTROL_H
 
 #include "../params.h"
+#include "Arduino.h"
 
 
 class PIDControl{
-  private:
-    float K_P = 0.00009; //0.00009
-    float K_I = 0.000005; //0.0000005
-    float K_D = 0.0095; //0.0085 (Filtered derivative and 100Hz)
+private:
+  float K_P;
+  float K_I;
+  float K_D;
 
-    float K_P_Jaw = 0.1;
-    float K_I_Jaw = 0.05;
-    float K_D_Jaw = 0.1;
+  float K_P_Jaw;
+  float K_I_Jaw;
+  float K_D_Jaw;
 
-    float U[3]; //controlled variable (CV)
-    float iSum[3]; //controlled integral variabel
-    float e[3]; //control difference (W_Y)
-    //W = Sollwert
-    //Y = Istwert
-  public:
-    float PController(float e, float k);
-    float IController(float e, float k, int i, float looptime);
-    float DController(float dE, float k);
+  float U[3]; //controlled variable (CV)
+  float iSum[3]; //controlled integral variabel
+  float e[3]; //control difference (W_Y)
+  //W = Sollwert
+  //Y = Istwert
 
-    void set(void);
-    void update(float RotorSignal[4], float Y[3], float dE[3], float W[3], float looptime);
-    void sendSerial(float RotorSignal[4]);
-    void setConstantsViaSerial(void);
+public:
+  float PController(float e, float k);
+  float IController(float e, float k, int i, float looptime);
+  float DController(float dE, float k);
+  void begin(void);
+  void update(float RotorSignal[4], float Y[3], float dE[3], float W[3], float looptime);
+  void sendSerial(float RotorSignal[4]);
+  void setConstantsViaSerial(void);
 };
 
 // functions for each individual regulation
@@ -36,7 +37,7 @@ float PIDControl::PController(float e, float k){
 }
 
 float PIDControl::IController(float e, float k, int i, float looptime){
-  if (abs(e) < MAX_E_FOR_I){
+  if ((abs(e) < MAX_E_FOR_I) && (abs(e) > MIN_E_FOR_I)) {
      iSum[i] = iSum[i] + e;
   }
   return k*iSum[i]*looptime/1000;
@@ -46,11 +47,19 @@ float PIDControl::DController(float dE, float k){
   return -k * dE; //sign has to match PController
 }
 
-void PIDControl::set(void){
+void PIDControl::begin(void){
   //initialize I_Controller
   iSum[0] = 0;
   iSum[1] = 0;
   iSum[2] = 0;
+  //initialize Constants
+  K_P = 0.0000215; //0.000027
+  K_I = 0.00000001; //0.0000001
+  K_D = 0.0225; //0.022 (Filtered derivative and 100Hz)
+
+  K_P_Jaw = 0.1;
+  K_I_Jaw = 0.05;
+  K_D_Jaw = 0.1;
 }
 
 void PIDControl::update(float RotorSignal[4], float Y[3], float dE[3], float W[3], float looptime){
@@ -61,28 +70,13 @@ void PIDControl::update(float RotorSignal[4], float Y[3], float dE[3], float W[3
 
   //calculating cotrolled variable (CV)
   //x-Axis
-  if (abs(e[0]) > MIN_E_FOR_ALL){
-    U[0] = PController(e[0], K_P) + IController(e[0], K_I, 0, looptime) + DController(dE[0], K_D);
-  }
-  else {
-    U[0] = 0;
-  }
+  U[0] = PController(e[0], K_P) + IController(e[0], K_I, 0, looptime) + DController(dE[0], K_D);
 
   //y-Axis
-  if (abs(e[1]) > MIN_E_FOR_ALL){
-    U[1] = PController(e[1], K_P) + IController(e[1], K_I, 1, looptime) + DController(dE[1], K_D);
-  }
-  else {
-    U[1] = 0;
-  }
+  U[1] = PController(e[1], K_P) + IController(e[1], K_I, 1, looptime) + DController(dE[1], K_D);
 
   //z-Axis
-  if (abs(e[0]) > MIN_E_FOR_ALL){
-    U[2] = PController(e[2], K_P_Jaw) + IController(e[2], K_I_Jaw, 2, looptime) + DController(dE[2], K_D_Jaw);
-  }
-  else {
-    U[2] = 0;
-  }
+  U[2] = PController(e[2], K_P_Jaw) + IController(e[2], K_I_Jaw, 2, looptime) + DController(dE[2], K_D_Jaw);
 
   //Multiplication with System_Matrice
   U[0] = 1 * U[0];
