@@ -1,6 +1,7 @@
 #ifndef HEIGHTCONTROL_H
 #define HEIGHTCONTROL_H
 
+#include "Arduino.h"
 // constants for HeightControl
 #define H_P 1 //positiv
 //#define H_I 1 erstmal nur PD_Regler
