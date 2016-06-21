@@ -28,4 +28,5 @@
   #define MAG_Z_OFFSET -52.7955       //From calibration tool
   #define DECLINATION_ANGLE_RADIAN 0
 
+
 #endif

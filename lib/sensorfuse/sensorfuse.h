@@ -75,7 +75,6 @@ void IMU::begin(){
 
   Serial.println("Internal sensor offsets AFTER calibration...");
   Serial.print(CurieIMU.getAccelerometerOffset(X_AXIS));
-  Serial.print("\t"); // -76
   Serial.print(CurieIMU.getAccelerometerOffset(Y_AXIS));
   Serial.print("\t"); // -2359
   Serial.print(CurieIMU.getAccelerometerOffset(Z_AXIS));
@@ -89,7 +88,7 @@ void IMU::begin(){
   CurieIMU.setGyroRange(GYRORANGE);
 
   //Compass initialisation
-  com.initialize(GAIN_1_3,MAG_X_OFFSET,MAG_Y_OFFSET,MAG_Z_OFFSET,DECLINATION_ANGLE_RADIAN);
+  com.initialize(GAIN_1_3,DECLINATION_ANGLE_RADIAN);
 }
 
 void IMU::update(float looptime){
