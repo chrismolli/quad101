@@ -1,6 +1,7 @@
 #ifndef ROTORCONTROL_H
 #define ROTORCONTROL_H
 
+#include "Arduino.h"
 #include "Servo.h"
 #include "../params.h"
 
@@ -9,15 +10,15 @@ class RotorControl{
 private:
   Servo esc1, esc2, esc3, esc4;
 public:
-  float RotorSignal[4] = {0,0,0,0};
-  void initialize(void);
+  float RotorSignal[4];
+  void begin(void);
   void update(void);
-  void begin(void); //mit Serial abfrage??
+  void start(void); //mit Serial abfrage??
   void setRotorSignalViaSerial(void);
 };
 
 
-void RotorControl::initialize(void){
+void RotorControl::begin(void){
 
   esc1.attach(PWMOUT1); //Establish Connection to ESCs
   esc2.attach(PWMOUT2);
@@ -25,18 +26,20 @@ void RotorControl::initialize(void){
   delay(500);
   esc2.write(0);
   delay(500);
-
-
+  RotorSignal[0] = 0;
+  RotorSignal[1] = 0;
+  RotorSignal[2] = 0;
+  RotorSignal[3] = 0;
 }
 
-void RotorControl::begin(void){
+void RotorControl::start(void){
   //Startvorgang Teststand
   int s = MIN_ROTOR_SIGNAL;
   while (s < TAKE_OFF_SIGNAL){
     esc1.write(s);
     esc2.write(s);
     s = s + 1;
-    delay(200);
+    delay(100);
   }
 
   esc1.write(TAKE_OFF_SIGNAL);
@@ -87,6 +90,5 @@ void RotorControl::setRotorSignalViaSerial(void){
     RotorSignal[1] = signalInput;      //then you could add the difference!
   }
 }
-
 
 #endif

@@ -9,7 +9,7 @@
 /*-----------------------------------------------------------------------*/
   //PID constants
   #define MAX_E_FOR_I 45 //Maximum angle to contribute to I_Controller
-  #define MIN_E_FOR_ALL 0 //Minimum angle to start controller
+  #define MIN_E_FOR_I 0 //Minimum angle to start controller
 
 /*-----------------------------------------------------------------------*/
   //Rotorcontrol constants
