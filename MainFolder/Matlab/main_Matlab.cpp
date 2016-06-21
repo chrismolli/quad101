@@ -7,10 +7,10 @@ gyroscope input of the Arduino 101.
 #include "Arduino.h"
 #include <Timer.h>
 #include "../lib/sensorfuse/sensorfuse.h"
-#include "../lib/PIDControl.h"
-#include "../lib/RotorControl.h"
-#include "../lib/HeightControl.h"
-#include "ConstantData.h"
+#include "../lib/Control/PIDControl.h"
+#include "../lib/Control/RotorControl.h"
+#include "../lib/Control/HeightControl.h"
+#include "../params.h"
 
 //declare Timer object
 Timer t;
@@ -34,9 +34,9 @@ void setup(){
   Serial.begin(38400);
   while (!Serial);
    //calibrate sensors
-  imu.startAndCalibrate();
-  pidController.set(); //calibrate PID_Regler to forget integrated sum (I)
-  rotors.initialize(); //set Rotors and ESCs to PINs and initialize
+  imu.begin();
+  pidController.begin(); //calibrate PID_Regler to forget integrated sum (I)
+  rotors.begin(); //set Rotors and ESCs to PINs and initialize
   rotors.start();
   //Set timer event, that calls updateIMU every SAMPLE_RATE milliseconds
   t.every(SAMPLE_RATE,timerUpdate);

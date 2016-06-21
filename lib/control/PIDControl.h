@@ -25,7 +25,7 @@ public:
   float PController(float e, float k);
   float IController(float e, float k, int i, float looptime);
   float DController(float dE, float k);
-  void set(void);
+  void begin(void);
   void update(float RotorSignal[4], float Y[3], float dE[3], float W[3], float looptime);
   void sendSerial(float RotorSignal[4]);
   void setConstantsViaSerial(void);
@@ -47,7 +47,7 @@ float PIDControl::DController(float dE, float k){
   return -k * dE; //sign has to match PController
 }
 
-void PIDControl::set(void){
+void PIDControl::begin(void){
   //initialize I_Controller
   iSum[0] = 0;
   iSum[1] = 0;

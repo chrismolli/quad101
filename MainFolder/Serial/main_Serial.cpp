@@ -37,9 +37,9 @@ void setup(){
 
    //calibrate sensors
   imu.begin();
-  pidController.set(); //calibrate PID_Regler to forget integrated sum (I)
-  rotors.initialize(); //set Rotors and ESCs to PINs and initialize
-  rotors.begin();
+  pidController.begin(); //calibrate PID_Regler to forget integrated sum (I)
+  rotors.begin(); //set Rotors and ESCs to PINs and initialize
+  rotors.start();
   Serial.println("What would you like to update?");
   Serial.println("controller: 'c'");
   Serial.println("height: 'h'");
