@@ -270,20 +270,20 @@ void Compass::calibrate(void){
   Serial.println("Saving hardiron offsets...");
   EEPROM.clear();
 
-  EEPROM.write(X_OFF_EEPROM_ADDR+1,Compass::offset[0] & 0xFF); // Write X LSB
   EEPROM.write(X_OFF_EEPROM_ADDR,Compass::offset[0] >> 8);             // Write X MSB
+  EEPROM.write(X_OFF_EEPROM_ADDR+1,Compass::offset[0] & 0xFF); // Write X LSB
 
-  EEPROM.write(Y_OFF_EEPROM_ADDR+1,Compass::offset[1] & 0xFF); // Write Y LSB
   EEPROM.write(Y_OFF_EEPROM_ADDR,Compass::offset[1] >> 8);             // Write Y MSB
+  EEPROM.write(Y_OFF_EEPROM_ADDR+1,Compass::offset[1] & 0xFF); // Write Y LSB
 
-  EEPROM.write(Z_OFF_EEPROM_ADDR+1,Compass::offset[2] & 0xFF);         // Write Z LSB
   EEPROM.write(Z_OFF_EEPROM_ADDR,Compass::offset[2] >> 8);             // Write Z MSB
+  EEPROM.write(Z_OFF_EEPROM_ADDR+1,Compass::offset[2] & 0xFF);         // Write Z LSB
 
   //VII. Check EEPROM
   uint8_t writeCheck = 0;
-  writeCheck += ( (EEPROM.read(X_OFF_EEPROM_ADDR) << 8 | EEPROM.read(X_OFF_EEPROM_ADDR+1)) && Compass::offset[0]);
-  writeCheck += ( (EEPROM.read(Y_OFF_EEPROM_ADDR) << 8 | EEPROM.read(Y_OFF_EEPROM_ADDR+1)) && Compass::offset[1]);
-  writeCheck += ( (EEPROM.read(Z_OFF_EEPROM_ADDR) << 8 | EEPROM.read(Z_OFF_EEPROM_ADDR+1)) && Compass::offset[2]);
+  writeCheck += ( (EEPROM.read(X_OFF_EEPROM_ADDR) << 8 | EEPROM.read(X_OFF_EEPROM_ADDR+1)) == (unsigned)Compass::offset[0]);
+  writeCheck += ( (EEPROM.read(Y_OFF_EEPROM_ADDR) << 8 | EEPROM.read(Y_OFF_EEPROM_ADDR+1)) == (unsigned)Compass::offset[1]);
+  writeCheck += ( (EEPROM.read(Z_OFF_EEPROM_ADDR) << 8 | EEPROM.read(Z_OFF_EEPROM_ADDR+1)) == (unsigned)Compass::offset[2]);
 
   if(writeCheck==3) Serial.println("SUCCESS: Offsets written to EEPROM!");
   else              Serial.println("ERROR: Could not write offsets to EEPROM!");

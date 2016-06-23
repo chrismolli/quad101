@@ -111,7 +111,11 @@ void IMU::update(float looptime){
     int lowpass = INTMAX / 4;
     int highpass = INTMAX;
     int accel_magnitude_approx = abs(IMU::raw_Accel[0]) +abs(IMU::raw_Accel[1]) +abs(IMU::raw_Accel[2]);
-    if(accel_magnitude_approx > lowpass && accel_magnitude_approx < highpass){
+
+    if(    accel_magnitude_approx > lowpass
+        && accel_magnitude_approx < highpass
+        && abs(IMU::rot[0]) < 75
+        && abs(IMU::rot[1]) < 75){
         //Turning around the X axis results in a vector on the Y-axis PITCH
         float acc_rot_x = atan2f((float)IMU::raw_Accel[1], (float)IMU::raw_Accel[2]) * 180 / PI;
         IMU::rot[0] = COMPLEMENTARY_WEIGHT * IMU::rot[0] + (1-COMPLEMENTARY_WEIGHT) * acc_rot_x;
