@@ -1,7 +1,7 @@
 /*
 Author: Christian Mollière
 Combining Compass data with Curie IMU to get a 9 DOF IMU using a complementary filter
-Revision 4 11.06.2016
+Revision 5 29.06.2016
 */
 
 #ifndef SENSORFUSE_H
@@ -15,15 +15,7 @@ Revision 4 11.06.2016
 
 /*==================================================================*/
   //IMU constants
-  //#define GYRORANGE 2
   #define INTMAX 32768        //16 bit Integer
-  //#define COMPLEMENTARY_WEIGHT 0.98
-
-  //COMPASS contants
-  //#define MAG_X_OFFSET 8.7539       //From calibration tool
-  //#define MAG_Y_OFFSET -442.0650    //From calibration tool
-  //#define MAG_Z_OFFSET -52.7955     //From calibration tool
-  //#define DECLINATION_ANGLE_RADIAN 0
 
 /*==================================================================*/
   //Class definition
@@ -88,7 +80,11 @@ void IMU::begin(){
   CurieIMU.setGyroRange(GYRORANGE);
 
   //Compass initialisation
-  com.initialize(GAIN_1_3,DECLINATION_ANGLE_RADIAN);
+  if(MAG_PLUGGED_IN){
+    com.begin(GAIN_1_3,DECLINATION_ANGLE_RADIAN);
+    com.readHeading();
+    IMU::rot[2]=IMU::com.heading;
+  }
 }
 
 void IMU::update(float looptime){
@@ -105,6 +101,10 @@ void IMU::update(float looptime){
     IMU::rot[0] += IMU::rot_vel[0]*((float)looptime / 1000) * (180/PI);
     IMU::rot[1] += IMU::rot_vel[1]*((float)looptime / 1000) * (180/PI);
     IMU::rot[2] += IMU::rot_vel[2]*((float)looptime / 1000) * (180/PI);
+
+    //Compensate sign reversing of JAW
+    if(IMU::rot[2]<0.0) IMU::rot[2]+=360.0;
+    else if(IMU::rot[2]>360.0) IMU::rot[2]-=360.0;
 
   //II. Compensate Gyrodrift with Acceldata if data !bullshit (complementary filtering)
   //int is 16bit at a range from -2g to 2g
@@ -126,13 +126,15 @@ void IMU::update(float looptime){
     }
 
   //III. Compensate JAW Gyro drift via Compass
-    com.readTiltHeading(IMU::rot);
-    /*if(IMU::rot[0]<3.0 && IMU::rot[1]<3.0){
-      IMU::rot[2] = COMPLEMENTARY_WEIGHT * IMU::rot[2] + (1-COMPLEMENTARY_WEIGHT) * (IMU::com.heading-IMU::com.fixHeading);
-    }
-    //Compensate sign reversing of JAW
-    if(IMU::rot[2]<0.0) IMU::rot[2]+=360.0;
-    else if(IMU::rot[2]>360.0) IMU::rot[2]-=360.0;*/
+  if(MAG_PLUGGED_IN){
+      com.readTiltHeading(IMU::rot);
+      if(IMU::rot[0]<15.0 && IMU::rot[1]<15.0){
+        IMU::rot[2] = COMPLEMENTARY_WEIGHT * IMU::rot[2] + (1-COMPLEMENTARY_WEIGHT) * (IMU::com.heading);
+      }
+      //Compensate sign reversing of JAW
+      if(IMU::rot[2]<0.0) IMU::rot[2]+=360.0;
+      else if(IMU::rot[2]>360.0) IMU::rot[2]-=360.0;
+  }
 
 }
 
