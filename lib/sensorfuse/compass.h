@@ -63,22 +63,25 @@ class Compass{
     short offset[3];            //raw
     short rawMag[3];            //raw
     float heading;              //degree
-    float declinationAngle;     //radian
 
     void  write(MagRegister_t reg, unsigned char hex);
     void  read(void);
-    void  begin(sensorGain_t gain,float declinationDegree);
+    void  begin(sensorGain_t gain,float magneticDeclination);
     void  readHeading(void);
     void  readTiltHeading(float rot[3]);
-    void  sendSerial(void);
     void  calibrate(void);
 
+  private:
+    float declination;          //radian
 };
 
 /*==================================================================*/
+  //Functions
 
-//Functions
 void Compass::write(MagRegister_t reg, unsigned char hex){
+  /*
+   *  Writes I2C message to magnetometer
+   */
     Wire.beginTransmission(HMC5883_ADDRESS);
     Wire.write(reg);
     Wire.write(hex);
@@ -86,6 +89,10 @@ void Compass::write(MagRegister_t reg, unsigned char hex){
 }
 
 void Compass::read(void){
+  /*
+   *  Reads magnetometer registers
+   */
+
   //Set pointer to 4th Register
   Wire.beginTransmission(HMC5883_ADDRESS);
   Wire.write(0x03);
@@ -103,13 +110,17 @@ void Compass::read(void){
   Compass::rawMag[1]= (Wire.read()<<8 | Wire.read()) - Compass::offset[1];
 }
 
-void Compass::begin(sensorGain_t gain,float declinationDegree){
+void Compass::begin(sensorGain_t gain,float magneticDeclinationDegree){
+  /*
+   *  Initializes magnetometer
+   */
+
   if(Serial){
     Serial.println("Initializing Magnetometer...");
   }
 
-  delay(6);
-  Wire.begin(); // Initializing I2C connection
+  // Initializing I2C connection
+  Wire.begin();
 
   //Send config to sensor
   Compass::write(CONFIG_REG_B,gain); // Set gain
@@ -122,7 +133,7 @@ void Compass::begin(sensorGain_t gain,float declinationDegree){
   Compass::rawMag[1]=0;
   Compass::rawMag[2]=0;
   Compass::heading=0;
-  Compass::declinationAngle=declinationDegree/180*PI;
+  Compass::declination=magneticDeclinationDegree/180*PI;
 
   //Read hardiron offset from EEPROM
   for(int i=0; i<6; i+=2){
@@ -130,6 +141,7 @@ void Compass::begin(sensorGain_t gain,float declinationDegree){
   }
 
   //Print offsets
+  Serial.println("Magnetic offsets read from EEPROM!");
   Serial.print("Offset X: ");
   Serial.print(Compass::offset[0]);
   Serial.print(" Offset Y: ");
@@ -138,10 +150,8 @@ void Compass::begin(sensorGain_t gain,float declinationDegree){
   Serial.print(Compass::offset[2]);
   Serial.println();
 
-  //Skip first readings and set fixpoint
+  //Skip first readings
   Compass::read();
-  delay(30);
-
   delay(2000);
 
   if(Serial){
@@ -150,6 +160,9 @@ void Compass::begin(sensorGain_t gain,float declinationDegree){
 }
 
 void Compass::readHeading(){
+  /*
+   *  Reads uncompensated heading
+   */
   Compass::read();
   //Calculate heading
   Compass::heading=atan2f((float)Compass::rawMag[0],(float)Compass::rawMag[1])+declinationAngle;
@@ -161,9 +174,11 @@ void Compass::readHeading(){
 }
 
 void Compass::readTiltHeading(float rot[3]){
-  /*This function needs to know the current roll and pitch of the sensor!
-  */
-  //Read raw Magnetometer values
+  /*
+   *  Compensates magnetometer readings from tilt
+   *  This function needs to know the current roll and pitch of the sensor!
+   */
+
   Compass::read();
 
   //Precompute sin cos
@@ -180,13 +195,9 @@ void Compass::readTiltHeading(float rot[3]){
 
   //Calculate new heading
   Compass::heading=atan2f(-y_comp,x_comp);
-  /*if(x_comp>0 && y_comp>=0)       Compass::heading=atan2f(-y_comp,x_comp);
-  else if(x_comp<0)               Compass::heading=-PI+atan2f(-y_comp,x_comp);
-  else if(x_comp>0 && y_comp<0)   Compass::heading=-2*PI+atan2f(-y_comp,x_comp);
-  else if(x_comp==0)              Compass::heading=-PI/2;*/
 
   //Add magnetic declination
-  Compass::heading+=declinationAngle;
+  Compass::heading+=declination;
 
   //Compensate sign reversing
   if(Compass::heading<0) Compass::heading+=2*PI;
@@ -197,6 +208,10 @@ void Compass::readTiltHeading(float rot[3]){
 }
 
 void Compass::calibrate(void){
+  /*
+   *  Calibrates the hardiron offsets of the magnetometer
+   *  Serial connection needed!
+   */
   //I. Calibration data
   int calibrationPoints = 2000;
   short xMin=0,xMax=0,yMin=0,yMax=0,zMin=0,zMax=0;
@@ -275,13 +290,6 @@ void Compass::calibrate(void){
 
   if(writeCheck==3) Serial.println("SUCCESS: Offsets written to EEPROM!");
   else              Serial.println("ERROR: Could not write offsets to EEPROM!");
-}
-
-void Compass::sendSerial(void){
-    //Prints the time and angle data to serial
-    Serial.print("Tilt Compensated Heading ");
-    Serial.print(Compass::heading);
-    Serial.println();
 }
 
 #endif

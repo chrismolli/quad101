@@ -24,9 +24,9 @@ Revision 5 29.06.2016
       Compass com;
       float rot[3];
       float rot_vel[3];
+
       void begin();
       void update(float looptime);
-      void sendSerial(void);
       void debug(void);
 
     private:
@@ -38,7 +38,10 @@ Revision 5 29.06.2016
   //Functions
 
 void IMU::begin(){
-  //Initialize IMU
+  /*
+   *  Initializes IMU and Compass
+   */
+
   CurieIMU.begin();
   // verify connection
   Serial.println("Testing device connections...");
@@ -48,13 +51,10 @@ void IMU::begin(){
     Serial.println("CurieIMU connection failed");
   }
 
-  Serial.println("Initializing calibration...");
-
-  Serial.println("Calibration starts in 5 sec. Make sure your board is stable and upright");
+  Serial.println("IMU calibration starts in 5 sec. Make sure your board is stable and upright");
   delay(5000);
 
-  // The board must be resting in a horizontal position for
-  // the following calibration procedure to work correctly!
+  // The board must be resting in a horizontal position for the following calibration procedure to work correctly!
   Serial.print("Starting Gyroscope calibration and enabling offset compensation...");
   CurieIMU.autoCalibrateGyroOffset();
   Serial.println(" Done");
@@ -65,8 +65,9 @@ void IMU::begin(){
   CurieIMU.autoCalibrateAccelerometerOffset(Z_AXIS, 1);
   Serial.println(" Done");
 
-  Serial.println("Internal sensor offsets AFTER calibration...");
+  Serial.println("IMU sensor offsets after calibration...");
   Serial.print(CurieIMU.getAccelerometerOffset(X_AXIS));
+  Serial.print("\t");
   Serial.print(CurieIMU.getAccelerometerOffset(Y_AXIS));
   Serial.print("\t"); // -2359
   Serial.print(CurieIMU.getAccelerometerOffset(Z_AXIS));
@@ -81,13 +82,16 @@ void IMU::begin(){
 
   //Compass initialisation
   if(MAG_PLUGGED_IN){
-    com.begin(GAIN_1_3,DECLINATION_ANGLE_RADIAN);
+    com.begin(GAIN_1_3,DECLINATION_ANGLE_DEGREE);
     com.readHeading();
     IMU::rot[2]=IMU::com.heading;
   }
 }
 
 void IMU::update(float looptime){
+  /*
+   *  Updates all sensor values, computes rotation, stabilizes drifts
+   */
 
   CurieIMU.readGyro(IMU::raw_Gyro[0],IMU::raw_Gyro[1],IMU::raw_Gyro[2]);
   CurieIMU.readAccelerometer(IMU::raw_Accel[0],IMU::raw_Accel[1],IMU::raw_Accel[2]);
@@ -136,19 +140,6 @@ void IMU::update(float looptime){
       else if(IMU::rot[2]>360.0) IMU::rot[2]-=360.0;
   }
 
-}
-
-void IMU::sendSerial(void){
-    //Prints the time and angle data to serial
-    //Serial.print("Time ");
-    //Serial.print(millis());
-    Serial.print(" Roll ");
-    Serial.print(IMU::rot[0]);
-    Serial.print(" Pitch ");
-    Serial.print(IMU::rot[1]);
-    Serial.print(" Jaw ");
-    Serial.print(IMU::rot[2]);
-    Serial.println();
 }
 
 void IMU::debug(void){
