@@ -59,7 +59,9 @@ void serialEvent(){
     //while(Serial.available()) Serial.read();
     switch (firstInput) {
       case 99: // compares firstInput to 'c'
+        rotors.stop();
         pidController.setConstantsViaSerial();
+        rotors.start();
         break;
       case 104: //compares firstInput to 'h'
         rotors.setRotorSignalViaSerial();

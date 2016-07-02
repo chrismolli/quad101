@@ -11,25 +11,36 @@ private:
   Servo esc1, esc2, esc3, esc4;
 public:
   float RotorSignal[4];
+  float RoundSignal[4];
   void begin(void);
   void update(void);
-  void start(void); //mit Serial abfrage??
+  void start(void);
+  void stop(void);
   void setRotorSignalViaSerial(void);
+  void sendSerial(void);
 };
 
 
 void RotorControl::begin(void){
-
-  esc1.attach(PWMOUT1); //Establish Connection to ESCs
+  //Establish Connection to ESCs
+  esc1.attach(PWMOUT1);
   esc2.attach(PWMOUT2);
-  esc1.write(0); //Initialize Rotors and be careful with delays!!
+  //Initialize Rotors and be careful with delays!!
+  esc1.write(0);
   delay(500);
   esc2.write(0);
   delay(500);
+
+  //Initialize RotorSignal
   RotorSignal[0] = 0;
   RotorSignal[1] = 0;
   RotorSignal[2] = 0;
   RotorSignal[3] = 0;
+
+  RoundSignal[0] = 0;
+  RoundSignal[1] = 0;
+  RoundSignal[2] = 0;
+  RoundSignal[3] = 0;
 }
 
 void RotorControl::start(void){
@@ -48,6 +59,25 @@ void RotorControl::start(void){
   //Write start value to the RotorSignals
   RotorSignal[0] = TAKE_OFF_SIGNAL;
   RotorSignal[1] = TAKE_OFF_SIGNAL;
+
+}
+
+void RotorControl::stop(void){
+  //Startvorgang Teststand
+  int s = TAKE_OFF_SIGNAL;
+  while (s > MIN_ROTOR_SIGNAL){
+    esc1.write(s);
+    esc2.write(s);
+    s = s - 1;
+    delay(40);
+  }
+
+  esc1.write(0);
+  esc2.write(0);
+
+  //Reset RotorSignal
+  RotorSignal[0] = 0;
+  RotorSignal[1] = 0;
 
 }
 
@@ -74,8 +104,10 @@ void RotorControl::update(void){
   }
 
 //write RotorSignal too ESCs
-  esc1.write((int)RotorSignal[0]);
-  esc2.write((int)RotorSignal[1]);
+  RoundSignal[0] = roundf(RotorSignal[0]);
+  RoundSignal[1] = roundf(RotorSignal[1]);
+  esc1.write((int)RoundSignal[0]);
+  esc2.write((int)RoundSignal[1]);
 }
 
 void RotorControl::setRotorSignalViaSerial(void){
@@ -90,5 +122,19 @@ void RotorControl::setRotorSignalViaSerial(void){
     RotorSignal[1] = signalInput;      //then you could add the difference!
   }
 }
+
+void RotorControl::sendSerial(void){
+    //Prints the time and RotorSignals to serial
+    Serial.println("Time: ");
+    Serial.print(millis());
+    Serial.print(" R0: ");
+    Serial.print(RotorSignal[0]);
+    Serial.print(" R1: ");
+    Serial.print(RotorSignal[1]);
+    /*Serial.print(" R2: ");
+    Serial.print(RotorSignal[2]);
+    Serial.print(" R3: ");
+    Serial.print(RotorSignal[3]); */
+  }
 
 #endif
