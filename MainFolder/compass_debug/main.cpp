@@ -6,42 +6,23 @@ Debuging script for tilt compensated compass
 #include "Timer.h"
 #include "../lib/sensorfuse/sensorfuse.h"
 
-#define SAMPLE_RATE 100
+#define SAMPLE_RATE_X 10
 
 Timer t;
 IMU imu;
 
-//Subroutines
-void updateData(){
-  //Vereinfachte Datenupdates
-  imu.update(SAMPLE_RATE);
-  //imu.com.readTiltHeading(imu.rot);
-  imu.com.read();
-  //imu.com.readHeading();
+void data(){
+  imu.update(SAMPLE_RATE_X);
 }
 
 void serial(){
+  //imu.debug();
   //imu.com.sendSerial();
-  //imu.sendSerial();
-
-  //Serial.print(imu.com.fixHeading);
-  //Serial.print(":");
-  //Serial.println(imu.com.heading);
-  //Serial.print(":");
-  //Serial.println(imu.com.heading-imu.com.fixHeading);
-
-
-  Serial.print(imu.raw_Accel[0]);
+  Serial.print(imu.rot[0]);
   Serial.print(",");
-  Serial.print(imu.raw_Accel[1]);
+  Serial.print(imu.rot[1]);
   Serial.print(",");
-  Serial.print(imu.raw_Accel[2]);
-  Serial.print(",");
-  Serial.print(imu.com.rawMag[0]);
-  Serial.print(",");
-  Serial.print(imu.com.rawMag[1]);
-  Serial.print(",");
-  Serial.print(imu.com.rawMag[2]);
+  Serial.print(imu.rot[2]);
   Serial.println(";");
 }
 
@@ -49,10 +30,11 @@ void serial(){
 void setup(){
   Serial.begin(230400);
   while(!Serial);
-  imu.startAndCalibrate();
+  imu.begin();
+  //imu.com.calibrate();
 
-  t.every(SAMPLE_RATE,updateData);
-  t.every(SAMPLE_RATE,serial);
+  t.every(SAMPLE_RATE_X,data);
+  t.every(10*SAMPLE_RATE_X,serial);
 }
 
 void loop(){
