@@ -165,7 +165,7 @@ void Compass::readHeading(){
    */
   Compass::read();
   //Calculate heading
-  Compass::heading=atan2f((float)Compass::rawMag[0],(float)Compass::rawMag[1])+declinationAngle;
+  Compass::heading=atan2f((float)Compass::rawMag[0],(float)Compass::rawMag[1])+declination;
   //Compensate sign reversing
   if(Compass::heading<0) Compass::heading +=2*PI;
   else if(Compass::heading>2*PI) Compass::heading -=2*PI;
