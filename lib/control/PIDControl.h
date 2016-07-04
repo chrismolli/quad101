@@ -27,7 +27,6 @@ public:
   float DController(float dE, float k);
   void begin(void);
   void update(float RotorSignal[4], float Y[3], float dE[3], float W[3], float looptime);
-  void sendSerial(void);
   void setConstantsViaSerial(void);
 };
 
@@ -53,9 +52,9 @@ void PIDControl::begin(void){
   iSum[1] = 0;
   iSum[2] = 0;
   //initialize Constants
-  K_P = 0.005; //0.000027
-  K_I = 0.00001; //0.0000001
-  K_D = 0.1; //0.022 (Filtered derivative and 100Hz)
+  K_P = K_P_START; //0.000027
+  K_I = K_I_START; //0.0000001
+  K_D = K_D_START; //0.022 (Filtered derivative and 100Hz)
 
   K_P_Jaw = 0.1;
   K_I_Jaw = 0.05;
@@ -70,7 +69,7 @@ void PIDControl::update(float RotorSignal[4], float Y[3], float dE[3], float W[3
 
   //calculating cotrolled variable (CV)
   //x-Axis
-  U[0] = PController(e[0], K_P) + IController(e[0], K_I, 0, looptime) + DController(dE[0], K_D);
+  U[0] = K_GLOBAL*(PController(e[0], K_P) + IController(e[0], K_I, 0, looptime) + DController(dE[0], K_D));
 
   //y-Axis
   //U[1] = PController(e[1], K_P) + IController(e[1], K_I, 1, looptime) + DController(dE[1], K_D);
@@ -96,9 +95,6 @@ void PIDControl::update(float RotorSignal[4], float Y[3], float dE[3], float W[3
   //RotorSignal[3] = RotorSignal[3] - U[2];
 }
 
-void PIDControl::sendSerial(void){
-
-  }
 
 void PIDControl::setConstantsViaSerial(void){
   Serial.println("Tell me which k_Value you want to update ");

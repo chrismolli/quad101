@@ -26,9 +26,8 @@ void RotorControl::begin(void){
   esc1.attach(PWMOUT1);
   esc2.attach(PWMOUT2);
   //Initialize Rotors and be careful with delays!!
-  esc1.write(0);
-  delay(500);
-  esc2.write(0);
+  esc1.writeMicroseconds(0);
+  esc2.writeMicroseconds(0);
   delay(500);
 
   //Initialize RotorSignal
@@ -47,14 +46,14 @@ void RotorControl::start(void){
   //Startvorgang Teststand
   int s = MIN_ROTOR_SIGNAL;
   while (s < TAKE_OFF_SIGNAL){
-    esc1.write(s);
-    esc2.write(s);
-    s = s + 1;
+    esc1.writeMicroseconds(s);
+    esc2.writeMicroseconds(s);
+    s = s + 20;
     delay(100);
   }
 
-  esc1.write(TAKE_OFF_SIGNAL);
-  esc2.write(TAKE_OFF_SIGNAL);
+  esc1.writeMicroseconds(TAKE_OFF_SIGNAL);
+  esc2.writeMicroseconds(TAKE_OFF_SIGNAL);
 
   //Write start value to the RotorSignals
   RotorSignal[0] = TAKE_OFF_SIGNAL;
@@ -66,14 +65,14 @@ void RotorControl::stop(void){
   //Startvorgang Teststand
   int s = TAKE_OFF_SIGNAL;
   while (s > MIN_ROTOR_SIGNAL){
-    esc1.write(s);
-    esc2.write(s);
-    s = s - 1;
+    esc1.writeMicroseconds(s);
+    esc2.writeMicroseconds(s);
+    s = s - 20;
     delay(40);
   }
 
-  esc1.write(0);
-  esc2.write(0);
+  esc1.writeMicroseconds(0);
+  esc2.writeMicroseconds(0);
 
   //Reset RotorSignal
   RotorSignal[0] = 0;
@@ -106,8 +105,8 @@ void RotorControl::update(void){
 //write RotorSignal too ESCs
   RoundSignal[0] = roundf(RotorSignal[0]);
   RoundSignal[1] = roundf(RotorSignal[1]);
-  esc1.write((int)RoundSignal[0]);
-  esc2.write((int)RoundSignal[1]);
+  esc1.writeMicroseconds((int)RoundSignal[0]);
+  esc2.writeMicroseconds((int)RoundSignal[1]);
 }
 
 void RotorControl::setRotorSignalViaSerial(void){
