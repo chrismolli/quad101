@@ -1,25 +1,30 @@
 #ifndef ROTORCONTROL_H
 #define ROTORCONTROL_H
 
-#include "Arduino.h"
-#include "Servo.h"
-#include "../params.h"
+/*==================================================================*/
+  //Extern librarys
+  #include "Arduino.h"
+  #include "Servo.h"
+  #include "../params.h"
 
+/*==================================================================*/
+  //Classdefinition
+  class RotorControl{
+  private:
+    Servo esc1, esc2, esc3, esc4;
+  public:
+    float RotorSignal[4];
+    float RoundSignal[4];
+    void begin(void);
+    void update(void);
+    void start(void);
+    void stop(void);
+    void setRotorSignalViaSerial(void);
+    void sendSerial(void);
+  };
 
-class RotorControl{
-private:
-  Servo esc1, esc2, esc3, esc4;
-public:
-  float RotorSignal[4];
-  float RoundSignal[4];
-  void begin(void);
-  void update(void);
-  void start(void);
-  void stop(void);
-  void setRotorSignalViaSerial(void);
-  void sendSerial(void);
-};
-
+/*==================================================================*/
+  //Functions
 
 void RotorControl::begin(void){
   //Establish Connection to ESCs
@@ -30,7 +35,7 @@ void RotorControl::begin(void){
   esc2.writeMicroseconds(0);
   delay(500);
 
-  //Initialize RotorSignal
+  //Initialize rotorsignals
   RotorSignal[0] = 0;
   RotorSignal[1] = 0;
   RotorSignal[2] = 0;
@@ -43,7 +48,7 @@ void RotorControl::begin(void){
 }
 
 void RotorControl::start(void){
-  //Startvorgang Teststand
+  //start procedure testbed
   int s = MIN_ROTOR_SIGNAL;
   while (s < TAKE_OFF_SIGNAL){
     esc1.writeMicroseconds(s);
@@ -55,14 +60,14 @@ void RotorControl::start(void){
   esc1.writeMicroseconds(TAKE_OFF_SIGNAL);
   esc2.writeMicroseconds(TAKE_OFF_SIGNAL);
 
-  //Write start value to the RotorSignals
+  //write start values to the rotorsignals
   RotorSignal[0] = TAKE_OFF_SIGNAL;
   RotorSignal[1] = TAKE_OFF_SIGNAL;
 
 }
 
 void RotorControl::stop(void){
-  //Startvorgang Teststand
+  //stop procedure testbed
   int s = TAKE_OFF_SIGNAL;
   while (s > MIN_ROTOR_SIGNAL){
     esc1.writeMicroseconds(s);
@@ -74,7 +79,7 @@ void RotorControl::stop(void){
   esc1.writeMicroseconds(0);
   esc2.writeMicroseconds(0);
 
-  //Reset RotorSignal
+  //reset rotorsignals
   RotorSignal[0] = 0;
   RotorSignal[1] = 0;
 

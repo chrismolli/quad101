@@ -1,36 +1,40 @@
 #ifndef PIDCONTROL_H
 #define PIDCONTROL_H
 
-#include "../params.h"
-#include "Arduino.h"
+/*==================================================================*/
+  //Extern librarys
+  #include "../params.h"
+  #include "Arduino.h"
 
+/*==================================================================*/
+  //Classdefinition
+  class PIDControl{
+    private:
+      float K_P;
+      float K_I;
+      float K_D;
 
-class PIDControl{
-private:
-  float K_P;
-  float K_I;
-  float K_D;
+      float K_P_Jaw;
+      float K_I_Jaw;
+      float K_D_Jaw;
 
-  float K_P_Jaw;
-  float K_I_Jaw;
-  float K_D_Jaw;
+      float U[3]; //controlled variable (CV)
+      float iSum[3]; //controlled integral variabel
+      float e[3]; //control difference (W_Y)
+      //W = Sollwert
+      //Y = Istwert
 
-  float U[3]; //controlled variable (CV)
-  float iSum[3]; //controlled integral variabel
-  float e[3]; //control difference (W_Y)
-  //W = Sollwert
-  //Y = Istwert
+    public:
+      float PController(float e, float k);
+      float IController(float e, float k, int i, float looptime);
+      float DController(float dE, float k);
+      void begin(void);
+      void update(float RotorSignal[4], float Y[3], float dE[3], float W[3], float looptime);
+      void setConstantsViaSerial(void);
+  };
 
-public:
-  float PController(float e, float k);
-  float IController(float e, float k, int i, float looptime);
-  float DController(float dE, float k);
-  void begin(void);
-  void update(float RotorSignal[4], float Y[3], float dE[3], float W[3], float looptime);
-  void setConstantsViaSerial(void);
-};
-
-// functions for each individual regulation
+/*==================================================================*/
+  //Functions
 float PIDControl::PController(float e, float k){
   return k*e;
 }
