@@ -67,7 +67,7 @@ void serialEvent(){
         rotors.setRotorSignalViaSerial();
         break;
       case 97: //compares firstInput to 'a'
-        Serial.println("Enter a 2-digit number! Maximum angle is 40°.");
+        Serial.println("Enter a 2-digit number! Maximum angle is 45 degree. ");
         Serial.println("What angle would you like to see? ");
         while (Serial.available()<2) {} //wating for Serial to have two digits
         int angleInput;

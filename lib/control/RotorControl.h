@@ -21,6 +21,7 @@
     void stop(void);
     void setRotorSignalViaSerial(void);
     void sendSerial(void);
+    void setESC1(int input);
   };
 
 /*==================================================================*/
@@ -140,5 +141,9 @@ void RotorControl::sendSerial(void){
     Serial.print(" R3: ");
     Serial.print(RotorSignal[3]); */
   }
+
+void RotorControl::setESC1(int input){
+  esc1.writeMicroseconds(input);
+}
 
 #endif
