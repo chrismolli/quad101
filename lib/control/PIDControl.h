@@ -1,37 +1,40 @@
 #ifndef PIDCONTROL_H
 #define PIDCONTROL_H
 
-#include "../params.h"
-#include "Arduino.h"
+/*==================================================================*/
+  //Extern librarys
+  #include "../params.h"
+  #include "Arduino.h"
 
+/*==================================================================*/
+  //Classdefinition
+  class PIDControl{
+    private:
+      float K_P;
+      float K_I;
+      float K_D;
 
-class PIDControl{
-private:
-  float K_P;
-  float K_I;
-  float K_D;
+      float K_P_Jaw;
+      float K_I_Jaw;
+      float K_D_Jaw;
 
-  float K_P_Jaw;
-  float K_I_Jaw;
-  float K_D_Jaw;
+      float U[3]; //controlled variable (CV)
+      float iSum[3]; //controlled integral variabel
+      float e[3]; //control difference (W_Y)
+      //W = Sollwert
+      //Y = Istwert
 
-  float U[3]; //controlled variable (CV)
-  float iSum[3]; //controlled integral variabel
-  float e[3]; //control difference (W_Y)
-  //W = Sollwert
-  //Y = Istwert
+    public:
+      float PController(float e, float k);
+      float IController(float e, float k, int i, float looptime);
+      float DController(float dE, float k);
+      void begin(void);
+      void update(float RotorSignal[4], float Y[3], float dE[3], float W[3], float looptime);
+      void setConstantsViaSerial(void);
+  };
 
-public:
-  float PController(float e, float k);
-  float IController(float e, float k, int i, float looptime);
-  float DController(float dE, float k);
-  void begin(void);
-  void update(float RotorSignal[4], float Y[3], float dE[3], float W[3], float looptime);
-  void sendSerial(void);
-  void setConstantsViaSerial(void);
-};
-
-// functions for each individual regulation
+/*==================================================================*/
+  //Functions
 float PIDControl::PController(float e, float k){
   return k*e;
 }
@@ -53,9 +56,9 @@ void PIDControl::begin(void){
   iSum[1] = 0;
   iSum[2] = 0;
   //initialize Constants
-  K_P = 0.005; //0.000027
-  K_I = 0.00001; //0.0000001
-  K_D = 0.1; //0.022 (Filtered derivative and 100Hz)
+  K_P = K_P_START; //0.000027
+  K_I = K_I_START; //0.0000001
+  K_D = K_D_START; //0.022 (Filtered derivative and 100Hz)
 
   K_P_Jaw = 0.1;
   K_I_Jaw = 0.05;
@@ -70,7 +73,7 @@ void PIDControl::update(float RotorSignal[4], float Y[3], float dE[3], float W[3
 
   //calculating cotrolled variable (CV)
   //x-Axis
-  U[0] = PController(e[0], K_P) + IController(e[0], K_I, 0, looptime) + DController(dE[0], K_D);
+  U[0] = K_GLOBAL*(PController(e[0], K_P) + IController(e[0], K_I, 0, looptime) + DController(dE[0], K_D));
 
   //y-Axis
   //U[1] = PController(e[1], K_P) + IController(e[1], K_I, 1, looptime) + DController(dE[1], K_D);
@@ -96,15 +99,14 @@ void PIDControl::update(float RotorSignal[4], float Y[3], float dE[3], float W[3
   //RotorSignal[3] = RotorSignal[3] - U[2];
 }
 
-void PIDControl::sendSerial(void){
-
-  }
 
 void PIDControl::setConstantsViaSerial(void){
   Serial.println("Tell me which k_Value you want to update ");
   while (!Serial.available()) {}
+
   String kString = "";
   char inChar = (char)Serial.read();
+
   switch (inChar) {
     case 112: // compares input to 'p'
       Serial.println("Set new K_P value: ");
@@ -127,6 +129,7 @@ void PIDControl::setConstantsViaSerial(void){
         K_P = kString.toFloat();
         Serial.println(kString);
         break;
+
       case 105: // compares input to 'i'
         Serial.println("Set new K_I value: ");
         while(inChar!='\n'){
@@ -148,8 +151,9 @@ void PIDControl::setConstantsViaSerial(void){
         K_I = kString.toFloat();
         Serial.println(kString);
         break;
+
       case 100: // compares input to 'd'
-      Serial.println("Set new K_D value: ");
+        Serial.println("Set new K_D value: ");
         while(inChar!='\n'){
           if (Serial.available()){
             inChar = (char)Serial.read();
@@ -169,6 +173,7 @@ void PIDControl::setConstantsViaSerial(void){
         K_D = kString.toFloat();
         Serial.println(kString);
         break;
+
       default:
         Serial.println("This constant doesn't exist. Start over again");
         //while(Serial.available()) Serial.read();
