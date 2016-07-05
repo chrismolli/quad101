@@ -28,8 +28,8 @@
 
 void RotorControl::begin(void){
   //Establish Connection to ESCs
-  esc1.attach(PWMOUT1);
-  esc2.attach(PWMOUT2);
+  esc1.attach(ESCPIN1);
+  esc2.attach(ESCPIN2);
   //Initialize Rotors and be careful with delays!!
   esc1.writeMicroseconds(0);
   esc2.writeMicroseconds(0);

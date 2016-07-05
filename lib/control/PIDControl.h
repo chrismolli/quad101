@@ -103,8 +103,10 @@ void PIDControl::update(float RotorSignal[4], float Y[3], float dE[3], float W[3
 void PIDControl::setConstantsViaSerial(void){
   Serial.println("Tell me which k_Value you want to update ");
   while (!Serial.available()) {}
+
   String kString = "";
   char inChar = (char)Serial.read();
+
   switch (inChar) {
     case 112: // compares input to 'p'
       Serial.println("Set new K_P value: ");
@@ -127,6 +129,7 @@ void PIDControl::setConstantsViaSerial(void){
         K_P = kString.toFloat();
         Serial.println(kString);
         break;
+
       case 105: // compares input to 'i'
         Serial.println("Set new K_I value: ");
         while(inChar!='\n'){
@@ -148,8 +151,9 @@ void PIDControl::setConstantsViaSerial(void){
         K_I = kString.toFloat();
         Serial.println(kString);
         break;
+
       case 100: // compares input to 'd'
-      Serial.println("Set new K_D value: ");
+        Serial.println("Set new K_D value: ");
         while(inChar!='\n'){
           if (Serial.available()){
             inChar = (char)Serial.read();
@@ -169,6 +173,7 @@ void PIDControl::setConstantsViaSerial(void){
         K_D = kString.toFloat();
         Serial.println(kString);
         break;
+
       default:
         Serial.println("This constant doesn't exist. Start over again");
         //while(Serial.available()) Serial.read();
