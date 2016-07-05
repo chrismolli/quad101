@@ -17,7 +17,7 @@
     float RoundSignal[4];
     void begin(void);
     void update(void);
-    void start(void);
+    void start(int startValue);
     void stop(void);
     void setRotorSignalViaSerial(void);
     void sendSerial(void);
@@ -33,7 +33,12 @@ void RotorControl::begin(void){
   esc2.attach(ESCPIN2);
   //Initialize Rotors and be careful with delays!!
   esc1.writeMicroseconds(0);
+  delay(500);
   esc2.writeMicroseconds(0);
+  delay(500);
+  esc1.writeMicroseconds(1012);
+  delay(500);
+  esc2.writeMicroseconds(1012);
   delay(500);
 
   //Initialize rotorsignals
@@ -48,22 +53,22 @@ void RotorControl::begin(void){
   RoundSignal[3] = 0;
 }
 
-void RotorControl::start(void){
+void RotorControl::start(int startValue){
   //start procedure testbed
   int s = MIN_ROTOR_SIGNAL;
-  while (s < TAKE_OFF_SIGNAL){
+  while (s < startValue){
     esc1.writeMicroseconds(s);
     esc2.writeMicroseconds(s);
     s = s + 20;
     delay(100);
   }
 
-  esc1.writeMicroseconds(TAKE_OFF_SIGNAL);
-  esc2.writeMicroseconds(TAKE_OFF_SIGNAL);
+  esc1.writeMicroseconds(startValue);
+  esc2.writeMicroseconds(startValue);
 
   //write start values to the rotorsignals
-  RotorSignal[0] = TAKE_OFF_SIGNAL;
-  RotorSignal[1] = TAKE_OFF_SIGNAL;
+  RotorSignal[0] = startValue;
+  RotorSignal[1] = startValue;
 
 }
 

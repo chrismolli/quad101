@@ -11,12 +11,12 @@
   class PIDControl{
     private:
       float K_P;
-      float K_I;
-      float K_D;
+      float T_I;
+      float T_D;
 
       float K_P_Jaw;
-      float K_I_Jaw;
-      float K_D_Jaw;
+      float T_I_Jaw;
+      float T_D_Jaw;
 
       float U[3]; //controlled variable (CV)
       float iSum[3]; //controlled integral variabel
@@ -43,7 +43,7 @@ float PIDControl::IController(float e, float k, int i, float looptime){
   if ((abs(e) < MAX_E_FOR_I) && (abs(e) > MIN_E_FOR_I)) {
      iSum[i] = iSum[i] + e;
   }
-  return k*iSum[i]*looptime/1000;
+  return (1/k)*iSum[i]*looptime/1000;
 }
 
 float PIDControl::DController(float dE, float k){
@@ -57,12 +57,12 @@ void PIDControl::begin(void){
   iSum[2] = 0;
   //initialize Constants
   K_P = K_P_START; //0.000027
-  K_I = K_I_START; //0.0000001
-  K_D = K_D_START; //0.022 (Filtered derivative and 100Hz)
+  T_I = T_I_START; //0.0000001
+  T_D = T_D_START; //0.022 (Filtered derivative and 100Hz)
 
   K_P_Jaw = 0.1;
-  K_I_Jaw = 0.05;
-  K_D_Jaw = 0.1;
+  T_I_Jaw = 0.05;
+  T_D_Jaw = 0.1;
 }
 
 void PIDControl::update(float RotorSignal[4], float Y[3], float dE[3], float W[3], float looptime){
@@ -73,13 +73,13 @@ void PIDControl::update(float RotorSignal[4], float Y[3], float dE[3], float W[3
 
   //calculating cotrolled variable (CV)
   //x-Axis
-  U[0] = K_GLOBAL*(PController(e[0], K_P) + IController(e[0], K_I, 0, looptime) + DController(dE[0], K_D));
+  U[0] = K_P*(PController(e[0], 1) + IController(e[0], T_I, 0, looptime) + DController(dE[0], T_D));
 
   //y-Axis
-  //U[1] = PController(e[1], K_P) + IController(e[1], K_I, 1, looptime) + DController(dE[1], K_D);
+  //U[1] = PController(e[1], K_P) + IController(e[1], T_I, 1, looptime) + DController(dE[1], T_D);
 
   //z-Axis
-  //U[2] = PController(e[2], K_P_Jaw) + IController(e[2], K_I_Jaw, 2, looptime) + DController(dE[2], K_D_Jaw);
+  //U[2] = PController(e[2], K_P_Jaw) + IController(e[2], T_I_Jaw, 2, looptime) + DController(dE[2], T_D_Jaw);
 
   //Multiplication with System_Matrice
   //U[0] = 1 * U[0];
@@ -131,15 +131,15 @@ void PIDControl::setConstantsViaSerial(void){
         break;
 
       case 105: // compares input to 'i'
-        Serial.println("Set new K_I value: ");
+        Serial.println("Set new T_I value: ");
         while(inChar!='\n'){
           if (Serial.available()){
             inChar = (char)Serial.read();
             if(inChar == 'c'){ // 'c' resets kString so you can input value again
               kString = "";
               //while(Serial.available()) Serial.read();
-              Serial.println("K_I value got reset!");
-              Serial.println("Set new K_I value: ");
+              Serial.println("T_I value got reset!");
+              Serial.println("Set new T_I value: ");
             }
             else if (inChar != '\n'){
               kString += inChar;
@@ -147,21 +147,21 @@ void PIDControl::setConstantsViaSerial(void){
             }
           }
         }
-        Serial.print("Your new K_I value is: ");
-        K_I = kString.toFloat();
+        Serial.print("Your new T_I value is: ");
+        T_I = kString.toFloat();
         Serial.println(kString);
         break;
 
       case 100: // compares input to 'd'
-        Serial.println("Set new K_D value: ");
+        Serial.println("Set new T_D value: ");
         while(inChar!='\n'){
           if (Serial.available()){
             inChar = (char)Serial.read();
             if(inChar == 'c'){ // 'c' resets kString so you can input value again
               kString = "";
               //while(Serial.available()) Serial.read();
-              Serial.println("K_D value got reset!");
-              Serial.println("Set new K_D value: ");
+              Serial.println("T_D value got reset!");
+              Serial.println("Set new T_D value: ");
             }
             else if (inChar != '\n'){
               kString += inChar;
@@ -169,8 +169,8 @@ void PIDControl::setConstantsViaSerial(void){
             }
           }
         }
-        Serial.print("Your new K_D value is: ");
-        K_D = kString.toFloat();
+        Serial.print("Your new T_D value is: ");
+        T_D = kString.toFloat();
         Serial.println(kString);
         break;
 

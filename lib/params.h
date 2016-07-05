@@ -10,15 +10,14 @@
   //PID constants
   #define MAX_E_FOR_I 45    //Maximum angle to contribute to I_Controller
   #define MIN_E_FOR_I 0.3   //Minimum angle to start controller
-  #define K_GLOBAL    1     //3 Global gain on PIDControl
-  #define K_P_START   0.00042         //0.004
-  #define K_I_START   0.00001         //0
-  #define K_D_START   0.21        //0.24
+  #define K_P_START   0.00042         //Global gain on PIDControl
+  #define T_I_START   240000000         //T_N 0.00001
+  #define T_D_START   500        //T_V 0.21
 
   //PID table
   /*setup         K_P       K_I       K_D       K_GLOBAL      PWMOUT1     PWMOUT2
     Frame M2      1         0         60        0.012         6           5
-    Testbed M2    X         X         X         X             X           X
+    Testbed M2             X         X         X             X           X
 
 
   */
