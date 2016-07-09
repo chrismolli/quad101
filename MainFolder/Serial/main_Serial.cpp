@@ -1,33 +1,35 @@
 /*
-Script for advanced IMU testing.
-Using complementary und kalman filtering for more precise results on the
-gyroscope input of the Arduino 101.
+Main for Testing and Changing PID Control during Runtime
 */
 
-#include "Arduino.h"
-#include <Timer.h>
-#include "../lib/sensorfuse/sensorfuse.h"
-#include "../lib/control/PIDControl.h"
-#include "../lib/control/RotorControl.h"
-#include "../lib/control/HeightControl.h"
-#include "../lib/params.h"
+/*==================================================================*/
+  //Extern libraries
+  #include "Arduino.h"
+  #include <Timer.h>
+  #include "../lib/sensorfuse/sensorfuse.h"
+  #include "../lib/control/PIDControl.h"
+  #include "../lib/control/RotorControl.h"
+  #include "../lib/control/HeightControl.h"
+  #include "../lib/params.h"
 
-//declare Timer object
-Timer t;
-IMU imu;
-PIDControl pidController;
-RotorControl rotors;
+/*==================================================================*/
+  //Declare needed objects
+  Timer t;
+  IMU imu;
+  PIDControl pidController;
+  RotorControl rotors;
 
-//declare necessary Variabels
-float targetPosition[3] = {0,0,0}; //reference_angle
-float targetHeight;
+/*==================================================================*/
+  //Declare necessary Variabels
+  //referenceAngle
+  float targetPosition[3] = {0,0,0};
 
+/*==================================================================*/
+  //Functions
 void timerUpdate(){
   imu.update(SAMPLE_RATE);
   pidController.update(rotors.RotorSignal, imu.rot, imu.rot_vel, targetPosition, SAMPLE_RATE);
   rotors.update();
-}
-void updateSerial(){
 }
 
 void setup(){
@@ -37,15 +39,19 @@ void setup(){
 
    //calibrate sensors
   imu.begin();
-  pidController.begin(); //calibrate PID_Regler to forget integrated sum (I)
-  rotors.begin(); //set Rotors and ESCs to PINs and initialize
-  rotors.start();
+  //initialize PID_Regler and reset integrated sum (I)
+  pidController.begin();
+  //set Rotors/ESCs to PINs and initialize
+  rotors.begin();
+  rotors.start(TAKE_OFF_SIGNAL);
+
+  //Serial Communication
   Serial.println("What would you like to update?");
   Serial.println("controller: 'c'");
   Serial.println("height: 'h'");
   Serial.println("angle: 'a'");
 
-  //Set timer event, that calls updateIMU every SAMPLE_RATE milliseconds
+  //Set timer event, that calls timerUpdate every SAMPLE_RATE milliseconds
   t.every(SAMPLE_RATE,timerUpdate);
 }
 
@@ -58,14 +64,18 @@ void serialEvent(){
     char firstInput = (char)Serial.read();
     //while(Serial.available()) Serial.read();
     switch (firstInput) {
+
       case 99: // compares firstInput to 'c'
         rotors.stop();
         pidController.setConstantsViaSerial();
-        rotors.start();
+        rotors.start(TAKE_OFF_SIGNAL);
         break;
+
       case 104: //compares firstInput to 'h'
-        rotors.setRotorSignalViaSerial();
+        rotors.stop();
+        rotors.start(rotors.setRotorSignalViaSerial());
         break;
+
       case 97: //compares firstInput to 'a'
         Serial.println("Enter a 2-digit number! Maximum angle is 45 degree. ");
         Serial.println("What angle would you like to see? ");
@@ -76,11 +86,13 @@ void serialEvent(){
           targetPosition[0] = angleInput;
         }
         break;
+
       default:
         Serial.println("Your first Input could not be recognized. Try again");
         //while(Serial.available()) Serial.read();
         break;
     }
+
     Serial.println("What would you like to update?");
     Serial.println("controller: 'c'");
     Serial.println("height: 'h'");

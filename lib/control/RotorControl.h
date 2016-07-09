@@ -19,7 +19,7 @@
     void update(void);
     void start(int startValue);
     void stop(void);
-    void setRotorSignalViaSerial(void);
+    int setRotorSignalViaSerial(void);
     void sendSerial(void);
     void setESC1(int input);
   };
@@ -31,6 +31,7 @@ void RotorControl::begin(void){
   //Establish Connection to ESCs
   esc1.attach(ESCPIN1);
   esc2.attach(ESCPIN2);
+
   //Initialize Rotors and be careful with delays!!
   esc1.writeMicroseconds(0);
   delay(500);
@@ -41,7 +42,7 @@ void RotorControl::begin(void){
   esc2.writeMicroseconds(1012);
   delay(500);
 
-  //Initialize rotorsignals
+  //Initialize RotorSignals
   RotorSignal[0] = 0;
   RotorSignal[1] = 0;
   RotorSignal[2] = 0;
@@ -66,7 +67,7 @@ void RotorControl::start(int startValue){
   esc1.writeMicroseconds(startValue);
   esc2.writeMicroseconds(startValue);
 
-  //write start values to the rotorsignals
+  //write start values to the RotorSignals
   RotorSignal[0] = startValue;
   RotorSignal[1] = startValue;
 
@@ -103,6 +104,7 @@ void RotorControl::update(void){
     RotorSignal[0] = MIN_ROTOR_SIGNAL;
     //Serial.println("R0 < MIN\n");
   }
+
   //Rotor 1
   if (RotorSignal[1] > MAX_ROTOR_SIGNAL){
     RotorSignal[1] = MAX_ROTOR_SIGNAL;
@@ -113,24 +115,33 @@ void RotorControl::update(void){
     //Serial.println("R1 < MIN\n");
   }
 
-//write RotorSignal too ESCs
+//write RotorSignal to ESCs
   RoundSignal[0] = roundf(RotorSignal[0]);
   RoundSignal[1] = roundf(RotorSignal[1]);
   esc1.writeMicroseconds((int)RoundSignal[0]);
   esc2.writeMicroseconds((int)RoundSignal[1]);
 }
 
-void RotorControl::setRotorSignalViaSerial(void){
+int RotorControl::setRotorSignalViaSerial(void){
   Serial.print("The maximum Signal you can send to the Rotors is: ");
   Serial.println(MAX_ROTOR_SIGNAL);
-  Serial.println("Always use 3 digits --> Example: 090");
-  Serial.println("Tell me which Signal you want to send to both Rotors. ");
-  while (Serial.available()<3) {} //wating for Serial to have three digits
+  Serial.println("Always use 4 digits --> Example: 1500");
+  Serial.print("Tell me which Signal you want to send to both Rotors: ");
+
+  //wating for Serial to have four digits
+  while (Serial.available()<4) {}
+
   int signalInput = Serial.parseInt();
-  if(signalInput <= MAX_ROTOR_SIGNAL){  //if you want the regulation to be steady
-    RotorSignal[0] = signalInput;      //you would need to safe the original RotorSignal and compare them
-    RotorSignal[1] = signalInput;      //then you could add the difference!
-  }
+  Serial.println(signalInput);
+  return signalInput;
+  /*if(signalInput <= MAX_ROTOR_SIGNAL){
+    RotorSignal[0] = signalInput;
+    RotorSignal[1] = signalInput;*/
+
+/*if you want the regulation to be steady
+  you would need to safe the original RotorSignal and compare them
+  then you could add the difference!
+  }*/
 }
 
 void RotorControl::sendSerial(void){

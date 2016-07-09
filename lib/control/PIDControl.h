@@ -55,10 +55,11 @@ void PIDControl::begin(void){
   iSum[0] = 0;
   iSum[1] = 0;
   iSum[2] = 0;
-  //initialize Constants
-  K_P = K_P_START; //0.000027
-  T_I = T_I_START; //0.0000001
-  T_D = T_D_START; //0.022 (Filtered derivative and 100Hz)
+
+  //initialize PID Constants
+  K_P = K_P_START;
+  T_I = T_I_START;
+  T_D = T_D_START;
 
   K_P_Jaw = 0.1;
   T_I_Jaw = 0.05;
