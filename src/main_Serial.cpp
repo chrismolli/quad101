@@ -39,7 +39,7 @@ void setup(){
   imu.begin();
   pidController.begin(); //calibrate PID_Regler to forget integrated sum (I)
   rotors.begin(); //set Rotors and ESCs to PINs and initialize
-  rotors.start();
+  rotors.start(TAKE_OFF_SIGNAL);
   Serial.println("What would you like to update?");
   Serial.println("controller: 'c'");
   Serial.println("height: 'h'");
@@ -61,7 +61,7 @@ void serialEvent(){
       case 99: // compares firstInput to 'c'
         rotors.stop();
         pidController.setConstantsViaSerial();
-        rotors.start();
+        rotors.start(TAKE_OFF_SIGNAL);
         break;
       case 104: //compares firstInput to 'h'
         rotors.setRotorSignalViaSerial();

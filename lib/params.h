@@ -9,16 +9,16 @@
   //PID constants
   #define MAX_E_FOR_I 45    //Maximum angle to contribute to I_Controller
   #define MIN_E_FOR_I 0.3   //Minimum angle to start I_controller
-  #define K_P_START   0.00042         //Global gain on PIDControl
-  #define T_I_START   2400         //T_N
-  #define T_D_START   500        //T_V
+  #define K_P_START   0.012       //Global gain on PIDControl
+  #define T_I_START   0           //T_N
+  #define T_D_START   5000        //T_V
 
   /*--------------------------------------*/
   /*PID control setups
 
     Setup         K_P       T_I       T_D       SampleRate  TakeOff   PWMOUT1     PWMOUT2
 
-    Frame M2      0.012     0         5000      5           1150      5           3
+    Frame M2      0.012     0         5000      5           1150      6           5
     Testbed M2    0.00042   2400      500       5           1150      3           5
     Testbed M2    0.00018   2400      600       3           1450      3           5
 
@@ -28,7 +28,7 @@
 /*-----------------------------------------------------------------------*/
   //Rotorcontrol constants
   //define Output Pins for ESCs
-  #define ESCPIN1 3
+  #define ESCPIN1 6
   #define ESCPIN2 5
   #define ESCPIN3 6
   #define ESCPIN4 9
@@ -36,7 +36,7 @@
   //RotorSignal limits (from 1012 until 2012 you have increase in F)
   #define MAX_ROTOR_SIGNAL 1815
   #define MIN_ROTOR_SIGNAL 1015
-  #define TAKE_OFF_SIGNAL  1415
+  #define TAKE_OFF_SIGNAL  1150
 
 /*-----------------------------------------------------------------------*/
   //Sensor constants
