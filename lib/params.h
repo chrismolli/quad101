@@ -9,6 +9,7 @@
   //PID constants
   #define MAX_E_FOR_I 45    //Maximum angle to contribute to I_Controller
   #define MIN_E_FOR_I 0.3   //Minimum angle to start I_controller
+
   #define K_P_START   0.0002         //Global gain on PIDControl
   #define T_I_START   10000         //T_N
   #define T_D_START   700        //T_V
@@ -29,7 +30,7 @@
 /*-----------------------------------------------------------------------*/
   //Rotorcontrol constants
   //define Output Pins for ESCs
-  #define ESCPIN1 3
+  #define ESCPIN1 6
   #define ESCPIN2 5
   #define ESCPIN3 6
   #define ESCPIN4 9
@@ -37,7 +38,7 @@
   //RotorSignal limits (from 1012 until 2012 you have increase in F)
   #define MAX_ROTOR_SIGNAL 1815
   #define MIN_ROTOR_SIGNAL 1015
-  #define TAKE_OFF_SIGNAL  1415
+  #define TAKE_OFF_SIGNAL  1150
 
 /*-----------------------------------------------------------------------*/
   //Sensor constants
