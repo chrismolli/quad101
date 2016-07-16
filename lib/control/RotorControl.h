@@ -83,8 +83,8 @@ void RotorControl::stop(void){
     delay(40);
   }
 
-  esc1.writeMicroseconds(0);
-  esc2.writeMicroseconds(0);
+  esc1.writeMicroseconds(1012);
+  esc2.writeMicroseconds(1012);
 
   //reset rotorsignals
   RotorSignal[0] = 0;

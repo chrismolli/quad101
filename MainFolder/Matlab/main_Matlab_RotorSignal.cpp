@@ -42,12 +42,14 @@ void setup(){
  imu.begin();
  //initialize PID_Regler and reset integrated sum (I)
  pidController.begin();
+ Serial.println(K_P_START);
  //set Rotors/ESCs to PINs and initialize
  rotors.begin();
  rotors.start(TAKE_OFF_SIGNAL);
 
   //Set timer event, that calls timerUpdate every SAMPLE_RATE milliseconds
   t.every(SAMPLE_RATE,timerUpdate);
+  Serial.println(K_P_START);
   Serial.end();
 
   //start Serial communication with Matlab
@@ -81,7 +83,7 @@ void serialEvent(){
 
     //send K_P
     if (charInput == 'X'){
-      Serial.println(K_P_START);
+      Serial.println(4);
     }
 
     //send T_D
@@ -97,7 +99,11 @@ void serialEvent(){
     //quit/stop Process
     if (charInput == 'Q'){
       rotors.stop();
-      t.stop(1);
+      //t.stop(1);
+      while (Serial.available()<1) {}
+      /*char2 = Serial.read();
+      if (char2 == 'D')
+      rotors.start(TAKE_OFF_SIGNAL);*/
     }
   }
 }
