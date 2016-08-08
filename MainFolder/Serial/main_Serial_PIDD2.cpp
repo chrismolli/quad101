@@ -78,14 +78,22 @@ void serialEvent(){
         break;
 
       case 97: //compares firstInput to 'a'
-        Serial.println("Enter a 2-digit number! Maximum angle is 45 degree. ");
+        if (targetPosition[0] == 0){
+          targetPosition[0] = 20;
+          Serial.println("angle of 20 degree has been set!");
+        }
+        else {
+          targetPosition[0] = 0;
+          Serial.println("angle of 0 degree has been set!");
+        }
+        /*Serial.println("Enter a 2-digit number! Maximum angle is 45 degree. ");
         Serial.println("What angle would you like to see? ");
         while (Serial.available()<2) {} //wating for Serial to have two digits
         int angleInput;
         angleInput = Serial.parseInt();
         if(angleInput <= 40){
           targetPosition[0] = angleInput;
-        }
+        }*/
         break;
 
       default:
