@@ -36,7 +36,7 @@ void timerUpdate(){
 void setup(){
   //Start Serial and wait for connection
   Serial.begin(38400);
-  while(!Serial);
+  while(!Serial.available()); //jetzt muss man einfach noch iwas drücken damits startet
 
    //calibrate sensors
   imu.begin();

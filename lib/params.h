@@ -10,10 +10,10 @@
   #define MAX_E_FOR_I 45    //Maximum angle to contribute to I_Controller
   #define MIN_E_FOR_I 0.3   //Minimum angle to start I_controller
 
-  #define K_P_START   0.001         //Global gain on PIDControl
-  #define T_I_START   2000         //T_N
-  #define T_D_START   330          //T_V
-  #define T_DD_START  370          //only used in PIDD2Control.h
+  #define K_P_START   0.006         //Global gain on PIDControl
+  #define T_I_START   400         //T_N
+  #define T_D_START   100          //T_V
+  #define T_DD_START  20          //only used in PIDD2Control.h
   /*--------------------------------------*/
   /*PID control setups
 
@@ -27,7 +27,9 @@
     Testbed M2    0.00045   2400      550           5           1300     Red      3           5
     Testbed M2    0.0004    2400      680           5           1300     Red      3           5
     Testbed M2    0.001     2000      330   370     5           1250     Red      3           5
-
+    Testbed M2    0.006     400       100   20      5           1250     Red      3           5
+    -->für SR = 200HZ ist so 0.007/8 das Maximum für Kp. Gutes Verhältnis für T_D/T_DD = 5
+    -->Verhältnis optimieren und eventuell mit Matlab simulieren versuchen
   */
   /*--------------------------------------*/
 
