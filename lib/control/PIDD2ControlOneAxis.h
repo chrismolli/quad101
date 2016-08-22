@@ -17,15 +17,14 @@
       float T_DD;
 
       //Jaw
-      float K_P_JAW;
-      float T_I_JAW;
-      float T_D_JAW;
-      float T_DD_JAW;
+      float K_P_Jaw;
+      float T_I_Jaw;
+      float T_D_Jaw;
 
       //further variables
       float U[3]; //controlled variable (CV)
       float iSum[3]; //controlled integral variabel
-      float old_dE[3]; //used for DDController
+      float old_dE; //used for DDController
       float e[3]; //control difference (W_Y)
       //W = Sollwert
       //Y = Istwert
@@ -34,7 +33,7 @@
       float PController(float e, float k);
       float IController(float e, float k, int i, float looptime);
       float DController(float dE, float k);
-      float DDController(float dE, float k, int i, float looptime);
+      float DDController(float dE, float k, float looptime);
       void begin(void);
       void update(float RotorSignal[4], float Y[3], float dE[3], float W[3], float looptime);
       void setConstantsViaSerial(void);
@@ -57,9 +56,9 @@ float PIDD2Control::DController(float dE, float k){
   return -k * dE; //sign has to match PController
 }
 
-float PIDD2Control::DDController(float dE, float k, int i, float looptime){
-  float DDValue = -k*(dE-old_dE[i])/(looptime/1000);
-  old_dE[i] = dE;
+float PIDD2Control::DDController(float dE, float k, float looptime){
+  float DDValue = -k*(dE-old_dE)/(looptime/1000);
+  old_dE = dE;
   return DDValue;
 }
 
@@ -70,9 +69,7 @@ void PIDD2Control::begin(void){
   iSum[2] = 0;
 
   //initialize DD_Controller
-  old_dE[0] = 0;
-  old_dE[1] = 0;
-  old_dE[2] = 0;
+  old_dE = 0;
 
   //initialize PID Constants
   K_P = K_P_START;
@@ -80,10 +77,9 @@ void PIDD2Control::begin(void){
   T_D = T_D_START;
   T_DD = T_DD_START;
 
-  K_P_JAW = 0.1;
-  T_I_JAW = 0.05;
-  T_D_JAW = 0.1;
-  T_DD_JAW = 0.1;
+  K_P_Jaw = 0.1;
+  T_I_Jaw = 0.05;
+  T_D_Jaw = 0.1;
 }
 
 void PIDD2Control::update(float RotorSignal[4], float Y[3], float dE[3], float W[3], float looptime){
@@ -94,13 +90,13 @@ void PIDD2Control::update(float RotorSignal[4], float Y[3], float dE[3], float W
 
   //calculating cotrolled variable (CV)
   //x-Axis
-  U[0] = K_P*(PController(e[0], 1) + IController(e[0], T_I, 0, looptime) + DController(dE[0], T_D) + DDController(dE[0], T_DD, 0, looptime));
+  U[0] = K_P*(PController(e[0], 1) + IController(e[0], T_I, 0, looptime) + DController(dE[0], T_D) + DDController(dE[0], T_DD, looptime));
 
   //y-Axis
-  U[1] = K_P*(PController(e[1], 1) + IController(e[1], T_I, 1, looptime) + DController(dE[1], T_D) + DDController(dE[1], T_DD, 1, looptime));
+  //U[1] = PController(e[1], K_P) + IController(e[1], T_I, 1, looptime) + DController(dE[1], T_D);
 
   //z-Axis
-  U[2] = K_P_JAW*(PController(e[2], 1) + IController(e[2], T_I_JAW, 2, looptime) + DController(dE[2], T_D_JAW) + DDController(dE[2], T_DD_JAW, 2, looptime));
+  //U[2] = PController(e[2], K_P_Jaw) + IController(e[2], T_I_Jaw, 2, looptime) + DController(dE[2], T_D_Jaw);
 
   //Multiplication with System_Matrice
   //U[0] = 1 * U[0];
@@ -111,13 +107,13 @@ void PIDD2Control::update(float RotorSignal[4], float Y[3], float dE[3], float W
   RotorSignal[0] = RotorSignal[0] + U[0]; //0 muss also in positiver Winkelrichtung liegen
   RotorSignal[1] = RotorSignal[1] - U[0];
   //y_axis
-  RotorSignal[2] = RotorSignal[2] + U[1];
-  RotorSignal[3] = RotorSignal[3] - U[1];
+  //RotorSignal[2] = RotorSignal[2] + U[1];
+  //RotorSignal[3] = RotorSignal[3] - U[1];
   //z-axis; counterclockwise = positive; Moment wirkt entgegen der Drehrichtung der Rotoren
-  RotorSignal[0] = RotorSignal[0] + U[2]; //1 und 2 müssen sich counterclockwise drehen --> Moment clockwise
-  RotorSignal[1] = RotorSignal[1] + U[2];
-  RotorSignal[2] = RotorSignal[2] - U[2];
-  RotorSignal[3] = RotorSignal[3] - U[2];
+  //RotorSignal[0] = RotorSignal[0] + U[2]; //1 und 2 müssen sich counterclockwise drehen --> Moment clockwise
+  //RotorSignal[1] = RotorSignal[1] + U[2];
+  //RotorSignal[2] = RotorSignal[2] - U[2];
+  //RotorSignal[3] = RotorSignal[3] - U[2];
 }
 
 

@@ -73,9 +73,16 @@ void serialEvent(){
 
     switch (charInput){
       //step Response
+      //warum funktiniert step Response so nur noch bis 10 Grad??
       case 'a':
-        targetPosition[0] = 20;
-        Serial.println(0);
+        if (targetPosition[0] == 0){
+          targetPosition[0] = 20;
+          Serial.println(0);
+        }
+        else {
+          targetPosition[0] = 0;
+          Serial.println(0);
+        }
         break;
 
       //send Deflection
