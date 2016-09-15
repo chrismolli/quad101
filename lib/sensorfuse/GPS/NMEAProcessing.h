@@ -18,11 +18,12 @@
     String rmc[9];
     float latitude;
     float longitude;
-  public:
-    void update(void);
     void updateRMCSections(void);
     void updateLat(void);
     void updateLng(void);
+
+  public:
+    void update(void);
     float returnLat(void);
     float returnLng(void);
     void begin(SoftwareSerial* ss, int baudRate);
@@ -31,7 +32,7 @@
   };
 
 /*==================================================================*/
-  //Functions
+  //Public Functions
 void NMEAProcessing::update(void){
   while (GPSModule->available() > 0){
     GPSModule->read();
@@ -44,6 +45,54 @@ void NMEAProcessing::update(void){
   }
 }
 
+void NMEAProcessing::begin(SoftwareSerial* ss, int baudRate){
+  //GPSModule is a pointer to the SotwareSerial which has to be defined in the main file
+  GPSModule = ss;
+  GPSModule->begin(baudRate);
+}
+
+/*=====================================*/
+  //Return functions
+float NMEAProcessing::returnLat(void){
+  return latitude;
+}
+
+float NMEAProcessing::returnLng(void){
+  return longitude;
+}
+
+/*=====================================*/
+  //String functions
+String NMEAProcessing::returnTotalRMCString(void){
+  String nmeaString = "$GPRMC,";
+  for (uint i = 0; i < sizeof(rmc) ; i++){
+    nmeaString += rmc[i];
+  }
+  return nmeaString;
+}
+
+String NMEAProcessing::formattedLatLng(void){
+  //Return Lat and Lng ready to print to the Serial
+  String returnString = "Latitude: ";
+  char latChar[9];
+  dtostrf(latitude, 4, 6, latChar); //4, 6 not sure whatfor
+  for (uint i = 0; i < sizeof(latChar); i++)
+  {
+    returnString += latChar[i];
+  }
+
+  returnString += " Longitude: ";
+  char lngChar[9];
+  dtostrf(longitude, 4, 6, lngChar);
+  for (uint i = 0; i < sizeof(lngChar); i++)
+  {
+    returnString += lngChar[i];
+  }
+  return returnString;
+}
+
+/*==================================================================*/
+  //Private Functions
 void NMEAProcessing::updateRMCSections(void){
   String totalRMCString = GPSModule->readStringUntil('\n');
   //Initializing variables to process RMCString
@@ -109,47 +158,6 @@ void NMEAProcessing::updateLng(void){
   else{
     longitude = lngFirstDigits + lngMinutes/60;
   }
-}
-
-float NMEAProcessing::returnLat(void){
-  return latitude;
-}
-
-float NMEAProcessing::returnLng(void){
-  return longitude;
-}
-
-//GPSModule is a pointer to the SotwareSerial which has to be defined in the main file
-void NMEAProcessing::begin(SoftwareSerial* ss, int baudRate){
-  GPSModule = ss;
-  GPSModule->begin(baudRate);
-}
-
-String NMEAProcessing::returnTotalRMCString(void){
-  String nmeaString = "$GPRMC,";
-  for (uint i = 0; i < sizeof(rmc) ; i++){
-    nmeaString += rmc[i];
-  }
-  return nmeaString;
-}
-
-String NMEAProcessing::formattedLatLng(void){
-  String returnString = "Latitude: ";
-  char latChar[9];
-  dtostrf(latitude, 4, 6, latChar);
-  for (uint i = 0; i < sizeof(latChar); i++)
-  {
-    returnString += latChar[i];
-  }
-
-  returnString += " Longitude: ";
-  char lngChar[9];
-  dtostrf(longitude, 4, 6, lngChar);
-  for (uint i = 0; i < sizeof(lngChar); i++)
-  {
-    returnString += lngChar[i];
-  }
-  return returnString;
 }
 
 #endif
