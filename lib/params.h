@@ -12,7 +12,7 @@
 
   #define K_P_START   0.0085         //Global gain on PIDControl
   #define T_I_START   400           //T_N
-  #define T_D_START   155           //T_V
+  #define T_D_START   150           //T_V
   #define T_DD_START  125            //only used in PIDD2Control.h
 
   #define K_P_JAW_START  0
@@ -40,9 +40,9 @@
   #define ESCPIN4 9
 
   //RotorSignal limits (from 1012 until 2012 you have increase in F)
-  #define MAX_ROTOR_SIGNAL 1500
+  #define MAX_ROTOR_SIGNAL 2000
   #define MIN_ROTOR_SIGNAL 1015
-  #define TAKE_OFF_SIGNAL  1200
+  #define TAKE_OFF_SIGNAL  1600
 
 /*-----------------------------------------------------------------------*/
   //Sensor constants
