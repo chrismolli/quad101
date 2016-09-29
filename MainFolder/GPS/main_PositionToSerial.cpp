@@ -24,20 +24,25 @@ Main for Sending GPS Data to Serial Port (Mac)
 /*-----------------------------------------------------------------------*/
   //Functions
   void timerUpdate(){
+    Serial.println("start update");
+    gpsModule.update();
+    Serial.println("update completed");
+    //t.update();
     Serial.println(gpsModule.returnTotalRMCString());
-    Serial.println(gpsModule.formattedLatLng());
+    Serial.println("loop completed");
+
+    //Serial.println(gpsModule.formattedLatLng());
   }
 
 void setup() {
   Serial.begin(38400);
   while (!Serial);
-
+  Serial.println("Initializing GPS module...");
   gpsModule.begin(&gpsSerial, 9600);
   t.every(2000, timerUpdate);
+  Serial.println("Initialization completed.");
 }
 
 void loop() {
-  gpsModule.update();
   t.update();
-
 }
