@@ -1,7 +1,5 @@
 /*
-Script for advanced IMU testing.
-Using complementary und kalman filtering for more precise results on the
-gyroscope input of the Arduino 101.
+Script for evaluating computing times
 */
 
 #include "Arduino.h"

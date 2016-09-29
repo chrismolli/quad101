@@ -80,10 +80,10 @@ void PIDD2Control::begin(void){
   T_D = T_D_START;
   T_DD = T_DD_START;
 
-  K_P_JAW = 0.1;
-  T_I_JAW = 0.05;
-  T_D_JAW = 0.1;
-  T_DD_JAW = 0.1;
+  K_P_JAW = K_P_JAW_START;
+  T_I_JAW = T_I_JAW_START;
+  T_D_JAW = T_D_JAW_START;
+  T_DD_JAW = T_DD_JAW_START;
 }
 
 void PIDD2Control::update(float RotorSignal[4], float Y[3], float dE[3], float W[3], float looptime){

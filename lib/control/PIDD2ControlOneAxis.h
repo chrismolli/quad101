@@ -1,6 +1,7 @@
 #ifndef PIDD2CONTROL_H
 #define PIDD2CONTROL_H
 
+// Only for one axis tuning
 /*==================================================================*/
   //Extern librarys
   #include "../params.h"

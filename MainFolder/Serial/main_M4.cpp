@@ -10,7 +10,7 @@ Main for Testing and Changing PID Control during Runtime
   #include "../lib/control/RotorControl.h"
   #include "../lib/control/HeightControl.h"
   #include "../lib/params.h"
-  #include "../lib/control/PIDD2ControlOneAxis.h"
+  #include "../lib/control/PIDD2Control.h"
 
 /*==================================================================*/
   //Declare needed objects
