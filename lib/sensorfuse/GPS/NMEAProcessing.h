@@ -21,6 +21,7 @@
     void updateRMCSections(void);
     void updateLat(void);
     void updateLng(void);
+    String xyz;
 
   public:
     void update(void);
@@ -35,13 +36,18 @@
   //Public Functions
 void NMEAProcessing::update(void){
   while (GPSModule->available() > 0){
-    GPSModule->read();
+    GPSModule->readString();
   }
   //RMC = Recommended Minimum Specific GNSS Data
-  if (GPSModule->find("$GPRMC,")) {
+  const char *search = "$GPRMC,";
+  if (GPSModule->find(*search)) {
     updateRMCSections();
     updateLat();
     updateLng();
+    Serial.println("SIGNAL FOUND!!!!");
+  }
+  else {
+    Serial.println("Didn't find $GPRMC,");
   }
 }
 
@@ -49,6 +55,9 @@ void NMEAProcessing::begin(SoftwareSerial* ss, int baudRate){
   //GPSModule is a pointer to the SotwareSerial which has to be defined in the main file
   GPSModule = ss;
   GPSModule->begin(baudRate);
+  Serial.println("Wating for GPS Signal");
+  while (!GPSModule->available());
+  Serial.println("GPS Signal received");
 }
 
 /*=====================================*/
@@ -65,7 +74,8 @@ float NMEAProcessing::returnLng(void){
   //String functions
 String NMEAProcessing::returnTotalRMCString(void){
   String nmeaString = "$GPRMC,";
-  for (uint i = 0; i < sizeof(rmc) ; i++){
+  Serial.println(xyz);
+  for (uint i = 0; i < 9 /*sizeof(rmc)*/ ; i++){
     nmeaString += rmc[i];
   }
   return nmeaString;
