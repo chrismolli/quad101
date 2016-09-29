@@ -25,6 +25,10 @@
 
     Setup         K_P       T_I       T_D   T_DD    SampleRate  TakeOff  Rotor    ESCPIN1     ESCPIN2
 
+    Testbed M2    0.006     400       100   20      5           1250     Red      3           5
+    Testbed M2    0.0085    400       70    15      5/3         1250/1350 Red     3           5
+    für SR = 200HZ ist so 0.007/8 das Maximum für Kp. Gutes Verhältnis für T_D/T_DD = 5
+    
     Frame M2      0.007     400       121   103     5           1200     Red      6           5
     Frame M2      0.0085    400       100   86      5           1200     Red      6           5
     Frame M4      0.0085    400       155   125     5           1200     Red
