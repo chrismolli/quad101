@@ -27,7 +27,7 @@ Main for Testing and Changing PID Control during Runtime
 /*==================================================================*/
   //Functions
 void timerUpdate(){
-  sensors.imu.update(SAMPLE_RATE);
+  sensors.update();
   controller.update(rotors.RotorSignal, sensors.imu.rot, sensors.imu.rot_vel, targetPosition, SAMPLE_RATE);
   rotors.update();
 }
@@ -35,12 +35,14 @@ void timerUpdate(){
 void setup(){
   //Start Serial and wait for connection
   Serial.begin(38400);
-  while(!Serial.available()); //jetzt muss man einfach noch iwas drücken damits startet
+  while(!Serial); //jetzt muss man einfach noch iwas drücken damits startet
 
    //calibrate sensors
-  sensors.imu.begin();
+  sensors.begin();
+
   //initialize PID_Regler and reset integrated sum (I)
   controller.begin();
+  
   //set Rotors/ESCs to PINs and initialize
   rotors.begin();
   rotors.start(TAKE_OFF_SIGNAL);

@@ -28,7 +28,7 @@
     Testbed M2    0.006     400       100   20      5           1250     Red      3           5
     Testbed M2    0.0085    400       70    15      5/3         1250/1350 Red     3           5
     für SR = 200HZ ist so 0.007/8 das Maximum für Kp. Gutes Verhältnis für T_D/T_DD = 5
-    
+
     Frame M2      0.007     400       121   103     5           1200     Red      6           5
     Frame M2      0.0085    400       100   86      5           1200     Red      6           5
     Frame M4      0.0085    400       155   125     5           1200     Red
@@ -54,5 +54,8 @@
   #define GYRORANGE 2
   #define MAG_PLUGGED_IN FALSE
   #define DECLINATION_ANGLE_DEGREE 2.1664
+
+  #define BMP_PLUGGED_IN FALSE
+  #define SEA_LEVEL_PRESSURE 101325 //Pa
 
 #endif
