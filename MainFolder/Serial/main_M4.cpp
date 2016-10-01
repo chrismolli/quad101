@@ -32,6 +32,10 @@ void timerUpdate(){
   rotors.update();
 }
 
+void slowTimerUpdate(){
+  sensors.updateSlow();
+}
+
 void setup(){
   //Start Serial and wait for connection
   Serial.begin(38400);
@@ -55,6 +59,7 @@ void setup(){
 
   //Set timer event, that calls timerUpdate every SAMPLE_RATE milliseconds
   t.every(SAMPLE_RATE,timerUpdate);
+  t.every(SLOW_SAMPLE_RATE,slowTimerUpdate);
 }
 
 void loop(){
