@@ -4,6 +4,7 @@
 /*-----------------------------------------------------------------------*/
   //Global constants
   #define SAMPLE_RATE 5     //update Frequency for sensors and Rotors
+  #define SLOW_SAMPLE_RATE 25
 
 /*-----------------------------------------------------------------------*/
   //PID constants
@@ -52,10 +53,15 @@
   //Sensor constants
   #define COMPLEMENTARY_WEIGHT 0.98
   #define GYRORANGE 2
+
   #define MAG_PLUGGED_IN FALSE
   #define DECLINATION_ANGLE_DEGREE 2.1664
 
   #define BMP_PLUGGED_IN FALSE
   #define SEA_LEVEL_PRESSURE 101325 //Pa
+
+  #define USR_PLUGGED_IN FALSE
+  #define USR_TRIGGER_PIN 13
+  #define USR_ECHO_PIN 12
 
 #endif
