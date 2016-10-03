@@ -9,6 +9,7 @@
   #include "IMU/imu.h"
   #include "BMP180/bmp.h"
   #include "USR/usr.h"
+  #include <CurieBLE.h>
   #include "../params.h"
 
 /*==================================================================*/
@@ -24,8 +25,17 @@
       void updateSlow(void);
 
     private:
-      uint8_t number_of_active_sensors;
+      void beginBLE(void);
+      void updateBLE(void);
   };
+
+  //BLE Telemetrics
+  BLEPeripheral quad101_peripheral;
+  BLEService ble_telemetrics_service("2E8C6277-2DDE-4D80-8C4B-629876703C70");
+  BLEFloatCharacteristic ble_roll("2E8C6277-2DDE-4D80-8C4B-629876703C7R", BLERead | BLENotify);
+  BLEFloatCharacteristic ble_pitch("2E8C6277-2DDE-4D80-8C4B-629876703C7P", BLERead | BLENotify);
+  BLEFloatCharacteristic ble_jaw("2E8C6277-2DDE-4D80-8C4B-629876703C7J", BLERead | BLENotify);
+  BLEFloatCharacteristic ble_height("2E8C6277-2DDE-4D80-8C4B-629876703C7H", BLERead | BLENotify);
 
 /*==================================================================*/
   //Functions
@@ -33,6 +43,7 @@
     imu.begin();
     if(BMP_PLUGGED_IN) bmp.begin();
     if(USR_PLUGGED_IN) usr.begin();
+    if(BLE_TELEMETRICS_ON) beginBLE();
   }
 
   void SENSORS::update(void){
@@ -42,20 +53,33 @@
 
   void SENSORS::updateSlow(void){
     if(USR_PLUGGED_IN) usr.pulseOut();
+    if(BLE_TELEMETRICS_ON) updateBLE();
   }
 
-  void SENSORS::getActive(void){
-    number_of_active_sensors = 1;
-    if(MAG_PLUGGED_IN) number_of_active_sensors++;
-    if(BMP_PLUGGED_IN) number_of_active_sensors++;
-    if(USR_PLUGGED_IN) number_of_active_sensors++;
+  void SENSORS::beginBLE(void){
+    quad101_peripheral.setLocalName("quad101");
+    quad101_peripheral.setAdvertisedServiceUuid(ble_telemetrics_service.uuid());
+    quad101_peripheral.addAttribute(ble_telemetrics_service);
+    quad101_peripheral.addAttribute(ble_roll);
+    quad101_peripheral.addAttribute(ble_pitch);
+    quad101_peripheral.addAttribute(ble_jaw);
+    quad101_peripheral.addAttribute(ble_height);
 
-    if(Serial){
-        Serial.print(number_of_active_sensors);
-        Serial.println(" active sensors found!");
-    }
+    ble_roll.setValue(imu.rot[0]);
+    ble_pitch.setValue(imu.rot[1]);
+    ble_jaw.setValue(imu.rot[2]);
+    ble_height.setValue(usr.height);
+
+    if(Serial) Serial.println("Starting BLE service");
+    quad101_peripheral.begin();
   }
 
+  void SENSORS::updateBLE(){
+    ble_roll.setValue(imu.rot[0]);
+    ble_pitch.setValue(imu.rot[1]);
+    ble_jaw.setValue(imu.rot[2]);
+    ble_height.setValue(usr.height);
+  }
 
 
 #endif

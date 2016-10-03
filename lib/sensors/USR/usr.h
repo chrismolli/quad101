@@ -79,8 +79,8 @@
         case LOW:
           echo_end=micros();
           height=(float)(echo_end-echo_start)/10000*340/2;
-          Serial.print(height);
-          Serial.println(" cm");
+          //Serial.print(height);
+          //Serial.println(" cm");
           pulse_flag=0;
           break;
       }

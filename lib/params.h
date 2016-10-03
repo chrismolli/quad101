@@ -64,4 +64,6 @@
   #define USR_TRIGGER_PIN 13
   #define USR_ECHO_PIN 12
 
+  #define BLE_TELEMETRICS_ON FALSE
+
 #endif
