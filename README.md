@@ -3,11 +3,13 @@ Very early stage of our planned quadcopter project, which is to be realized by u
 the Arduino 101 with its builtin Intel's Curie Module as the main flight controller.
 
 Right now, we are working on the implementation of positional control with a PID controller and different sensor sources
--Onboard gyro and accelerometer (done)
--3axis-magnetometer (done)
--Ultrasonic Rangefinder (done)
--Pressure sensor (done)
--GPS Module
+<ul>
+<li>Onboard gyro and accelerometer (done)</li>
+<li>3axis-magnetometer (done)</li>
+<li>Ultrasonic Rangefinder (done)</li>
+<li>Pressure sensor (done)</li>
+<li>GPS Module</li>
+</ul>
 
 We did succed in building the first layer positional controller that stabilizes the pitch and roll rotation of the quad. Next up is a height controller for hovering and takeoff tests.
 
