@@ -7,7 +7,7 @@
   #define SLOW_SAMPLE_RATE 25
 
 /*-----------------------------------------------------------------------*/
-  //PID constants
+  //Position Control
   #define MAX_E_FOR_I 45    //Maximum angle to contribute to I_Controller
   #define MIN_E_FOR_I 0.3   //Minimum angle to start I_controller
 
@@ -20,6 +20,12 @@
   #define T_I_JAW_START  1000
   #define T_D_JAW_START  0
   #define T_DD_JAW_START 0
+
+/*-----------------------------------------------------------------------*/
+  //Height Control
+  #define K_P_HEIGHT_START 0.001
+  #define T_I_HEIGHT_START 1000000
+  #define T_D_HEIGHT_START 10
 
   /*--------------------------------------*/
   /*PID control setups
@@ -47,7 +53,7 @@
   //RotorSignal limits (from 1012 until 2012 you have increase in F)
   #define MAX_ROTOR_SIGNAL 2000
   #define MIN_ROTOR_SIGNAL 1015
-  #define TAKE_OFF_SIGNAL  1600
+  #define BEFORE_TAKE_OFF_SIGNAL 1300
 
 /*-----------------------------------------------------------------------*/
   //Sensor constants

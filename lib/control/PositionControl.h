@@ -1,5 +1,5 @@
-#ifndef PIDD2CONTROL_H
-#define PIDD2CONTROL_H
+#ifndef POSITIONCONTROL_H
+#define POSITIONCONTROL_H
 
 /*==================================================================*/
   //Extern librarys
@@ -8,7 +8,7 @@
 
 /*==================================================================*/
   //Classdefinition
-  class PIDD2Control{
+  class POSITIONCONTROL{
     private:
       //Pitch and Roll
       float K_P;
@@ -30,40 +30,48 @@
       //W = Sollwert
       //Y = Istwert
 
-    public:
+      //private Functions
       float PController(float e, float k);
       float IController(float e, float k, int i, float looptime);
       float DController(float dE, float k);
       float DDController(float dE, float k, int i, float looptime);
+
+    public:
+      float targetPosition[3];
+
       void begin(void);
-      void update(float RotorSignal[4], float Y[3], float dE[3], float W[3], float looptime);
+      void update(float RotorSignal[4], float Y[3], float dE[3], float looptime);
       void setConstantsViaSerial(void);
   };
 
+
 /*==================================================================*/
-  //Functions
-float PIDD2Control::PController(float e, float k){
+  //Private Functions
+float POSITIONCONTROL::PController(float e, float k){
   return k*e;
 }
 
-float PIDD2Control::IController(float e, float k, int i, float looptime){
+float POSITIONCONTROL::IController(float e, float k, int i, float looptime){
   if ((abs(e) < MAX_E_FOR_I) && (abs(e) > MIN_E_FOR_I)) {
      iSum[i] = iSum[i] + e;
   }
   return (1/k)*iSum[i]*(looptime/1000);
 }
 
-float PIDD2Control::DController(float dE, float k){
+float POSITIONCONTROL::DController(float dE, float k){
   return -k * dE; //sign has to match PController
 }
 
-float PIDD2Control::DDController(float dE, float k, int i, float looptime){
+float POSITIONCONTROL::DDController(float dE, float k, int i, float looptime){
   float DDValue = -k*(dE-old_dE[i])/(looptime/1000);
   old_dE[i] = dE;
   return DDValue;
 }
 
-void PIDD2Control::begin(void){
+/*==================================================================*/
+  //Public Functions
+
+void POSITIONCONTROL::begin(void){
   //initialize I_Controller
   iSum[0] = 0;
   iSum[1] = 0;
@@ -86,11 +94,11 @@ void PIDD2Control::begin(void){
   T_DD_JAW = T_DD_JAW_START;
 }
 
-void PIDD2Control::update(float RotorSignal[4], float Y[3], float dE[3], float W[3], float looptime){
+void POSITIONCONTROL::update(float RotorSignal[4], float Y[3], float dE[3], float looptime){
   //calculate control difference
-  e[0] = W[0]-Y[0];
-  e[1] = W[1]-Y[1];
-  e[2] = W[2]-Y[2];
+  e[0] = targetPosition[0]-Y[0];
+  e[1] = targetPosition[1]-Y[1];
+  e[2] = targetPosition[2]-Y[2];
 
   //calculating cotrolled variable (CV)
   //x-Axis
@@ -121,7 +129,7 @@ void PIDD2Control::update(float RotorSignal[4], float Y[3], float dE[3], float W
 }
 
 
-void PIDD2Control::setConstantsViaSerial(void){
+void POSITIONCONTROL::setConstantsViaSerial(void){
   Serial.println("Tell me which k_Value you want to update ");
   while (!Serial.available()) {}
 

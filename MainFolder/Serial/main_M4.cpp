@@ -8,32 +8,24 @@ Main for Testing and Changing PID Control during Runtime
   #include <Timer.h>
   #include "../lib/sensors/sensors.h"
   #include "../lib/control/RotorControl.h"
-  #include "../lib/control/HeightControl.h"
   #include "../lib/params.h"
-  #include "../lib/control/PIDD2Control.h"
 
 /*==================================================================*/
   //Declare needed objects
   Timer t;
   SENSORS sensors;
-  PIDD2Control controller;
-  RotorControl rotors;
-
-/*==================================================================*/
-  //Declare necessary Variabels
-  //referenceAngle
-  float targetPosition[3] = {0,0,0};
+  ROTORCONTROL rotors;
 
 /*==================================================================*/
   //Functions
 void timerUpdate(){
   sensors.update();
-  controller.update(rotors.RotorSignal, sensors.imu.rot, sensors.imu.rot_vel, targetPosition, SAMPLE_RATE);
-  rotors.update();
+  rotors.update(sensors.imu.rot, sensors.imu.rot_vel);
 }
 
 void slowTimerUpdate(){
   sensors.updateSlow();
+  rotors.updateSlow(sensors.imu.rot, sensors.imu.rot_vel, sensors.usr.height);
 }
 
 void setup(){
@@ -44,12 +36,9 @@ void setup(){
   //start and calibrate sensors
   sensors.begin();
 
-  //initialize PID_Regler and reset integrated sum (I)
-  controller.begin();
-
   //set Rotors/ESCs to PINs and initialize
   rotors.begin();
-  rotors.start(TAKE_OFF_SIGNAL);
+  rotors.start(BEFORE_TAKE_OFF_SIGNAL);
 
   //Serial Communication
   Serial.println("What would you like to update?");
@@ -74,22 +63,29 @@ void serialEvent(){
 
       case 99: // compares firstInput to 'c'
         rotors.stop();
-        controller.setConstantsViaSerial();
-        rotors.start(TAKE_OFF_SIGNAL);
+        rotors.positionController.setConstantsViaSerial();
+        rotors.start(BEFORE_TAKE_OFF_SIGNAL);
         break;
+
+      case 67: // compares firstInput to 'C'
+          rotors.stop();
+          rotors.heightController.setConstantsViaSerial();
+          rotors.start(BEFORE_TAKE_OFF_SIGNAL);
+          break;
 
       case 104: //compares firstInput to 'h'
         rotors.stop();
-        rotors.start(rotors.setRotorSignalViaSerial());
+        rotors.heightController.setTargetHeight();
+        rotors.start(BEFORE_TAKE_OFF_SIGNAL);
         break;
 
       case 97: //compares firstInput to 'a'
-        if (targetPosition[0] == 0){
-          targetPosition[0] = 20;
+        if (rotors.positionController.targetPosition[0] == 0){
+          rotors.positionController.targetPosition[0] = 20;
           Serial.println("angle of 20 degree has been set!");
         }
         else {
-          targetPosition[0] = 0;
+          rotors.positionController.targetPosition[0] = 0;
           Serial.println("angle of 0 degree has been set!");
         }
         /*Serial.println("Enter a 2-digit number! Maximum angle is 45 degree. ");

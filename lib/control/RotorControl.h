@@ -6,17 +6,25 @@
   #include "Arduino.h"
   #include "Servo.h"
   #include "../params.h"
+  #include "PositionControl.h"
+  #include "HeightControl.h"
+  #include "../sensors/sensors.h"
 
 /*==================================================================*/
   //Classdefinition
-  class RotorControl{
+  class ROTORCONTROL{
   private:
     Servo esc1, esc2, esc3, esc4;
   public:
+    POSITIONCONTROL positionController;
+    HEIGHTCONTROL heightController;
+
     float RotorSignal[4];
     float RoundSignal[4];
+
     void begin(void);
-    void update(void);
+    void update(float rot[3], float rot_vel[3]);
+    void updateSlow(float rot[3], float rot_vel[3], float height);
     void start(int startValue);
     void stop(void);
     int setRotorSignalViaSerial(void);
@@ -25,9 +33,8 @@
   };
 
 /*==================================================================*/
-  //Functions
-
-void RotorControl::begin(void){
+  //General Functions
+void ROTORCONTROL::begin(void){
   //Establish Connection to ESCs
   esc1.attach(ESCPIN1);
   esc2.attach(ESCPIN2);
@@ -62,10 +69,16 @@ void RotorControl::begin(void){
   RoundSignal[1] = 0;
   RoundSignal[2] = 0;
   RoundSignal[3] = 0;
+
+  //Initialize PositionControl and HeightControl
+  positionController.begin();
+  heightController.begin();
 }
 
-void RotorControl::start(int startValue){
+void ROTORCONTROL::start(int startValue){
   //start procedure testbed
+  //could be used as the first start before take Off via HeightControl
+
   int s = MIN_ROTOR_SIGNAL;
   while (s < startValue){
     esc1.writeMicroseconds(s);
@@ -89,9 +102,9 @@ void RotorControl::start(int startValue){
 
 }
 
-void RotorControl::stop(void){
+void ROTORCONTROL::stop(void){
   //stop procedure testbed
-  int s = TAKE_OFF_SIGNAL;
+  int s = BEFORE_TAKE_OFF_SIGNAL;
   while (s > MIN_ROTOR_SIGNAL){
     esc1.writeMicroseconds(s);
     esc2.writeMicroseconds(s);
@@ -114,9 +127,13 @@ void RotorControl::stop(void){
 
 }
 
-void RotorControl::update(void){
+/*==================================================================*/
+  //Update Functions
+void ROTORCONTROL::update(float rot[3], float rot_vel[3]){
+  //update PositionControl
+  positionController.update(RotorSignal, rot, rot_vel, SAMPLE_RATE);
 
-//rotorSignal mustn't exceed limits
+  //rotorSignal mustn't exceed limits
   //Rotor 0
   if (RotorSignal[0] > MAX_ROTOR_SIGNAL){ //Maximum Value
     RotorSignal[0] = MAX_ROTOR_SIGNAL;
@@ -157,19 +174,80 @@ void RotorControl::update(void){
     //Serial.println("R1 < MIN\n");
   }
 
-//write RotorSignal to ESCs
-  RoundSignal[0] = roundf(RotorSignal[0]);
-  RoundSignal[1] = roundf(RotorSignal[1]);
-  RoundSignal[2] = roundf(RotorSignal[2]);
-  RoundSignal[3] = roundf(RotorSignal[3]);
+  //write RotorSignal to ESCs
+    RoundSignal[0] = roundf(RotorSignal[0]);
+    RoundSignal[1] = roundf(RotorSignal[1]);
+    RoundSignal[2] = roundf(RotorSignal[2]);
+    RoundSignal[3] = roundf(RotorSignal[3]);
 
-  esc1.writeMicroseconds((int)RoundSignal[0]);
-  esc2.writeMicroseconds((int)RoundSignal[1]);
-  esc3.writeMicroseconds((int)RoundSignal[2]);
-  esc4.writeMicroseconds((int)RoundSignal[3]);
+    esc1.writeMicroseconds((int)RoundSignal[0]);
+    esc2.writeMicroseconds((int)RoundSignal[1]);
+    esc3.writeMicroseconds((int)RoundSignal[2]);
+    esc4.writeMicroseconds((int)RoundSignal[3]);
 }
 
-int RotorControl::setRotorSignalViaSerial(void){
+  void ROTORCONTROL::updateSlow(float rot[3], float rot_vel[3], float height){
+    //update HeightControl
+    heightController.update(RotorSignal, height, SLOW_SAMPLE_RATE);
+    //update PositionControl
+    positionController.update(RotorSignal, rot, rot_vel, SAMPLE_RATE);
+
+    //rotorSignal mustn't exceed limits
+    //Rotor 0
+    if (RotorSignal[0] > MAX_ROTOR_SIGNAL){ //Maximum Value
+      RotorSignal[0] = MAX_ROTOR_SIGNAL;
+      //Serial.println("R0 > MAX\n");
+    }
+    if (RotorSignal[0] < MIN_ROTOR_SIGNAL){ //Minimum Value
+      RotorSignal[0] = MIN_ROTOR_SIGNAL;
+      //Serial.println("R0 < MIN\n");
+    }
+
+    //Rotor 1
+    if (RotorSignal[1] > MAX_ROTOR_SIGNAL){
+      RotorSignal[1] = MAX_ROTOR_SIGNAL;
+      //Serial.println("R1 > MAX\n");
+    }
+    if (RotorSignal[1] < MIN_ROTOR_SIGNAL){
+      RotorSignal[1] = MIN_ROTOR_SIGNAL;
+      //Serial.println("R1 < MIN\n");
+    }
+
+    //Rotor 2
+    if (RotorSignal[2] > MAX_ROTOR_SIGNAL){
+      RotorSignal[2] = MAX_ROTOR_SIGNAL;
+      //Serial.println("R1 > MAX\n");
+    }
+    if (RotorSignal[2] < MIN_ROTOR_SIGNAL){
+      RotorSignal[2] = MIN_ROTOR_SIGNAL;
+      //Serial.println("R1 < MIN\n");
+    }
+
+    //Rotor 3
+    if (RotorSignal[3] > MAX_ROTOR_SIGNAL){
+      RotorSignal[3] = MAX_ROTOR_SIGNAL;
+      //Serial.println("R1 > MAX\n");
+    }
+    if (RotorSignal[3] < MIN_ROTOR_SIGNAL){
+      RotorSignal[3] = MIN_ROTOR_SIGNAL;
+      //Serial.println("R1 < MIN\n");
+    }
+
+  //write RotorSignal to ESCs
+    RoundSignal[0] = roundf(RotorSignal[0]);
+    RoundSignal[1] = roundf(RotorSignal[1]);
+    RoundSignal[2] = roundf(RotorSignal[2]);
+    RoundSignal[3] = roundf(RotorSignal[3]);
+
+    esc1.writeMicroseconds((int)RoundSignal[0]);
+    esc2.writeMicroseconds((int)RoundSignal[1]);
+    esc3.writeMicroseconds((int)RoundSignal[2]);
+    esc4.writeMicroseconds((int)RoundSignal[3]);
+  }
+
+/*==================================================================*/
+  //Serial Communication Functions
+int ROTORCONTROL::setRotorSignalViaSerial(void){
   Serial.print("The maximum Signal you can send to the Rotors is: ");
   Serial.println(MAX_ROTOR_SIGNAL);
   Serial.println("Always use 4 digits --> Example: 1500");
@@ -191,7 +269,7 @@ int RotorControl::setRotorSignalViaSerial(void){
   }*/
 }
 
-void RotorControl::sendSerial(void){
+void ROTORCONTROL::sendSerial(void){
     //Prints the time and RotorSignals to serial
     Serial.println("Time: ");
     Serial.print(millis());
@@ -199,13 +277,13 @@ void RotorControl::sendSerial(void){
     Serial.print(RotorSignal[0]);
     Serial.print(" R1: ");
     Serial.print(RotorSignal[1]);
-    /*Serial.print(" R2: ");
+    Serial.print(" R2: ");
     Serial.print(RotorSignal[2]);
     Serial.print(" R3: ");
-    Serial.print(RotorSignal[3]); */
+    Serial.print(RotorSignal[3]); 
   }
 
-void RotorControl::setESC1(int input){
+void ROTORCONTROL::setESC1(int input){
   esc1.writeMicroseconds(input);
 }
 
