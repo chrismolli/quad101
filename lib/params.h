@@ -66,4 +66,8 @@
 
   #define BLE_TELEMETRICS_ON FALSE
 
+  //Skylab GPS Sensor
+  #define RX_PIN 4
+  #define TX_PIN 3
+
 #endif
