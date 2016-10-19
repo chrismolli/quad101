@@ -44,15 +44,15 @@ void IMU::begin(){
 
   CurieIMU.begin();
   // verify connection
-  Serial.println("Testing device connections...");
+  /*Serial.println("Testing device connections...");
   if (CurieIMU.begin()) {
     Serial.println("CurieIMU connection successful");
   } else {
     Serial.println("CurieIMU connection failed");
   }
-
-  Serial.println("IMU calibration starts in 5 sec. Make sure your board is stable and upright");
-  delay(5000);
+  */
+  Serial.println("IMU calibration starts in 3 sec. Make sure your board is stable and upright");
+  delay(3000);
 
   // The board must be resting in a horizontal position for the following calibration procedure to work correctly!
   Serial.print("Starting Gyroscope calibration and enabling offset compensation...");
@@ -65,7 +65,7 @@ void IMU::begin(){
   CurieIMU.autoCalibrateAccelerometerOffset(Z_AXIS, 1);
   Serial.println(" Done");
 
-  Serial.println("IMU sensor offsets after calibration...");
+  /*Serial.println("IMU sensor offsets after calibration...");
   Serial.print(CurieIMU.getAccelerometerOffset(X_AXIS));
   Serial.print("\t");
   Serial.print(CurieIMU.getAccelerometerOffset(Y_AXIS));
@@ -77,6 +77,7 @@ void IMU::begin(){
   Serial.print(CurieIMU.getGyroOffset(Y_AXIS));
   Serial.print("\t"); // 0
   Serial.println(CurieIMU.getGyroOffset(Z_AXIS));
+  */
 
   CurieIMU.setGyroRange(GYRORANGE);
 

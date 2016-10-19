@@ -60,6 +60,9 @@
     K_P_HEIGHT = K_P_HEIGHT_START;
     T_I_HEIGHT = T_I_HEIGHT_START;
     T_D_HEIGHT = T_D_HEIGHT_START;
+
+    //initialize targetHeight
+    targetHeight = TARGETHEIGHTSTART;
   }
 
 void HEIGHTCONTROL::update(float RotorSignal[4], float height, float looptime){

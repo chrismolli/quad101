@@ -13,22 +13,16 @@
 
   #define K_P_START   0.0085         //Global gain on PIDControl
   #define T_I_START   400           //T_N
-  #define T_D_START   150           //T_V
-  #define T_DD_START  125            //only used in PIDD2Control.h
+  #define T_D_START   130           //T_V
+  #define T_DD_START  105            //only used in PIDD2Control.h
 
   #define K_P_JAW_START  0
   #define T_I_JAW_START  1000
   #define T_D_JAW_START  0
   #define T_DD_JAW_START 0
 
-/*-----------------------------------------------------------------------*/
-  //Height Control
-  #define K_P_HEIGHT_START 0.001
-  #define T_I_HEIGHT_START 1000000
-  #define T_D_HEIGHT_START 10
-
   /*--------------------------------------*/
-  /*PID control setups
+  /*PositionControl setups
 
     Setup         K_P       T_I       T_D   T_DD    SampleRate  TakeOff  Rotor    ESCPIN1     ESCPIN2
 
@@ -43,6 +37,24 @@
   /*--------------------------------------*/
 
 /*-----------------------------------------------------------------------*/
+  //Height Control
+  #define K_P_HEIGHT_START 0.01975
+  #define T_I_HEIGHT_START 24
+  #define T_D_HEIGHT_START 4
+
+  //minimum Height 4.1cm
+  #define TARGETHEIGHTSTART 10 //cm, USR measurement in cm as well
+
+  /*--------------------------------------*/
+  /*HeightControl setups
+
+    Setup         K_P       T_I    T_D   T_DD    SampleRate  TakeOff  Rotor    ESCPIN1     ESCPIN2
+
+    Frame M4      0.01975   24     4     0       20          1200
+  */
+  /*--------------------------------------*/
+
+/*-----------------------------------------------------------------------*/
   //Rotorcontrol constants
   //define Output Pins for ESCs
   #define ESCPIN1 6
@@ -51,9 +63,9 @@
   #define ESCPIN4 9
 
   //RotorSignal limits (from 1012 until 2012 you have increase in F)
-  #define MAX_ROTOR_SIGNAL 2000
+  #define MAX_ROTOR_SIGNAL 1900
   #define MIN_ROTOR_SIGNAL 1015
-  #define BEFORE_TAKE_OFF_SIGNAL 1300
+  #define BEFORE_TAKE_OFF_SIGNAL 1575
 
 /*-----------------------------------------------------------------------*/
   //Sensor constants
@@ -66,14 +78,14 @@
   #define BMP_PLUGGED_IN FALSE
   #define SEA_LEVEL_PRESSURE 101325 //Pa
 
-  #define USR_PLUGGED_IN FALSE
+  #define USR_PLUGGED_IN TRUE
   #define USR_TRIGGER_PIN 13
   #define USR_ECHO_PIN 12
 
   #define BLE_TELEMETRICS_ON FALSE
 
   //Skylab GPS Sensor
-  #define RX_PIN 4
-  #define TX_PIN 3
+  #define RX_PIN 4 //goes to TX at sensor
+  #define TX_PIN 3 //goes to RX at sensor
 
 #endif

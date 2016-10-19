@@ -85,8 +85,8 @@ void ROTORCONTROL::start(int startValue){
     esc2.writeMicroseconds(s);
     esc3.writeMicroseconds(s);
     esc4.writeMicroseconds(s);
-    s = s + 20;
-    delay(100);
+    s = s + 15;
+    delay(200);
   }
 
   esc1.writeMicroseconds(startValue);
@@ -137,7 +137,7 @@ void ROTORCONTROL::update(float rot[3], float rot_vel[3]){
   //Rotor 0
   if (RotorSignal[0] > MAX_ROTOR_SIGNAL){ //Maximum Value
     RotorSignal[0] = MAX_ROTOR_SIGNAL;
-    //Serial.println("R0 > MAX\n");
+    Serial.println("R0 > MAX\n");
   }
   if (RotorSignal[0] < MIN_ROTOR_SIGNAL){ //Minimum Value
     RotorSignal[0] = MIN_ROTOR_SIGNAL;
@@ -280,7 +280,7 @@ void ROTORCONTROL::sendSerial(void){
     Serial.print(" R2: ");
     Serial.print(RotorSignal[2]);
     Serial.print(" R3: ");
-    Serial.print(RotorSignal[3]); 
+    Serial.print(RotorSignal[3]);
   }
 
 void ROTORCONTROL::setESC1(int input){
