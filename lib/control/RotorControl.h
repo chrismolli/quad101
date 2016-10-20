@@ -137,7 +137,7 @@ void ROTORCONTROL::update(float rot[3], float rot_vel[3]){
   //Rotor 0
   if (RotorSignal[0] > MAX_ROTOR_SIGNAL){ //Maximum Value
     RotorSignal[0] = MAX_ROTOR_SIGNAL;
-    Serial.println("R0 > MAX\n");
+    //Serial.println("R0 > MAX\n");
   }
   if (RotorSignal[0] < MIN_ROTOR_SIGNAL){ //Minimum Value
     RotorSignal[0] = MIN_ROTOR_SIGNAL;

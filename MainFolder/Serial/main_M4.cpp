@@ -9,12 +9,14 @@ Main for Testing and Changing PID Control during Runtime
   #include "../lib/sensors/sensors.h"
   #include "../lib/control/RotorControl.h"
   #include "../lib/params.h"
+  #include "../lib/ble_telemetrics/ble_telemetrics.h"
 
 /*==================================================================*/
   //Declare needed objects
   Timer t;
   SENSORS sensors;
   ROTORCONTROL rotors;
+  BLE ble;
 
 /*==================================================================*/
   //Functions
@@ -26,6 +28,9 @@ void timerUpdate(){
 void slowTimerUpdate(){
   sensors.updateSlow();
   rotors.updateSlow(sensors.imu.rot, sensors.imu.rot_vel, sensors.usr.height);
+  #if BLE_TELEMETRICS_ON
+    ble.update();
+  #endif
 }
 
 void setup(){
@@ -45,6 +50,11 @@ void setup(){
   Serial.println("controller: 'c'");
   Serial.println("height: 'h'");
   Serial.println("angle: 'a'");
+
+  //Activate untethered communication
+  #if BLE_TELEMETRICS_ON
+    ble.begin(rotors,sensors);
+  #endif
 
   //Set timer event, that calls timerUpdate every SAMPLE_RATE milliseconds
   t.every(SAMPLE_RATE,timerUpdate);

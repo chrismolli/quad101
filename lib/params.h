@@ -44,6 +44,7 @@
 
   //minimum Height 4.1cm
   #define TARGETHEIGHTSTART 10 //cm, USR measurement in cm as well
+  #define REFERENCEHEIGHT 4
 
   /*--------------------------------------*/
   /*HeightControl setups
@@ -82,7 +83,7 @@
   #define USR_TRIGGER_PIN 13
   #define USR_ECHO_PIN 12
 
-  #define BLE_TELEMETRICS_ON FALSE
+  #define BLE_TELEMETRICS_ON TRUE
 
   //Skylab GPS Sensor
   #define RX_PIN 4 //goes to TX at sensor
