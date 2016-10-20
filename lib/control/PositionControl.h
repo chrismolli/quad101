@@ -10,18 +10,6 @@
   //Classdefinition
   class POSITIONCONTROL{
     private:
-      //Pitch and Roll
-      float K_P;
-      float T_I;
-      float T_D;
-      float T_DD;
-
-      //Jaw
-      float K_P_JAW;
-      float T_I_JAW;
-      float T_D_JAW;
-      float T_DD_JAW;
-
       //further variables
       float U[3]; //controlled variable (CV)
       float iSum[3]; //controlled integral variabel
@@ -37,6 +25,18 @@
       float DDController(float dE, float k, int i, float looptime);
 
     public:
+      //Pitch and Roll
+      float K_P;
+      float T_I;
+      float T_D;
+      float T_DD;
+
+      //Jaw
+      float K_P_JAW;
+      float T_I_JAW;
+      float T_D_JAW;
+      float T_DD_JAW;
+      
       float targetPosition[3];
 
       void begin(void);

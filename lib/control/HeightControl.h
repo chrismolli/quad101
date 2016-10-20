@@ -10,11 +10,6 @@
   //Classdefinition
   class HEIGHTCONTROL{
   private:
-    //control constants
-    float K_P_HEIGHT;
-    float T_I_HEIGHT;
-    float T_D_HEIGHT;
-
     //further variables
     float U_height; //controlled variable (CV)
     float iSum; //controlled integral variabel
@@ -28,6 +23,11 @@
     float DController(float e, float k);
 
   public:
+    //control constants
+    float K_P_HEIGHT;
+    float T_I_HEIGHT;
+    float T_D_HEIGHT;
+
     float targetHeight;
     void begin(void);
     void update(float RotorSignal[4], float height, float looptime);
@@ -62,7 +62,7 @@
     T_D_HEIGHT = T_D_HEIGHT_START;
 
     //initialize targetHeight
-    targetHeight = TARGETHEIGHTSTART;
+    targetHeight = TARGETHEIGHTSTART+REFERENCEHEIGHT;
   }
 
 void HEIGHTCONTROL::update(float RotorSignal[4], float height, float looptime){
@@ -165,7 +165,7 @@ void HEIGHTCONTROL::setConstantsViaSerial(void){
 
       float signalInput = Serial.parseFloat();
       Serial.println(signalInput);
-      targetHeight = signalInput;
+      targetHeight = signalInput+REFERENCEHEIGHT;
     }
 
 #endif
