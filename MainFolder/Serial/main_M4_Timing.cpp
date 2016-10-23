@@ -20,19 +20,45 @@ Main for Testing and Changing PID Control during Runtime
   BLE ble;
   SoftwareSerial skm53Serial(RX_PIN, TX_PIN); //RX 4 geht zu TX im GPS Modul; TX 3 geht zu RX im GPS Modul
 
+  //Declare necessary variables
+  float t1, t2, t3, t4;
+
 /*==================================================================*/
   //Functions
 void timerUpdate(){
+  t1 = micros();
   sensors.update();
+  t2 = micros();
   rotors.update(sensors.imu.rot, sensors.imu.rot_vel);
+  t3 = micros();
+
+  Serial.print("SensorsUpdate: ");
+  Serial.print(t2-t1);
+  Serial.print(" RotorControlUpdate: ");
+  Serial.print(t3-t2);
+  Serial.print(" TotalFastUpdate: ");
+  Serial.println(t3-t1);
 }
 
 void slowTimerUpdate(){
+  t1 = micros();
   sensors.updateSlow();
+  t2 = micros();
   rotors.updateSlow(sensors.imu.rot, sensors.imu.rot_vel, sensors.usr.height);
+  t3 = micros();
   #if BLE_TELEMETRICS_ON
     ble.update();
   #endif
+  t4 = micros();
+  
+  Serial.print("SensorsUpdate: ");
+  Serial.print(t2-t1);
+  Serial.print(" RotorControlUpdate: ");
+  Serial.print(t3-t2);
+  Serial.print(" BleUpdate: ");
+  Serial.print(t4-t3);
+  Serial.print(" TotalSlowUpdate: ");
+  Serial.println(t4-t1);
 }
 
 void setup(){

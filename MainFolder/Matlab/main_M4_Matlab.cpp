@@ -20,6 +20,10 @@ Main for Testing and Changing PID Control during Runtime
   BLE ble;
   SoftwareSerial skm53Serial(RX_PIN, TX_PIN); //RX 4 geht zu TX im GPS Modul; TX 3 geht zu RX im GPS Modul
 
+  //needed variables
+  int charInput;
+  float x;
+
 /*==================================================================*/
   //Functions
 void timerUpdate(){
@@ -47,12 +51,6 @@ void setup(){
   rotors.begin();
   rotors.start(BEFORE_TAKE_OFF_SIGNAL);
 
-  //Serial Communication
-  Serial.println("What would you like to update?");
-  Serial.println("controller: 'c'");
-  Serial.println("height: 'h'");
-  Serial.println("angle: 'a'");
-
   //Activate untethered communication
   #if BLE_TELEMETRICS_ON
     ble.begin(rotors,sensors);
@@ -69,56 +67,83 @@ void loop(){
 
 void serialEvent(){
   if (Serial.available() > 0){
-    char firstInput = (char)Serial.read();
-    //while(Serial.available()) Serial.read();
-    switch (firstInput) {
+    charInput = Serial.read();
 
-      case 99: // compares firstInput to 'c'
-        rotors.stop();
-        rotors.positionController.setConstantsViaSerial();
-        rotors.start(BEFORE_TAKE_OFF_SIGNAL);
-        break;
-
-      case 67: // compares firstInput to 'C'
-          rotors.stop();
-          rotors.heightController.setConstantsViaSerial();
-          rotors.start(BEFORE_TAKE_OFF_SIGNAL);
-          break;
-
-      case 104: //compares firstInput to 'h'
-        rotors.stop();
-        rotors.heightController.setTargetHeight();
-        rotors.start(BEFORE_TAKE_OFF_SIGNAL);
-        break;
-
-      case 97: //compares firstInput to 'a'
+    switch (charInput){
+      //step Response
+      //warum funktiniert step Response so nur noch bis 10 Grad??
+      case 'a':
         if (rotors.positionController.targetPosition[0] == 0){
           rotors.positionController.targetPosition[0] = 20;
-          Serial.println("angle of 20 degree has been set!");
+          Serial.println(20);
         }
         else {
           rotors.positionController.targetPosition[0] = 0;
-          Serial.println("angle of 0 degree has been set!");
+          Serial.println(0);
         }
-        /*Serial.println("Enter a 2-digit number! Maximum angle is 45 degree. ");
-        Serial.println("What angle would you like to see? ");
-        while (Serial.available()<2) {} //wating for Serial to have two digits
-        int angleInput;
-        angleInput = Serial.parseInt();
-        if(angleInput <= 40){
-          targetPosition[0] = angleInput;
-        }*/
         break;
 
-      default:
-        Serial.println("Your first Input could not be recognized. Try again");
-        //while(Serial.available()) Serial.read();
+      //send Deflection
+      case 'D':
+        Serial.println(sensors.imu.rot[0]);
+        break;
+
+      //send RotorSignal
+      case 'S':
+        Serial.println(rotors.RotorSignal[1]);
+        break;
+
+      //send K_P
+      case 'W':
+        x = 10000*K_P_START;
+        Serial.println(x);
+        break;
+
+      //send T_D
+      case 'X':
+        Serial.println(T_I_START);
+        break;
+
+      //send T_I
+      case 'Y':
+        Serial.println(T_D_START);
+        break;
+
+      //send T_DD
+      case 'Z':
+        Serial.println(T_DD_START);
+        break;
+
+      //send K_P for heightController
+      case 'w':
+        x = 10000*K_P_HEIGHT_START;
+        Serial.println(x);
+        break;
+
+      //send T_D from heightController
+      case 'x':
+        Serial.println(T_I_HEIGHT_START);
+        break;
+
+      //send T_I from heightController
+      case 'y':
+        Serial.println(T_D_HEIGHT_START);
+        break;
+
+      //send height from heightController
+      case 'h':
+        Serial.println(sensors.usr.height);
+        break;
+
+      //quit/stop Process
+      case 'Q':
+        rotors.stop();
+        //t.stop(1);
+        while (Serial.available()<1) {}
+        /*char2 = Serial.read();
+        if (char2 == 'D')
+        rotors.start(TAKE_OFF_SIGNAL);*/
         break;
     }
-
-    Serial.println("What would you like to update?");
-    Serial.println("controller: 'c'");
-    Serial.println("height: 'h'");
-    Serial.println("angle: 'a'");
   }
 }

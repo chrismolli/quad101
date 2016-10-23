@@ -79,14 +79,17 @@
   #define BMP_PLUGGED_IN FALSE
   #define SEA_LEVEL_PRESSURE 101325 //Pa
 
-  #define USR_PLUGGED_IN TRUE
+  #define USR_PLUGGED_IN FALSE
   #define USR_TRIGGER_PIN 13
   #define USR_ECHO_PIN 12
 
-  #define BLE_TELEMETRICS_ON TRUE
+  #define BLE_TELEMETRICS_ON FALSE
 
   //Skylab GPS Sensor
+  #define SKM53_PLUGGED_IN FALSE
+  #define SKM53_BAUDRATE 9600
   #define RX_PIN 4 //goes to TX at sensor
-  #define TX_PIN 3 //goes to RX at sensor
+  #define TX_PIN 2 //goes to RX at sensor
+
 
 #endif

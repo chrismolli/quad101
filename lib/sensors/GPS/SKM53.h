@@ -1,5 +1,10 @@
-#ifndef NMEAPROCESSING_H
-#define NMEAPROCESSING_H
+#ifndef SKM53_H
+#define SKM53_H
+
+/* SKM53 is a GPS module from Skylab. Class is needed to process the NMEA-strings the module
+   sends via a SoftwareSerial connection (RX/TX);
+   It needs to get the Serial connection to the module from the main.
+*/
 
 /*==================================================================*/
   //Extern libraries
@@ -9,7 +14,7 @@
 
 /*==================================================================*/
   //Classdefinition
-  class NMEAProcessing{
+  class SKM53{
   private:
     //pointer to SoftwareSerial object defined in the main file
     SoftwareSerial* GPSModule;
@@ -18,10 +23,6 @@
     String rmc[15];
     String totalRMCString;
 
-    float gpsLatitude;
-    float gpsLongitude;
-    float gpsSpeedOverGround;
-    float gpsCourseOverGround;
     void updateRMCSections(void);
     void updateLat(void);
     void updateLng(void);
@@ -29,19 +30,20 @@
     void updateCourse(void);
 
   public:
+    float latitude;
+    float longitude;
+    float speedOverGround;
+    float courseOverGround;
+
     void update(void);
-    float returnLat(void);
-    float returnLng(void);
-    float returnSpeed(void);
-    float returnCourse(void);
-    void begin(SoftwareSerial* ss, int baudRate);
+    void begin(SoftwareSerial* ss);
     String returnTotalRMCString(void);
     String formattedGPSOutput(void);
   };
 
 /*==================================================================*/
   //Public Functions
-void NMEAProcessing::update(void){
+void SKM53::update(void){
   GPSModule->flush();
   while (GPSModule->available() > 0){
     GPSModule->readString();
@@ -59,35 +61,18 @@ void NMEAProcessing::update(void){
   }
 }
 
-void NMEAProcessing::begin(SoftwareSerial* ss, int baudRate){
+void SKM53::begin(SoftwareSerial* ss){
   //GPSModule is a pointer to the SotwareSerial which has to be defined in the main file
   GPSModule = ss;
-  GPSModule->begin(baudRate);
+  GPSModule->begin(SKM53_BAUDRATE);
   //Serial.println("Wating for GPS Signal");
   while (!GPSModule->available());
   //Serial.println("GPS Signal received");
 }
 
 /*=====================================*/
-  //Return functions
-float NMEAProcessing::returnLat(void){
-  return gpsLatitude;
-}
-
-float NMEAProcessing::returnLng(void){
-  return gpsLongitude;
-}
-
-float NMEAProcessing::returnSpeed(void){
-  return gpsSpeedOverGround;
-}
-
-float NMEAProcessing::returnCourse(void){
-  return gpsCourseOverGround;
-}
-/*=====================================*/
   //String functions
-String NMEAProcessing::returnTotalRMCString(void){
+String SKM53::returnTotalRMCString(void){
 
   String nmeaString = "$GPRMC, ";
   for (uint i = 0; i < 15 /*sizeof(rmc)*/ ; i++){
@@ -97,19 +82,19 @@ String NMEAProcessing::returnTotalRMCString(void){
   return nmeaString;
 }
 
-String NMEAProcessing::formattedGPSOutput(void){
+String SKM53::formattedGPSOutput(void){
   //Return Lat and Lng ready to print to the Serial
   String returnString = "";
   char latChar[9];
-  dtostrf(gpsLatitude, 4, 6, latChar); //4, 6 not sure whatfor
+  dtostrf(latitude, 4, 6, latChar); //4, 6 not sure whatfor
   for (uint i = 0; i < sizeof(latChar); i++)
   {
     returnString += latChar[i];
   }
 
   returnString += ", ";
-  char lngChar[8]; //should be increased to 9 or even 10 if the degrees of Lng increase 
-  dtostrf(gpsLongitude, 4, 6, lngChar);
+  char lngChar[8]; //should be increased to 9 or even 10 if the degrees of Lng increase
+  dtostrf(longitude, 4, 6, lngChar);
   for (uint i = 0; i < sizeof(lngChar); i++)
   {
     returnString += lngChar[i];
@@ -118,7 +103,7 @@ String NMEAProcessing::formattedGPSOutput(void){
   returnString += ", ";
 
   char speedChar[7];
-  dtostrf(gpsSpeedOverGround, 4, 6, speedChar);
+  dtostrf(speedOverGround, 4, 6, speedChar);
   for (uint i = 0; i < sizeof(speedChar); i++)
   {
     returnString += speedChar[i];
@@ -129,7 +114,7 @@ String NMEAProcessing::formattedGPSOutput(void){
 
 /*==================================================================*/
   //Private Functions
-void NMEAProcessing::updateRMCSections(void){
+void SKM53::updateRMCSections(void){
   totalRMCString = GPSModule->readStringUntil('\n');
   //Initializing variables to process RMCString
   stringPosition = 0;
@@ -152,7 +137,7 @@ void NMEAProcessing::updateRMCSections(void){
   }
 }
 
-void NMEAProcessing::updateLat(void){
+void SKM53::updateLat(void){
   //now we need to sperate the degrees from the minutes
   float latFirstDigits;
   float latMinutes;
@@ -167,14 +152,14 @@ void NMEAProcessing::updateLat(void){
   //check if northern or southern hemisphere
   //calculate final latitude
   if (rmc[3] == "S") {
-    gpsLatitude = -latFirstDigits - latMinutes/60;
+    latitude = -latFirstDigits - latMinutes/60;
   }
   else{
-    gpsLatitude = latFirstDigits + latMinutes/60;
+    latitude = latFirstDigits + latMinutes/60;
   }
 }
 
-void NMEAProcessing::updateLng(void){
+void SKM53::updateLng(void){
   //now we need to sperate the degrees from the minutes
   float lngFirstDigits;
   float lngMinutes;
@@ -189,19 +174,19 @@ void NMEAProcessing::updateLng(void){
   //check if eastern or western hemisphere
   //calculate final longitude
   if (rmc[5] == "W") {
-    gpsLongitude = -lngFirstDigits - lngMinutes/60;
+    longitude = -lngFirstDigits - lngMinutes/60;
   }
   else{
-    gpsLongitude = lngFirstDigits + lngMinutes/60;
+    longitude = lngFirstDigits + lngMinutes/60;
   }
 }
 
-void NMEAProcessing::updateSpeed(void){
-  gpsSpeedOverGround = rmc[6].toFloat()*0.514444; //transform to m/s
+void SKM53::updateSpeed(void){
+  speedOverGround = rmc[6].toFloat()*0.514444; //transform to m/s
 }
 
-void NMEAProcessing::updateCourse(void){
-  gpsCourseOverGround = rmc[7].toFloat(); //in degree
+void SKM53::updateCourse(void){
+  courseOverGround = rmc[7].toFloat(); //in degree
 }
 
 #endif
