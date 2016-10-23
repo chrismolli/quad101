@@ -55,7 +55,7 @@ void setup(){
 
   //Activate untethered communication
   #if BLE_TELEMETRICS_ON
-    ble.begin(rotors,sensors);
+    ble.begin(rotors);
   #endif
 
   //Set timer event, that calls timerUpdate every SAMPLE_RATE milliseconds
