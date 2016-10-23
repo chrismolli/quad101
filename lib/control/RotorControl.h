@@ -35,6 +35,7 @@
 /*==================================================================*/
   //General Functions
 void ROTORCONTROL::begin(void){
+  if(Serial) Serial.print("Starting rotorcontrol...");
   //Establish Connection to ESCs
   esc1.attach(ESCPIN1);
   esc2.attach(ESCPIN2);
@@ -43,21 +44,15 @@ void ROTORCONTROL::begin(void){
 
   //Initialize Rotors and be careful with delays!!
   esc1.writeMicroseconds(0);
-  delay(500);
   esc2.writeMicroseconds(0);
-  delay(500);
   esc3.writeMicroseconds(0);
-  delay(500);
   esc4.writeMicroseconds(0);
-  delay(500);
+  delay(5);
   esc1.writeMicroseconds(1012);
-  delay(500);
   esc2.writeMicroseconds(1012);
-  delay(500);
   esc3.writeMicroseconds(1012);
-  delay(500);
   esc4.writeMicroseconds(1012);
-  delay(500);
+  delay(5);
 
   //Initialize RotorSignals
   RotorSignal[0] = 0;
@@ -73,12 +68,13 @@ void ROTORCONTROL::begin(void){
   //Initialize PositionControl and HeightControl
   positionController.begin();
   heightController.begin();
+  if(Serial) Serial.println(" Done");
+
 }
 
 void ROTORCONTROL::start(int startValue){
   //start procedure testbed
   //could be used as the first start before take Off via HeightControl
-
   int s = MIN_ROTOR_SIGNAL;
   while (s < startValue){
     esc1.writeMicroseconds(s);
