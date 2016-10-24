@@ -82,49 +82,38 @@
   }
 
   void BLE::update(){
-    //Telemetrics upload
-    //Deleted!
-
     //Data download
-    //p
     if(ble_pcon_KP.written()){
       p_con_address->K_P=ble_pcon_KP.value();
-      ble_pcon_KP.setValue(p_con_address->K_P);
+      //Serial.println(p_con_address->K_P);
     }
 
     if(ble_pcon_TI.written()){
       p_con_address->T_I=ble_pcon_TI.value();
-      ble_pcon_TI.setValue(p_con_address->T_I);
     }
 
     if(ble_pcon_TD.written()){
       p_con_address->T_D=ble_pcon_TD.value();
-      ble_pcon_TD.setValue(p_con_address->T_D);
     }
 
     if(ble_pcon_TDD.written()){
       p_con_address->T_DD=ble_pcon_TDD.value();
-      ble_pcon_TDD.setValue(p_con_address->T_DD);
     }
     //h
     if(ble_hcon_KP.written()){
       h_con_address->K_P_HEIGHT=ble_hcon_KP.value();
-      ble_hcon_KP.setValue(h_con_address->K_P_HEIGHT);
     }
 
     if(ble_hcon_TI.written()){
       h_con_address->T_I_HEIGHT=ble_hcon_TI.value();
-      ble_hcon_TI.setValue(h_con_address->T_I_HEIGHT);
     }
 
     if(ble_hcon_TD.written()){
       h_con_address->T_D_HEIGHT=ble_hcon_TD.value();
-      ble_hcon_TD.setValue(h_con_address->T_D_HEIGHT);
     }
 
     if(ble_hcon_HEIGHT.written()){
       h_con_address->targetHeight=ble_hcon_HEIGHT.value();
-      ble_hcon_HEIGHT.setValue(h_con_address->targetHeight);
     }
 
   }
