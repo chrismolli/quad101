@@ -73,12 +73,14 @@ void serialEvent(){
     //while(Serial.available()) Serial.read();
     switch (firstInput) {
 
+      //positionController
       case 99: // compares firstInput to 'c'
         rotors.stop();
         rotors.positionController.setConstantsViaSerial();
         rotors.start(BEFORE_TAKE_OFF_SIGNAL);
         break;
 
+      //heightController
       case 67: // compares firstInput to 'C'
           rotors.stop();
           rotors.heightController.setConstantsViaSerial();
@@ -93,8 +95,8 @@ void serialEvent(){
 
       case 97: //compares firstInput to 'a'
         if (rotors.positionController.targetPosition[0] == 0){
-          rotors.positionController.targetPosition[0] = 20;
-          Serial.println("angle of 20 degree has been set!");
+          rotors.positionController.targetPosition[0] = 5;
+          Serial.println("angle of 5 degree has been set!");
         }
         else {
           rotors.positionController.targetPosition[0] = 0;
@@ -108,6 +110,11 @@ void serialEvent(){
         if(angleInput <= 40){
           targetPosition[0] = angleInput;
         }*/
+        break;
+
+      //landing the copter using heightController
+      case 108: //compares firstInput to 'l'
+        rotors.heightController.targetHeight = REFERENCEHEIGHT;
         break;
 
       default:

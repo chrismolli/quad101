@@ -36,7 +36,7 @@
       float T_I_JAW;
       float T_D_JAW;
       float T_DD_JAW;
-      
+
       float targetPosition[3];
 
       void begin(void);
@@ -122,7 +122,7 @@ void POSITIONCONTROL::update(float RotorSignal[4], float Y[3], float dE[3], floa
   RotorSignal[2] = RotorSignal[2] + U[1];
   RotorSignal[3] = RotorSignal[3] - U[1];
   //z-axis; counterclockwise = positive; Moment wirkt entgegen der Drehrichtung der Rotoren
-  RotorSignal[0] = RotorSignal[0] + U[2]; //1 und 2 müssen sich counterclockwise drehen --> Moment clockwise
+  RotorSignal[0] = RotorSignal[0] + U[2]; //0 und 1 müssen sich counterclockwise drehen --> Moment clockwise
   RotorSignal[1] = RotorSignal[1] + U[2];
   RotorSignal[2] = RotorSignal[2] - U[2];
   RotorSignal[3] = RotorSignal[3] - U[2];
