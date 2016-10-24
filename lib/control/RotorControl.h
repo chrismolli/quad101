@@ -16,6 +16,10 @@
   private:
     Servo esc1, esc2, esc3, esc4;
   public:
+
+    uint8_t safetyModeOn;
+    uint8_t safetyModeFlag;
+
     POSITIONCONTROL positionController;
     HEIGHTCONTROL heightController;
 
@@ -68,6 +72,8 @@ void ROTORCONTROL::begin(void){
   //Initialize PositionControl and HeightControl
   positionController.begin();
   heightController.begin();
+  safetyModeOn = 0;
+  safetyModeFlag = 0;
   if(Serial) Serial.println(" Done");
 
 }
@@ -75,8 +81,13 @@ void ROTORCONTROL::begin(void){
 void ROTORCONTROL::start(int startValue){
   //start procedure testbed
   //could be used as the first start before take Off via HeightControl
+<<<<<<< HEAD
   if(Serial) Serial.print("Starting Rotors...");
   int s = MIN_ROTOR_SIGNAL;
+=======
+  if(Serial) Serial.print("Starting rotors...");
+  int s = 1012;
+>>>>>>> 87d7df92aaddd5e1f18c43631577711dd198d2b5
   while (s < startValue){
     esc1.writeMicroseconds(s);
     esc2.writeMicroseconds(s);
@@ -98,6 +109,10 @@ void ROTORCONTROL::start(int startValue){
   RotorSignal[3] = startValue;
 
   if(Serial) Serial.println(" Done");
+<<<<<<< HEAD
+=======
+
+>>>>>>> 87d7df92aaddd5e1f18c43631577711dd198d2b5
 }
 
 void ROTORCONTROL::stop(void){
@@ -127,65 +142,7 @@ void ROTORCONTROL::stop(void){
 /*==================================================================*/
   //Update Functions
 void ROTORCONTROL::update(float rot[3], float rot_vel[3]){
-  //update PositionControl
-  positionController.update(RotorSignal, rot, rot_vel, SAMPLE_RATE);
-
-  //rotorSignal mustn't exceed limits
-  //Rotor 0
-  if (RotorSignal[0] > MAX_ROTOR_SIGNAL){ //Maximum Value
-    RotorSignal[0] = MAX_ROTOR_SIGNAL;
-    //Serial.println("R0 > MAX\n");
-  }
-  if (RotorSignal[0] < MIN_ROTOR_SIGNAL){ //Minimum Value
-    RotorSignal[0] = MIN_ROTOR_SIGNAL;
-    //Serial.println("R0 < MIN\n");
-  }
-
-  //Rotor 1
-  if (RotorSignal[1] > MAX_ROTOR_SIGNAL){
-    RotorSignal[1] = MAX_ROTOR_SIGNAL;
-    //Serial.println("R1 > MAX\n");
-  }
-  if (RotorSignal[1] < MIN_ROTOR_SIGNAL){
-    RotorSignal[1] = MIN_ROTOR_SIGNAL;
-    //Serial.println("R1 < MIN\n");
-  }
-
-  //Rotor 2
-  if (RotorSignal[2] > MAX_ROTOR_SIGNAL){
-    RotorSignal[2] = MAX_ROTOR_SIGNAL;
-    //Serial.println("R1 > MAX\n");
-  }
-  if (RotorSignal[2] < MIN_ROTOR_SIGNAL){
-    RotorSignal[2] = MIN_ROTOR_SIGNAL;
-    //Serial.println("R1 < MIN\n");
-  }
-
-  //Rotor 3
-  if (RotorSignal[3] > MAX_ROTOR_SIGNAL){
-    RotorSignal[3] = MAX_ROTOR_SIGNAL;
-    //Serial.println("R1 > MAX\n");
-  }
-  if (RotorSignal[3] < MIN_ROTOR_SIGNAL){
-    RotorSignal[3] = MIN_ROTOR_SIGNAL;
-    //Serial.println("R1 < MIN\n");
-  }
-
-  //write RotorSignal to ESCs
-    RoundSignal[0] = roundf(RotorSignal[0]);
-    RoundSignal[1] = roundf(RotorSignal[1]);
-    RoundSignal[2] = roundf(RotorSignal[2]);
-    RoundSignal[3] = roundf(RotorSignal[3]);
-
-    esc1.writeMicroseconds((int)RoundSignal[0]);
-    esc2.writeMicroseconds((int)RoundSignal[1]);
-    esc3.writeMicroseconds((int)RoundSignal[2]);
-    esc4.writeMicroseconds((int)RoundSignal[3]);
-}
-
-  void ROTORCONTROL::updateSlow(float rot[3], float rot_vel[3], float height){
-    //update HeightControl
-    heightController.update(RotorSignal, height, SLOW_SAMPLE_RATE);
+  if ((safetyModeOn == 0) && (safetyModeFlag = 0)){
     //update PositionControl
     positionController.update(RotorSignal, rot, rot_vel, SAMPLE_RATE);
 
@@ -230,18 +187,92 @@ void ROTORCONTROL::update(float rot[3], float rot_vel[3]){
       //Serial.println("R1 < MIN\n");
     }
 
-  //write RotorSignal to ESCs
-    RoundSignal[0] = roundf(RotorSignal[0]);
-    RoundSignal[1] = roundf(RotorSignal[1]);
-    RoundSignal[2] = roundf(RotorSignal[2]);
-    RoundSignal[3] = roundf(RotorSignal[3]);
+    //write RotorSignal to ESCs
+      RoundSignal[0] = roundf(RotorSignal[0]);
+      RoundSignal[1] = roundf(RotorSignal[1]);
+      RoundSignal[2] = roundf(RotorSignal[2]);
+      RoundSignal[3] = roundf(RotorSignal[3]);
 
-    esc1.writeMicroseconds((int)RoundSignal[0]);
-    esc2.writeMicroseconds((int)RoundSignal[1]);
-    esc3.writeMicroseconds((int)RoundSignal[2]);
-    esc4.writeMicroseconds((int)RoundSignal[3]);
+      esc1.writeMicroseconds((int)RoundSignal[0]);
+      esc2.writeMicroseconds((int)RoundSignal[1]);
+      esc3.writeMicroseconds((int)RoundSignal[2]);
+      esc4.writeMicroseconds((int)RoundSignal[3]);
   }
 
+  //stop Rotors in case of signal loss or emergency
+  else if((safetyModeOn == 1) && (safetyModeFlag == 0)){
+    ROTORCONTROL::stop();
+    safetyModeFlag = 1;
+  }
+
+  //start Rotors again as soon as user changes safetyModeOn to 0
+  else if((safetyModeOn == 0) && (safetyModeFlag == 1)){
+    ROTORCONTROL::start(BEFORE_TAKE_OFF_SIGNAL);
+    safetyModeFlag = 0;
+  }
+
+}
+
+  void ROTORCONTROL::updateSlow(float rot[3], float rot_vel[3], float height){
+    if (safetyModeOn == 0){
+      //update HeightControl
+      heightController.update(RotorSignal, height, SLOW_SAMPLE_RATE);
+      //update PositionControl (update in slowUpdate too?)
+      //positionController.update(RotorSignal, rot, rot_vel, SAMPLE_RATE);
+
+      //rotorSignal mustn't exceed limits
+      //Rotor 0
+      if (RotorSignal[0] > MAX_ROTOR_SIGNAL){ //Maximum Value
+        RotorSignal[0] = MAX_ROTOR_SIGNAL;
+        //Serial.println("R0 > MAX\n");
+      }
+      if (RotorSignal[0] < MIN_ROTOR_SIGNAL){ //Minimum Value
+        RotorSignal[0] = MIN_ROTOR_SIGNAL;
+        //Serial.println("R0 < MIN\n");
+      }
+
+      //Rotor 1
+      if (RotorSignal[1] > MAX_ROTOR_SIGNAL){
+        RotorSignal[1] = MAX_ROTOR_SIGNAL;
+        //Serial.println("R1 > MAX\n");
+      }
+      if (RotorSignal[1] < MIN_ROTOR_SIGNAL){
+        RotorSignal[1] = MIN_ROTOR_SIGNAL;
+        //Serial.println("R1 < MIN\n");
+      }
+
+      //Rotor 2
+      if (RotorSignal[2] > MAX_ROTOR_SIGNAL){
+        RotorSignal[2] = MAX_ROTOR_SIGNAL;
+        //Serial.println("R1 > MAX\n");
+      }
+      if (RotorSignal[2] < MIN_ROTOR_SIGNAL){
+        RotorSignal[2] = MIN_ROTOR_SIGNAL;
+        //Serial.println("R1 < MIN\n");
+      }
+
+      //Rotor 3
+      if (RotorSignal[3] > MAX_ROTOR_SIGNAL){
+        RotorSignal[3] = MAX_ROTOR_SIGNAL;
+        //Serial.println("R1 > MAX\n");
+      }
+      if (RotorSignal[3] < MIN_ROTOR_SIGNAL){
+        RotorSignal[3] = MIN_ROTOR_SIGNAL;
+        //Serial.println("R1 < MIN\n");
+      }
+
+    //write RotorSignal to ESCs
+      RoundSignal[0] = roundf(RotorSignal[0]);
+      RoundSignal[1] = roundf(RotorSignal[1]);
+      RoundSignal[2] = roundf(RotorSignal[2]);
+      RoundSignal[3] = roundf(RotorSignal[3]);
+
+      esc1.writeMicroseconds((int)RoundSignal[0]);
+      esc2.writeMicroseconds((int)RoundSignal[1]);
+      esc3.writeMicroseconds((int)RoundSignal[2]);
+      esc4.writeMicroseconds((int)RoundSignal[3]);
+    }
+  }
 /*==================================================================*/
   //Serial Communication Functions
 int ROTORCONTROL::setRotorSignalViaSerial(void){

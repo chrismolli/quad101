@@ -158,7 +158,7 @@ void HEIGHTCONTROL::setConstantsViaSerial(void){
 
     void HEIGHTCONTROL::setTargetHeight(void){
 
-      Serial.print("Which height would you like to fly? ");
+      Serial.print("Which height would you like to fly in cm? ");
       Serial.print("It Should be a number with 3 significant characters, for example 0.25 ");
       //wating for Serial to have four digits
       while (Serial.available()<4) {}
