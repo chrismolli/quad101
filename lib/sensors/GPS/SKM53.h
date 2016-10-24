@@ -49,7 +49,7 @@ void SKM53::update(void){
     GPSModule->readString();
   }
   //RMC = Recommended Minimum Specific GNSS Data
-    //const char *search = "$GPRMC,"; funktioniert so nicht
+  //const char *search = "$GPRMC,\0"; funktioniert so nicht
   if (GPSModule->find("$GPRMC,")) {
     updateRMCSections();
     updateLat();
@@ -139,8 +139,8 @@ void SKM53::updateRMCSections(void){
 
 void SKM53::updateLat(void){
   //now we need to sperate the degrees from the minutes
-  float latFirstDigits;
-  float latMinutes;
+  float latFirstDigits=0;
+  float latMinutes=0;
   for (uint i = 0; i < rmc[2].length(); i++) {
     //look for the ".",because we know we have two digits before it for the Minutes
     if (rmc[2].substring(i, i + 1) == ".") {
@@ -161,8 +161,8 @@ void SKM53::updateLat(void){
 
 void SKM53::updateLng(void){
   //now we need to sperate the degrees from the minutes
-  float lngFirstDigits;
-  float lngMinutes;
+  float lngFirstDigits=0;
+  float lngMinutes=0;
   for (uint i = 0; i < rmc[4].length(); i++) {
     //look for the ".",because we know we have two digits before it for the Minutes
     if (rmc[4].substring(i, i + 1) == ".") {

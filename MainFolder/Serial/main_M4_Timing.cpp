@@ -50,7 +50,7 @@ void slowTimerUpdate(){
     ble.update();
   #endif
   t4 = micros();
-  
+
   Serial.print("SensorsUpdate: ");
   Serial.print(t2-t1);
   Serial.print(" RotorControlUpdate: ");
@@ -81,7 +81,7 @@ void setup(){
 
   //Activate untethered communication
   #if BLE_TELEMETRICS_ON
-    ble.begin(rotors,sensors);
+    ble.begin(rotors);
   #endif
 
   //Set timer event, that calls timerUpdate every SAMPLE_RATE milliseconds
