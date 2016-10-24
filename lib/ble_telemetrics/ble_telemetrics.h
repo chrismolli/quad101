@@ -37,6 +37,8 @@
   BLEFloatCharacteristic ble_hcon_TI("2E8C6277-2DDE-4D80-8C4B-629876703C76", BLERead | BLEWrite);
   BLEFloatCharacteristic ble_hcon_TD("2E8C6277-2DDE-4D80-8C4B-629876703C77", BLERead | BLEWrite);
   BLEFloatCharacteristic ble_hcon_HEIGHT("2E8C6277-2DDE-4D80-8C4B-629876703C78", BLERead | BLEWrite);
+  //
+  BLECharCharacteristic ble_startstop("2E8C6277-2DDE-4D80-8C4B-629876703C79", BLERead | BLEWrite);
 
 
 /*==================================================================*/
