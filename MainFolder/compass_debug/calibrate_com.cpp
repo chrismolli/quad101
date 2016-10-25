@@ -4,7 +4,7 @@ Debuging script for tilt compensated compass
 
 #include "Arduino.h"
 #include "Timer.h"
-#include "../lib/sensorfuse/sensorfuse.h"
+#include "../lib/sensors/IMU/imu.h"
 
 #define SAMPLE_RATE_X 10
 
@@ -31,13 +31,13 @@ void setup(){
   Serial.begin(230400);
   while(!Serial);
   imu.begin();
-  //imu.com.calibrate();
+  imu.com.calibrate();
 
   t.every(SAMPLE_RATE_X,data);
   t.every(10*SAMPLE_RATE_X,serial);
 }
 
 void loop(){
-  t.update();
-  if(Serial.available()) Serial.end();
+  //t.update();
+  //if(Serial.available()) Serial.end();
 }
