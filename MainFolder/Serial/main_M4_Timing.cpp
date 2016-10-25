@@ -17,7 +17,7 @@ Main for Testing and Changing PID Control during Runtime
   Timer t;
   SENSORS sensors;
   ROTORCONTROL rotors;
-  BLE ble;
+  BLE_COM ble;
   SoftwareSerial skm53Serial(RX_PIN, TX_PIN); //RX 4 geht zu TX im GPS Modul; TX 3 geht zu RX im GPS Modul
 
   //Declare necessary variables
@@ -64,7 +64,7 @@ void slowTimerUpdate(){
 void setup(){
   //Start Serial and wait for connection
   Serial.begin(38400);
-  while(!Serial);
+  if(FORCE_SERIAL) while(!Serial);
 
   //start and calibrate sensors
   sensors.begin(&skm53Serial);

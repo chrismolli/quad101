@@ -3,8 +3,8 @@
 
 /*-----------------------------------------------------------------------*/
   //Global constants
-  #define SAMPLE_RATE 5     //update Frequency for sensors and Rotors
-  #define SLOW_SAMPLE_RATE 25
+  #define SAMPLE_RATE 5         //update every ...ms sensors and rotors
+  #define SLOW_SAMPLE_RATE 25   //update every ...ms bluetooht and usr
 
 /*-----------------------------------------------------------------------*/
   //Position Control
@@ -69,6 +69,10 @@
   #define BEFORE_TAKE_OFF_SIGNAL 1575
 
 /*-----------------------------------------------------------------------*/
+  //Communication
+  #define BLE_TELEMETRICS_ON TRUE
+  #define FORCE_SERIAL TRUE
+
   //Sensor constants
   #define COMPLEMENTARY_WEIGHT 0.98
   #define GYRORANGE 2
@@ -82,9 +86,6 @@
   #define USR_PLUGGED_IN FALSE
   #define USR_TRIGGER_PIN 13
   #define USR_ECHO_PIN 12
-
-  #define BLE_TELEMETRICS_ON FALSE
-  #define BLE_AUTOSTART FALSE
 
   //Skylab GPS Sensor
   #define SKM53_PLUGGED_IN FALSE
