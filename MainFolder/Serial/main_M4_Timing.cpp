@@ -9,7 +9,7 @@ Main for Testing and Changing PID Control during Runtime
   #include "../lib/sensors/sensors.h"
   #include "../lib/control/RotorControl.h"
   #include "../lib/params.h"
-  #include "../lib/ble_telemetrics/ble_telemetrics.h"
+  #include "../lib/ble_com/ble_com.h"
   #include "SoftwareSerial.h"
 
 /*==================================================================*/

@@ -39,7 +39,7 @@
 /*==================================================================*/
   //General Functions
 void ROTORCONTROL::begin(void){
-  if(Serial) Serial.print("Starting rotorcontrol...");
+  if(Serial) Serial.print("Starting Rotorcontrol...");
   //Establish Connection to ESCs
   esc1.attach(ESCPIN1);
   esc2.attach(ESCPIN2);
@@ -81,8 +81,9 @@ void ROTORCONTROL::begin(void){
 void ROTORCONTROL::start(int startValue){
   //start procedure testbed
   //could be used as the first start before take Off via HeightControl
-  if(Serial) Serial.print("Starting rotors...");
-  int s = 1012;
+  if(Serial) Serial.print("Starting Rotors...");
+  int s = MIN_ROTOR_SIGNAL;
+
   while (s < startValue){
     esc1.writeMicroseconds(s);
     esc2.writeMicroseconds(s);
@@ -104,7 +105,6 @@ void ROTORCONTROL::start(int startValue){
   RotorSignal[3] = startValue;
 
   if(Serial) Serial.println(" Done");
-
 }
 
 void ROTORCONTROL::stop(void){

@@ -84,6 +84,7 @@
   #define USR_ECHO_PIN 12
 
   #define BLE_TELEMETRICS_ON FALSE
+  #define BLE_AUTOSTART FALSE
 
   //Skylab GPS Sensor
   #define SKM53_PLUGGED_IN FALSE
