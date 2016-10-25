@@ -22,6 +22,7 @@
     private:
       POSITIONCONTROL *p_con_address;
       HEIGHTCONTROL *h_con_address;
+      ROTORCONTROL *r_con_address;
   };
 
   //BLE UUIDS have to be defined externally to work properly
@@ -38,7 +39,7 @@
   BLEFloatCharacteristic ble_hcon_TD("2E8C6277-2DDE-4D80-8C4B-629876703C77", BLERead | BLEWrite);
   BLEFloatCharacteristic ble_hcon_HEIGHT("2E8C6277-2DDE-4D80-8C4B-629876703C78", BLERead | BLEWrite);
   //
-  BLECharCharacteristic ble_startstop("2E8C6277-2DDE-4D80-8C4B-629876703C79", BLERead | BLEWrite);
+  BLEUnsignedCharCharacteristic ble_startstop("2E8C6277-2DDE-4D80-8C4B-629876703C79", BLEWrite);
 
 
 /*==================================================================*/
@@ -47,6 +48,7 @@
     if(Serial) Serial.print("Starting BLE service...");
 
     // Set the data pointer
+    r_con_address=&rotors;
     p_con_address=&rotors.positionController;
     h_con_address=&rotors.heightController;
 
@@ -64,6 +66,8 @@
     quad101_peripheral.addAttribute(ble_hcon_TI);
     quad101_peripheral.addAttribute(ble_hcon_TD);
     quad101_peripheral.addAttribute(ble_hcon_HEIGHT);
+    //
+    quad101_peripheral.addAttribute(ble_startstop);
 
     //Set data for the first time
     ble_pcon_KP.setValue(p_con_address->K_P);
@@ -76,6 +80,14 @@
     ble_hcon_TD.setValue(h_con_address->T_D_HEIGHT);
     ble_hcon_HEIGHT.setValue(h_con_address->targetHeight);
 
+    if(BLE_AUTOSTART){
+      ble_startstop.setValue(0);
+      rotors.safetyModeOn=0; //0 means start
+    }else{
+      ble_startstop.setValue(1);
+      rotors.safetyModeOn=1; //1 means stop
+    }
+
     //Start advertising
     quad101_peripheral.begin();
     if(Serial) Serial.println(" DONE");
@@ -83,9 +95,9 @@
 
   void BLE::update(){
     //Data download
+    //p
     if(ble_pcon_KP.written()){
       p_con_address->K_P=ble_pcon_KP.value();
-      //Serial.println(p_con_address->K_P);
     }
 
     if(ble_pcon_TI.written()){
@@ -114,6 +126,11 @@
 
     if(ble_hcon_HEIGHT.written()){
       h_con_address->targetHeight=ble_hcon_HEIGHT.value();
+    }
+    //startstop
+    if(ble_startstop.written()){
+      r_con_address->safetyModeOn=ble_startstop.value();
+      if(Serial) if(r_con_address->safetyModeOn) Serial.println("!!! Emergency stop initiated !!!");
     }
 
   }

@@ -81,13 +81,9 @@ void ROTORCONTROL::begin(void){
 void ROTORCONTROL::start(int startValue){
   //start procedure testbed
   //could be used as the first start before take Off via HeightControl
-<<<<<<< HEAD
   if(Serial) Serial.print("Starting Rotors...");
   int s = MIN_ROTOR_SIGNAL;
-=======
-  if(Serial) Serial.print("Starting rotors...");
-  int s = 1012;
->>>>>>> 87d7df92aaddd5e1f18c43631577711dd198d2b5
+
   while (s < startValue){
     esc1.writeMicroseconds(s);
     esc2.writeMicroseconds(s);
@@ -109,10 +105,6 @@ void ROTORCONTROL::start(int startValue){
   RotorSignal[3] = startValue;
 
   if(Serial) Serial.println(" Done");
-<<<<<<< HEAD
-=======
-
->>>>>>> 87d7df92aaddd5e1f18c43631577711dd198d2b5
 }
 
 void ROTORCONTROL::stop(void){
