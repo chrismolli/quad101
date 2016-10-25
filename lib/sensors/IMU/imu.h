@@ -101,7 +101,7 @@ void IMU::update(float looptime){
   //((float)looptime / 1000) converts SAMPLE_RATE into seconds
     IMU::rot_vel[0] = ((float)IMU::raw_Gyro[0] / INTMAX) * GYRORANGE ;
     IMU::rot_vel[1] = ((float)IMU::raw_Gyro[1] / INTMAX) * GYRORANGE ;
-    IMU::rot_vel[2] = ((float)IMU::raw_Gyro[2] / INTMAX) * GYRORANGE ;
+    IMU::rot_vel[2] = -((float)IMU::raw_Gyro[2] / INTMAX) * GYRORANGE ; //clockwise positiv (same as Compass) 
 
     IMU::rot[0] += IMU::rot_vel[0]*((float)looptime / 1000) * (180/PI);
     IMU::rot[1] += IMU::rot_vel[1]*((float)looptime / 1000) * (180/PI);
