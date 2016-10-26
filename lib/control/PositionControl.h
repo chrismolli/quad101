@@ -95,10 +95,19 @@ void POSITIONCONTROL::begin(void){
 }
 
 void POSITIONCONTROL::update(float RotorSignal[4], float Y[3], float dE[3], float looptime){
-  //calculate control difference
+  //calculate control difference for PITCH & ROLL
   e[0] = targetPosition[0]-Y[0];
   e[1] = targetPosition[1]-Y[1];
-  e[2] = targetPosition[2]-Y[2];
+
+  //JAW control difference
+  e[2] = targetPosition[2]-Y[2]; //usual case
+
+  if (abs(targetPosition[2]-Y[2]) > 180){ //control Difference > 180
+    e[2] = 360 - abs(targetPosition[2]-Y[2]); //control difference if target < actual value
+    if (targetPosition[2] > Y[2]){ //reverse sign if target > actual value
+      e[2] = -e[2];
+    }
+  }
 
   //calculating cotrolled variable (CV)
   //x-Axis
