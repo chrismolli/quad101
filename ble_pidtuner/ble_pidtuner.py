@@ -233,7 +233,7 @@ def main():
                 stdscr.clear()
 
         #mainloop
-        stop_flag=0
+        stop_flag=1
         stdscr.clear()
         while True:
             stdscr.addstr(0,0,'Connected',curses.color_pair(2))
