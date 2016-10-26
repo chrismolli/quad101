@@ -15,14 +15,18 @@
 
 /*==================================================================*/
   //Class definition
-  class BLE{
+  class BLE_COM{
     public:
       void begin(ROTORCONTROL rotors);
       void update();
     private:
+      //uint8_t _connection_flag;
+      //BLECentralHelper _central;
+
       POSITIONCONTROL *p_con_address;
       HEIGHTCONTROL *h_con_address;
       ROTORCONTROL *r_con_address;
+
   };
 
   //BLE UUIDS have to be defined externally to work properly
@@ -39,12 +43,12 @@
   BLEFloatCharacteristic ble_hcon_TD("2E8C6277-2DDE-4D80-8C4B-629876703C77", BLERead | BLEWrite);
   BLEFloatCharacteristic ble_hcon_HEIGHT("2E8C6277-2DDE-4D80-8C4B-629876703C78", BLERead | BLEWrite);
   //
-  BLEUnsignedCharCharacteristic ble_startstop("2E8C6277-2DDE-4D80-8C4B-629876703C79", BLEWrite);
+  BLEUnsignedCharCharacteristic ble_startstop("2E8C6277-2DDE-4D80-8C4B-629876703C79", BLERead | BLEWrite);
 
 
 /*==================================================================*/
   //Functions
-  void BLE::begin(ROTORCONTROL rotors){
+  void BLE_COM::begin(ROTORCONTROL rotors){
     if(Serial) Serial.print("Starting BLE service...");
 
     // Set the data pointer
@@ -80,57 +84,53 @@
     ble_hcon_TD.setValue(h_con_address->T_D_HEIGHT);
     ble_hcon_HEIGHT.setValue(h_con_address->targetHeight);
 
-    if(BLE_AUTOSTART){
-      ble_startstop.setValue(0);
-      rotors.safetyModeOn=0; //0 means start
-    }else{
-      ble_startstop.setValue(1);
-      rotors.safetyModeOn=1; //1 means stop
-    }
+    ble_startstop.setValue(0);
 
     //Start advertising
+    //_connection_flag=0;
+    //_central=NULL;
     quad101_peripheral.begin();
     if(Serial) Serial.println(" DONE");
   }
 
-  void BLE::update(){
+  void BLE_COM::update(){
+    /*
+    //Listen for centrals to connect
+    _central = quad101_peripheral.central();
+    if(_central){
+      if(_connection_flag==0 && Serial){
+        Serial.print("Connected to central: ");
+        Serial.println(_central.address());
+      }
+      _connection_flag=1;
+    }
+
+    //Auto stop when central disconnects
+    if(!_central && _connection_flag){
+      _connection_flag=0;
+      r_con_address->safetyModeOn=1;
+      ble_startstop.setValue(1);
+      if(Serial) Serial.println("!!! Emergency stop initiated (Connection lost) !!!");
+    }
+    */
+
     //Data download
-    //p
-    if(ble_pcon_KP.written()){
-      p_con_address->K_P=ble_pcon_KP.value();
-    }
+    //p-controller
+    if(ble_pcon_KP.written()) p_con_address->K_P=ble_pcon_KP.value();
+    if(ble_pcon_TI.written()) p_con_address->T_I=ble_pcon_TI.value();
+    if(ble_pcon_TD.written()) p_con_address->T_D=ble_pcon_TD.value();
+    if(ble_pcon_TDD.written()) p_con_address->T_DD=ble_pcon_TDD.value();
 
-    if(ble_pcon_TI.written()){
-      p_con_address->T_I=ble_pcon_TI.value();
-    }
+    //h-controller
+    if(ble_hcon_KP.written()) h_con_address->K_P_HEIGHT=ble_hcon_KP.value();
+    if(ble_hcon_TI.written()) h_con_address->T_I_HEIGHT=ble_hcon_TI.value();
+    if(ble_hcon_TD.written()) h_con_address->T_D_HEIGHT=ble_hcon_TD.value();
+    if(ble_hcon_HEIGHT.written()) h_con_address->targetHeight=ble_hcon_HEIGHT.value();
 
-    if(ble_pcon_TD.written()){
-      p_con_address->T_D=ble_pcon_TD.value();
-    }
-
-    if(ble_pcon_TDD.written()){
-      p_con_address->T_DD=ble_pcon_TDD.value();
-    }
-    //h
-    if(ble_hcon_KP.written()){
-      h_con_address->K_P_HEIGHT=ble_hcon_KP.value();
-    }
-
-    if(ble_hcon_TI.written()){
-      h_con_address->T_I_HEIGHT=ble_hcon_TI.value();
-    }
-
-    if(ble_hcon_TD.written()){
-      h_con_address->T_D_HEIGHT=ble_hcon_TD.value();
-    }
-
-    if(ble_hcon_HEIGHT.written()){
-      h_con_address->targetHeight=ble_hcon_HEIGHT.value();
-    }
-    //startstop
+    //Manual startstop function
     if(ble_startstop.written()){
       r_con_address->safetyModeOn=ble_startstop.value();
-      if(Serial) if(r_con_address->safetyModeOn) Serial.println("!!! Emergency stop initiated !!!");
+      if(Serial && r_con_address->safetyModeOn) Serial.println("!!! Emergency stop initiated !!!");
     }
 
   }

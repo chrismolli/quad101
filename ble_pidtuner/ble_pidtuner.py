@@ -23,15 +23,21 @@ def initialize_terminal():
     curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_GREEN)
     return stdscr
 
-def characteristic_to_float(char_value):
-    val = struct.unpack('f', char_value)
+def characteristic_to_float(data):
+    val = struct.unpack('f', data)
     return val
 
 def float_to_characteristic(float_value):
-    #val = struct.pack('f', float_value)[0]
     val = struct.pack('f', float_value)
     return val
 
+def characteristic_to_char(data):
+    val = struct.unpack('B',data)
+    return val
+
+def char_to_characteristic(char_value):
+    val = struct.pack('B',char_value)
+    return val
 
 # III. quad ble service uuids
 SERVICE_UUID=uuid.UUID('2E8C6277-2DDE-4D80-8C4B-629876703C70')
@@ -45,8 +51,10 @@ H_KP_UUID=uuid.UUID('2E8C6277-2DDE-4D80-8C4B-629876703C75')
 H_TI_UUID=uuid.UUID('2E8C6277-2DDE-4D80-8C4B-629876703C76')
 H_TD_UUID=uuid.UUID('2E8C6277-2DDE-4D80-8C4B-629876703C77')
 H_HEIGHT_UUID=uuid.UUID('2E8C6277-2DDE-4D80-8C4B-629876703C78')
+#startstop
+START_STOP_UUID=uuid.UUID('2E8C6277-2DDE-4D80-8C4B-629876703C79')
 
-characteristic_uuids=[P_KP_UUID,P_TI_UUID,P_TD_UUID,P_TDD_UUID,H_KP_UUID,H_TI_UUID,H_TD_UUID,H_HEIGHT_UUID]
+characteristic_uuids=[P_KP_UUID,P_TI_UUID,P_TD_UUID,P_TDD_UUID,H_KP_UUID,H_TI_UUID,H_TD_UUID,H_HEIGHT_UUID,START_STOP_UUID]
 
 # IV. mainroutine
 ble = Adafruit_BluefruitLE.get_provider()
@@ -94,6 +102,9 @@ def main():
         h_ti = quad101.find_characteristic(H_TI_UUID)
         h_td = quad101.find_characteristic(H_TD_UUID)
         h_height = quad101.find_characteristic(H_HEIGHT_UUID)
+
+        start_stop = quad101.find_characteristic(START_STOP_UUID)
+
 
         stdscr.clear()
         stdscr.addstr(0,0,'Connected',curses.color_pair(2))
@@ -222,10 +233,15 @@ def main():
                 stdscr.clear()
 
         #mainloop
+        stop_flag=0
         stdscr.clear()
         while True:
             stdscr.addstr(0,0,'Connected',curses.color_pair(2))
             stdscr.addstr(9,0,'Enter (q) to quit, (i) to insert a value or (s) to start/stop.',curses.color_pair(1))
+            if stop_flag==0:
+                stdscr.addstr(0,25,'ROTORS ON ',curses.color_pair(2))
+            else:
+                stdscr.addstr(0,25,'ROTORS OFF')
             stdscr.refresh()
             print_constants()
 
@@ -246,7 +262,12 @@ def main():
 
             elif key == 's':
                 #start stop
-                a=0
+                if stop_flag:
+                    start_stop.write_value(char_to_characteristic(0))
+                    stop_flag=0
+                else:
+                    start_stop.write_value(char_to_characteristic(1))
+                    stop_flag=1
 
             elif key == 'i':
                 #Write controller
