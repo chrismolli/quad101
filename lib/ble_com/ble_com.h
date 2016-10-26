@@ -17,7 +17,7 @@
   //Class definition
   class BLE_COM{
     public:
-      void begin(ROTORCONTROL rotors);
+      void begin(ROTORCONTROL *rotors);
       void update();
     private:
       //uint8_t _connection_flag;
@@ -48,13 +48,13 @@
 
 /*==================================================================*/
   //Functions
-  void BLE_COM::begin(ROTORCONTROL rotors){
+  void BLE_COM::begin(ROTORCONTROL *rotors){
     if(Serial) Serial.print("Starting BLE service...");
 
     // Set the data pointer
-    r_con_address=&rotors;
-    p_con_address=&rotors.positionController;
-    h_con_address=&rotors.heightController;
+    r_con_address=rotors;
+    p_con_address=&rotors->positionController;
+    h_con_address=&rotors->heightController;
 
     // Initialize ble enviroment
     quad101_peripheral.setLocalName("quad101");

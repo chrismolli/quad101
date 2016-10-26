@@ -48,15 +48,21 @@ void ROTORCONTROL::begin(void){
 
   //Initialize Rotors and be careful with delays!!
   esc1.writeMicroseconds(0);
+  delay(500);
   esc2.writeMicroseconds(0);
+  delay(500);
   esc3.writeMicroseconds(0);
+  delay(500);
   esc4.writeMicroseconds(0);
-  delay(5);
+  delay(500);
   esc1.writeMicroseconds(1012);
+  delay(500);
   esc2.writeMicroseconds(1012);
+  delay(500);
   esc3.writeMicroseconds(1012);
+  delay(500);
   esc4.writeMicroseconds(1012);
-  delay(5);
+  delay(500);
 
   //Initialize RotorSignals
   RotorSignal[0] = 0;
@@ -72,7 +78,10 @@ void ROTORCONTROL::begin(void){
   //Initialize PositionControl and HeightControl
   positionController.begin();
   heightController.begin();
-  safetyModeOn = 0;
+  
+  if(AUTOSTART) safetyModeOn = 0;
+  else safetyModeOn = 1;
+
   safetyModeFlag = 0;
   if(Serial) Serial.println(" Done");
 
@@ -192,7 +201,7 @@ void ROTORCONTROL::update(float rot[3], float rot_vel[3]){
   }
 
   //stop Rotors in case of signal loss or emergency
-  else if((safetyModeOn == 1) && (safetyModeFlag == 0)){
+  else if((safetyModeOn) && (safetyModeFlag == 0)){
     ROTORCONTROL::stop();
     safetyModeFlag = 1;
   }

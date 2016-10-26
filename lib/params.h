@@ -5,6 +5,7 @@
   //Global constants
   #define SAMPLE_RATE 5         //update every ...ms sensors and rotors
   #define SLOW_SAMPLE_RATE 25   //update every ...ms bluetooht and usr
+  #define AUTOSTART FALSE
 
 /*-----------------------------------------------------------------------*/
   //Position Control
@@ -64,20 +65,21 @@
   #define ESCPIN4 9
 
   //RotorSignal limits (from 1012 until 2012 you have increase in F)
-  #define MAX_ROTOR_SIGNAL 1900
+  #define MAX_ROTOR_SIGNAL 1100
   #define MIN_ROTOR_SIGNAL 1015
-  #define BEFORE_TAKE_OFF_SIGNAL 1575
+  #define BEFORE_TAKE_OFF_SIGNAL 1080
 
 /*-----------------------------------------------------------------------*/
   //Communication
   #define BLE_TELEMETRICS_ON TRUE
   #define FORCE_SERIAL TRUE
 
+
   //Sensor constants
   #define COMPLEMENTARY_WEIGHT 0.98
   #define GYRORANGE 2
 
-  #define MAG_PLUGGED_IN FALSE
+  #define MAG_PLUGGED_IN TRUE
   #define DECLINATION_ANGLE_DEGREE 2.1664
 
   #define BMP_PLUGGED_IN FALSE
