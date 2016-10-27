@@ -92,6 +92,10 @@ void POSITIONCONTROL::begin(void){
   T_I_JAW = T_I_JAW_START;
   T_D_JAW = T_D_JAW_START;
   T_DD_JAW = T_DD_JAW_START;
+
+  targetPosition[0]=0;
+  targetPosition[1]=0;
+  targetPosition[2]=TARGET_JAW;
 }
 
 void POSITIONCONTROL::update(float RotorSignal[4], float Y[3], float dE[3], float looptime){

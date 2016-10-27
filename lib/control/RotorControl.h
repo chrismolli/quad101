@@ -78,11 +78,11 @@ void ROTORCONTROL::begin(void){
   //Initialize PositionControl and HeightControl
   positionController.begin();
   heightController.begin();
-  
+
   if(AUTOSTART) safetyModeOn = 0;
   else safetyModeOn = 1;
 
-  safetyModeFlag = 0;
+  safetyModeFlag = 1;
   if(Serial) Serial.println(" Done");
 
 }
@@ -98,8 +98,8 @@ void ROTORCONTROL::start(int startValue){
     esc2.writeMicroseconds(s);
     esc3.writeMicroseconds(s);
     esc4.writeMicroseconds(s);
-    s = s + 15;
-    delay(200);
+    s = s + 40;
+    delay(40);
   }
 
   esc1.writeMicroseconds(startValue);

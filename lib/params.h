@@ -12,15 +12,17 @@
   #define MAX_E_FOR_I 45    //Maximum angle to contribute to I_Controller
   #define MIN_E_FOR_I 0.3   //Minimum angle to start I_controller
 
-  #define K_P_START   0.0085         //Global gain on PIDControl
+  #define K_P_START   0.009         //Global gain on PIDControl
   #define T_I_START   400           //T_N
-  #define T_D_START   130           //T_V
-  #define T_DD_START  105            //only used in PIDD2Control.h
+  #define T_D_START   250           //T_V
+  #define T_DD_START  200            //only used in PIDD2Control.h
 
   #define K_P_JAW_START  0
-  #define T_I_JAW_START  1000
-  #define T_D_JAW_START  0
-  #define T_DD_JAW_START 0
+  #define T_I_JAW_START  200
+  #define T_D_JAW_START  3
+  #define T_DD_JAW_START 1
+
+  #define TARGET_JAW 283
 
   /*--------------------------------------*/
   /*PositionControl setups
@@ -39,12 +41,12 @@
 
 /*-----------------------------------------------------------------------*/
   //Height Control
-  #define K_P_HEIGHT_START 0.01975
+  #define K_P_HEIGHT_START 0.02
   #define T_I_HEIGHT_START 24
-  #define T_D_HEIGHT_START 4
+  #define T_D_HEIGHT_START 8
 
   //minimum Height 4.1cm
-  #define TARGETHEIGHTSTART 10 //cm, USR measurement in cm as well
+  #define TARGETHEIGHTSTART 4 //cm, USR measurement in cm as well
   #define REFERENCEHEIGHT 4
 
   /*--------------------------------------*/
@@ -65,14 +67,14 @@
   #define ESCPIN4 9
 
   //RotorSignal limits (from 1012 until 2012 you have increase in F)
-  #define MAX_ROTOR_SIGNAL 1100
+  #define MAX_ROTOR_SIGNAL 1980
   #define MIN_ROTOR_SIGNAL 1015
-  #define BEFORE_TAKE_OFF_SIGNAL 1080
+  #define BEFORE_TAKE_OFF_SIGNAL 1580
 
 /*-----------------------------------------------------------------------*/
   //Communication
   #define BLE_TELEMETRICS_ON TRUE
-  #define FORCE_SERIAL TRUE
+  #define FORCE_SERIAL FALSE
 
 
   //Sensor constants
