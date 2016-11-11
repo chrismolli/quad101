@@ -24,6 +24,7 @@ Revision 5 29.06.2016
       Compass com;
       float rot[3];
       float rot_vel[3];
+      float accel[3];
 
       void begin();
       void update(float looptime);
@@ -80,6 +81,7 @@ void IMU::begin(){
   */
 
   CurieIMU.setGyroRange(GYRORANGE);
+  CurieIMU.setAccelerometerRange(ACCELRANGE);
 
   //Compass initialisation
   if(MAG_PLUGGED_IN){
@@ -97,11 +99,16 @@ void IMU::update(float looptime){
   CurieIMU.readGyro(IMU::raw_Gyro[0],IMU::raw_Gyro[1],IMU::raw_Gyro[2]);
   CurieIMU.readAccelerometer(IMU::raw_Accel[0],IMU::raw_Accel[1],IMU::raw_Accel[2]);
 
+  //Taking care of formatting acceleration
+  accel[0] = (float)raw_Accel[0]/INTMAX*ACCELRANGE*GRAVITY;
+  accel[1] = (float)raw_Accel[1]/INTMAX*ACCELRANGE*GRAVITY;
+  accel[2] = (float)raw_Accel[2]/INTMAX*ACCELRANGE*GRAVITY;
+
   //I.Calculating Angulars solo based on gyroscope's data
   //((float)looptime / 1000) converts SAMPLE_RATE into seconds
     IMU::rot_vel[0] = ((float)IMU::raw_Gyro[0] / INTMAX) * GYRORANGE ;
     IMU::rot_vel[1] = ((float)IMU::raw_Gyro[1] / INTMAX) * GYRORANGE ;
-    IMU::rot_vel[2] = -((float)IMU::raw_Gyro[2] / INTMAX) * GYRORANGE ; //clockwise positiv (same as Compass) 
+    IMU::rot_vel[2] = -((float)IMU::raw_Gyro[2] / INTMAX) * GYRORANGE ; //clockwise positiv (same as Compass)
 
     IMU::rot[0] += IMU::rot_vel[0]*((float)looptime / 1000) * (180/PI);
     IMU::rot[1] += IMU::rot_vel[1]*((float)looptime / 1000) * (180/PI);
@@ -133,23 +140,23 @@ void IMU::update(float looptime){
   //III. Compensate JAW Gyro drift via Compass
   if(MAG_PLUGGED_IN){
       com.readTiltHeading(IMU::rot);
-      if(IMU::rot[0]<15.0 && IMU::rot[1]<15.0){
+      if(IMU::rot[0]<15.0 && IMU::rot[1]<15.0 && IMU::rot[2] > 5.0 && IMU::rot[2] < 355.0){
         IMU::rot[2] = COMPLEMENTARY_WEIGHT * IMU::rot[2] + (1-COMPLEMENTARY_WEIGHT) * (IMU::com.heading);
       }
       //Compensate sign reversing of JAW
-      if(IMU::rot[2]<0.0) IMU::rot[2]+=360.0;
+      if(IMU::rot[2]<0.0) IMU::rot[2]+=360.0; //die zwei Zeilen könnten doch in die obere if-Schleife??
       else if(IMU::rot[2]>360.0) IMU::rot[2]-=360.0;
   }
 
 }
 
 void IMU::debug(void){
-  Serial.print(IMU::raw_Accel[0]);
+  Serial.print(IMU::accel[0]);
   Serial.print(",");
-  Serial.print(IMU::raw_Accel[1]);
+  Serial.print(IMU::accel[1]);
   Serial.print(",");
-  Serial.print(IMU::raw_Accel[2]);
-  Serial.print(",");
+  Serial.print(IMU::accel[2]);
+  /*Serial.print(",");
   Serial.print(IMU::com.rawMag[0]);
   Serial.print(",");
   Serial.print(IMU::com.rawMag[1]);
@@ -166,7 +173,7 @@ void IMU::debug(void){
   Serial.print(",");
   Serial.print(IMU::raw_Gyro[1]);
   Serial.print(",");
-  Serial.print(IMU::raw_Gyro[2]);
+  Serial.print(IMU::raw_Gyro[2]);*/
   Serial.println(";");
 }
 

@@ -57,7 +57,7 @@ void SKM53::update(void){
 
   }
   else {
-    Serial.println("Didn't find $GPRMC,");
+    if (Serial) Serial.println("Didn't find $GPRMC,");
   }
 }
 
@@ -83,7 +83,7 @@ String SKM53::returnTotalRMCString(void){
 }
 
 String SKM53::formattedGPSOutput(void){
-  //Return Lat and Lng ready to print to the Serial
+  //Return Lat and Lng ready to print to the Serial (lat, lng, speed, course)
   String returnString = "";
   char latChar[9];
   dtostrf(latitude, 4, 6, latChar); //4, 6 not sure whatfor
@@ -138,7 +138,7 @@ void SKM53::updateRMCSections(void){
 }
 
 void SKM53::updateLat(void){
-  //now we need to sperate the degrees from the minutes
+  //now we need to seperate the degrees from the minutes
   float latFirstDigits=0;
   float latMinutes=0;
   for (uint i = 0; i < rmc[2].length(); i++) {

@@ -4,7 +4,7 @@
 /*-----------------------------------------------------------------------*/
   //Global constants
   #define SAMPLE_RATE 5         //update every ...ms sensors and rotors
-  #define SLOW_SAMPLE_RATE 25   //update every ...ms bluetooht and usr
+  #define SLOW_SAMPLE_RATE 25   //update every ...ms bluetooth and usr
   #define AUTOSTART FALSE
 
 /*-----------------------------------------------------------------------*/
@@ -73,25 +73,36 @@
 
 /*-----------------------------------------------------------------------*/
   //Communication
-  #define BLE_TELEMETRICS_ON TRUE
+  #define BLE_TELEMETRICS_ON FALSE
   #define FORCE_SERIAL FALSE
 
-
-  //Sensor constants
+/*-----------------------------------------------------------------------*/
+  //Main IMU
   #define COMPLEMENTARY_WEIGHT 0.98
   #define GYRORANGE 2
+  #define ACCELRANGE 2
 
-  #define MAG_PLUGGED_IN TRUE
+  //ADXL335 (accelerometer)
+  #define ADXL335_PLUGGED_IN TRUE
+  #define GRAVITY 9.81
+  #define XPIN A1
+  #define YPIN A2
+  #define ZPIN A3
+
+  //Magnetometer
+  #define MAG_PLUGGED_IN FALSE
   #define DECLINATION_ANGLE_DEGREE 2.1664
 
+  //BMP180 pressure sensor
   #define BMP_PLUGGED_IN FALSE
   #define SEA_LEVEL_PRESSURE 101325 //Pa
 
+  //USR
   #define USR_PLUGGED_IN FALSE
   #define USR_TRIGGER_PIN 13
   #define USR_ECHO_PIN 12
 
-  //Skylab GPS Sensor
+  //SKM53 Skylab GPS Sensor
   #define SKM53_PLUGGED_IN FALSE
   #define SKM53_BAUDRATE 9600
   #define RX_PIN 4 //goes to TX at sensor
