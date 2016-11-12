@@ -65,9 +65,16 @@ void SKM53::begin(SoftwareSerial* ss){
   //GPSModule is a pointer to the SotwareSerial which has to be defined in the main file
   GPSModule = ss;
   GPSModule->begin(SKM53_BAUDRATE);
-  //Serial.println("Wating for GPS Signal");
+  if (Serial) Serial.print("Wating for GPS Signal... ");
   while (!GPSModule->available());
-  //Serial.println("GPS Signal received");
+  SKM53::update();
+  if (Serial){
+    Serial.println("GPS Signal received");
+    Serial.print("Lat: ");
+    Serial.print(SKM53::latitude);
+    Serial.print(" Lon: ");
+    Serial.println(SKM53::longitude);
+  }
 }
 
 /*=====================================*/

@@ -8,7 +8,6 @@ Main for Sending GPS Data to Serial Port (Mac)
   #include <Timer.h>
   #include "../lib/sensors/sensors.h"
   #include "../lib/params.h"
-  #include "../lib/sensors/GPS/SKM53.h"
   #include "SoftwareSerial.h"
 
 /*-----------------------------------------------------------------------*/
@@ -24,21 +23,21 @@ Main for Sending GPS Data to Serial Port (Mac)
 /*-----------------------------------------------------------------------*/
   //Functions
   void timerUpdate(){
-    sensors.skm53.update();
-    //Serial.println("update completed");
-    //Serial.println(gpsModule.returnTotalRMCString());
-    Serial.println(sensors.skm53.formattedGPSOutput());
-    //Serial.println(gpsModule.formattedLatLng());
+    sensors.update();
+  }
+
+  void slowTimerUpdate(){
+    sensors.updateSlow();
+    sensors.locationFilter.debug();
   }
 
 void setup() {
   Serial.begin(38400);
   while (!Serial);
-  Serial.println("Initializing GPS module...");
   sensors.begin(&skm53Serial);
-  t.every(25, timerUpdate);
-  Serial.println("Initialization complete.");
-  Serial.println("Latitude, Longitude, Speed, Course");
+  t.every(SAMPLE_RATE, timerUpdate);
+  t.every(SLOW_SAMPLE_RATE, slowTimerUpdate);
+  Serial.println("Lat, Lon, gpsLat, gpsLon;");
 }
 
 void loop() {

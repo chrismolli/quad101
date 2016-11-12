@@ -59,7 +59,7 @@
   /*--------------------------------------*/
 
 /*-----------------------------------------------------------------------*/
-  //Rotorcontrol constants
+  //Rotor Control constants
   //define Output Pins for ESCs
   #define ESCPIN1 6
   #define ESCPIN2 5
@@ -77,13 +77,14 @@
   #define FORCE_SERIAL FALSE
 
 /*-----------------------------------------------------------------------*/
+  //SENSORS
   //Main IMU
   #define COMPLEMENTARY_WEIGHT 0.98
   #define GYRORANGE 2
   #define ACCELRANGE 2
 
   //ADXL335 (accelerometer)
-  #define ADXL335_PLUGGED_IN TRUE
+  #define ADXL335_PLUGGED_IN FALSE
   #define GRAVITY 9.81
   #define XPIN A1
   #define YPIN A2
@@ -103,10 +104,15 @@
   #define USR_ECHO_PIN 12
 
   //SKM53 Skylab GPS Sensor
-  #define SKM53_PLUGGED_IN FALSE
+  #define SKM53_PLUGGED_IN TRUE
   #define SKM53_BAUDRATE 9600
   #define RX_PIN 4 //goes to TX at sensor
   #define TX_PIN 2 //goes to RX at sensor
+
+  //Location Filter
+  #define LOCATIONFILTER_ON TRUE
+  #define LOCATION_COMPLEMENTARY_WEIGHT 0.9
+  #define RADIUSEQUATOR 6378137 //m
 
 
 #endif
