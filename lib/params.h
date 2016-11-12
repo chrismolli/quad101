@@ -84,7 +84,7 @@
   #define ACCELRANGE 2
 
   //ADXL335 (accelerometer)
-  #define ADXL335_PLUGGED_IN FALSE
+  #define ADXL335_PLUGGED_IN TRUE
   #define GRAVITY 9.81
   #define XPIN A1
   #define YPIN A2

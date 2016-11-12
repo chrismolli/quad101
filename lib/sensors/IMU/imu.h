@@ -100,8 +100,8 @@ void IMU::update(float looptime){
   CurieIMU.readAccelerometer(IMU::raw_Accel[0],IMU::raw_Accel[1],IMU::raw_Accel[2]);
 
   //Taking care of formatting acceleration
-  accel[0] = (float)raw_Accel[0]/INTMAX*ACCELRANGE*GRAVITY;
-  accel[1] = (float)raw_Accel[1]/INTMAX*ACCELRANGE*GRAVITY;
+  accel[0] = -(float)raw_Accel[0]/INTMAX*ACCELRANGE*GRAVITY;
+  accel[1] = -(float)raw_Accel[1]/INTMAX*ACCELRANGE*GRAVITY;
   accel[2] = (float)raw_Accel[2]/INTMAX*ACCELRANGE*GRAVITY;
 
   //I.Calculating Angulars solo based on gyroscope's data
@@ -156,19 +156,19 @@ void IMU::debug(void){
   Serial.print(IMU::accel[1]);
   Serial.print(",");
   Serial.print(IMU::accel[2]);
-  /*Serial.print(",");
-  Serial.print(IMU::com.rawMag[0]);
+  Serial.print(",");
+  /*Serial.print(IMU::com.rawMag[0]);
   Serial.print(",");
   Serial.print(IMU::com.rawMag[1]);
   Serial.print(",");
   Serial.print(IMU::com.rawMag[2]);
-  Serial.print(",");
+  Serial.print(",");*/
   Serial.print(IMU::rot[0]);
   Serial.print(",");
   Serial.print(IMU::rot[1]);
   Serial.print(",");
   Serial.print(IMU::rot[2]);
-  Serial.print(",");
+/*  Serial.print(",");
   Serial.print(IMU::raw_Gyro[0]);
   Serial.print(",");
   Serial.print(IMU::raw_Gyro[1]);

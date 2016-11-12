@@ -23,8 +23,9 @@
   public:
     float latitude;
     float longitude;
+    float accel_local[2]; //accel in x and y direction of the quad
+    float accel_global[2]; //accel[lat, lon]
     float speed[2]; //speed[lat, lon]
-    float accel[2]; //accel[lat, lon]
     float distance[2]; //distance[lat, lon]
 
     void begin(SKM53* gpsObject, IMU* imuObject);
@@ -42,22 +43,32 @@ void LOCATIONFILTER::begin(SKM53* gpsObject, IMU* imuObject){
     latitude = skm53->latitude;
     longitude = skm53->longitude;
 
+    accel_local[0] = 0;
+    accel_local[1] = 0;
+    accel_global[0] = 0;
+    accel_global[1] = 0;
     speed[0] = 0;
     speed[1] = 0;
-    accel[0] = 0;
-    accel[1] = 0;
     distance[0] = 0;
     distance[1] = 0;
   }
 void LOCATIONFILTER::imuUpdate(float looptime){
-    //calculating acceleration in lat and lon direction
-    //imu->accel[0] is x-direction or direction of travel or heading (all the same)
-    //imu->accel[1] is y-direction
-    accel[0] = imu->accel[0]*cos(imu->com.heading*PI/180)-imu->accel[1]*sin(imu->com.heading*PI/180);
-    accel[1] = imu->accel[0]*sin(imu->com.heading*PI/180)-imu->accel[1]*cos(imu->com.heading*PI/180);
+    /*
+      first: calculate acceleration in x and y direction taking position (pitch and roll)
+      and gravity into account
+      second: calculate acceleration in lat and lon direction
+      imu->accel[0] is x-direction or direction of travel or heading (all the same)
+      imu->accel[1] is y-direction
+      third: integration
+    */
+    accel_local[0] = (imu->accel[0]-GRAVITY*sin(imu->rot[1]*PI/180))*cos(imu->rot[1]*PI/180)-(imu->accel[2]-GRAVITY*cos(imu->rot[1]*PI/180))*sin(imu->rot[1]*PI/180);
+    accel_local[1] = (imu->accel[1]+GRAVITY*sin(imu->rot[0]*PI/180))*cos(imu->rot[0]*PI/180)+(imu->accel[2]-GRAVITY*cos(imu->rot[0]*PI/180))*sin(imu->rot[0]*PI/180);
 
-    speed[0] += accel[0]*looptime;
-    speed[1] += accel[1]*looptime;
+    accel_global[0] = accel_local[0]*cos(imu->rot[2]*PI/180)-accel_local[1]*sin(imu->rot[2]*PI/180);
+    accel_global[1] = accel_local[0]*sin(imu->rot[2]*PI/180)-accel_local[1]*cos(imu->rot[2]*PI/180);
+
+    speed[0] += accel_global[0]*looptime;
+    speed[1] += accel_global[1]*looptime;
 
     distance[0] += speed[0]*looptime;
     distance[1] += speed[1]*looptime;
@@ -82,7 +93,7 @@ void LOCATIONFILTER::gpsUpdate(void){
 
 void LOCATIONFILTER::debug(void){
     if (Serial){
-      //lat, lon, latgps, longps;
+      //lat, lon, latgps, longps, accelx, accely;
       Serial.print(latitude);
       Serial.print(", ");
       Serial.print(longitude);
@@ -90,6 +101,10 @@ void LOCATIONFILTER::debug(void){
       Serial.print(skm53->latitude);
       Serial.print(", ");
       Serial.print(skm53->longitude);
+      Serial.print(", ");
+      Serial.print(accel_local[0]);
+      Serial.print(", ");
+      Serial.print(accel_local[1]);
       Serial.println("; ");
 
     }
