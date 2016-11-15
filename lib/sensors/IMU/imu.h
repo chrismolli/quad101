@@ -101,13 +101,13 @@ void IMU::update(float looptime){
 
   //Taking care of formatting acceleration
   accel[0] = -(float)raw_Accel[0]/INTMAX*ACCELRANGE*GRAVITY;
-  accel[1] = -(float)raw_Accel[1]/INTMAX*ACCELRANGE*GRAVITY;
+  accel[1] = (float)raw_Accel[1]/INTMAX*ACCELRANGE*GRAVITY;
   accel[2] = (float)raw_Accel[2]/INTMAX*ACCELRANGE*GRAVITY;
 
   //I.Calculating Angulars solo based on gyroscope's data
   //((float)looptime / 1000) converts SAMPLE_RATE into seconds
     IMU::rot_vel[0] = ((float)IMU::raw_Gyro[0] / INTMAX) * GYRORANGE ;
-    IMU::rot_vel[1] = ((float)IMU::raw_Gyro[1] / INTMAX) * GYRORANGE ;
+    IMU::rot_vel[1] = -((float)IMU::raw_Gyro[1] / INTMAX) * GYRORANGE ;
     IMU::rot_vel[2] = -((float)IMU::raw_Gyro[2] / INTMAX) * GYRORANGE ; //clockwise positiv (same as Compass)
 
     IMU::rot[0] += IMU::rot_vel[0]*((float)looptime / 1000) * (180/PI);
@@ -133,7 +133,7 @@ void IMU::update(float looptime){
         IMU::rot[0] = COMPLEMENTARY_WEIGHT * IMU::rot[0] + (1-COMPLEMENTARY_WEIGHT) * acc_rot_x;
 
         //Turning around the Y axis results in a vector on the X-axis ROLL
-        float acc_rot_y = atan2f((float)IMU::raw_Accel[0], (float)IMU::raw_Accel[2]) * 180 / PI;
+        float acc_rot_y = atan2f(-(float)IMU::raw_Accel[0], (float)IMU::raw_Accel[2]) * 180 / PI;
         IMU::rot[1] = COMPLEMENTARY_WEIGHT * IMU::rot[1] - (1-COMPLEMENTARY_WEIGHT) * acc_rot_y;
     }
 
@@ -142,10 +142,11 @@ void IMU::update(float looptime){
       com.readTiltHeading(IMU::rot);
       if(IMU::rot[0]<15.0 && IMU::rot[1]<15.0 && IMU::rot[2] > 5.0 && IMU::rot[2] < 355.0){
         IMU::rot[2] = COMPLEMENTARY_WEIGHT * IMU::rot[2] + (1-COMPLEMENTARY_WEIGHT) * (IMU::com.heading);
+
+        //Compensate sign reversing of JAW
+        if(IMU::rot[2]<0.0) IMU::rot[2]+=360.0; //die zwei Zeilen könnten doch in die obere if-Schleife??
+        else if(IMU::rot[2]>360.0) IMU::rot[2]-=360.0;
       }
-      //Compensate sign reversing of JAW
-      if(IMU::rot[2]<0.0) IMU::rot[2]+=360.0; //die zwei Zeilen könnten doch in die obere if-Schleife??
-      else if(IMU::rot[2]>360.0) IMU::rot[2]-=360.0;
   }
 
 }

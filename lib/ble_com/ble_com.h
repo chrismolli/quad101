@@ -74,10 +74,10 @@
     quad101_peripheral.addAttribute(ble_startstop);
 
     //Set data for the first time
-    ble_pcon_KP.setValue(p_con_address->K_P);
-    ble_pcon_TI.setValue(p_con_address->T_I);
-    ble_pcon_TD.setValue(p_con_address->T_D);
-    ble_pcon_TDD.setValue(p_con_address->T_DD);
+    ble_pcon_KP.setValue(p_con_address->K_P_ROLL);
+    ble_pcon_TI.setValue(p_con_address->T_I_ROLL);
+    ble_pcon_TD.setValue(p_con_address->T_D_ROLL);
+    ble_pcon_TDD.setValue(p_con_address->T_DD_ROLL);
 
     ble_hcon_KP.setValue(h_con_address->K_P_HEIGHT);
     ble_hcon_TI.setValue(h_con_address->T_I_HEIGHT);
@@ -116,10 +116,10 @@
 
     //Data download
     //p-controller
-    if(ble_pcon_KP.written()) p_con_address->K_P=ble_pcon_KP.value();
-    if(ble_pcon_TI.written()) p_con_address->T_I=ble_pcon_TI.value();
-    if(ble_pcon_TD.written()) p_con_address->T_D=ble_pcon_TD.value();
-    if(ble_pcon_TDD.written()) p_con_address->T_DD=ble_pcon_TDD.value();
+    if(ble_pcon_KP.written()) p_con_address->K_P_ROLL=ble_pcon_KP.value();
+    if(ble_pcon_TI.written()) p_con_address->T_I_ROLL=ble_pcon_TI.value();
+    if(ble_pcon_TD.written()) p_con_address->T_D_ROLL=ble_pcon_TD.value();
+    if(ble_pcon_TDD.written()) p_con_address->T_DD_ROLL=ble_pcon_TDD.value();
 
     //h-controller
     if(ble_hcon_KP.written()) h_con_address->K_P_HEIGHT=ble_hcon_KP.value();

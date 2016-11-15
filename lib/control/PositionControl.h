@@ -10,26 +10,28 @@
   //Classdefinition
   class POSITIONCONTROL{
     private:
-      //further variables
-      float U[3]; //controlled variable (CV)
-      float iSum[3]; //controlled integral variabel
-      float old_dE[3]; //used for DDController
-      float e[3]; //control difference (W_Y)
-      //W = Sollwert
-      //Y = Istwert
+      float U[3];       //controlled variable (CV)
+      float iSum[3];    //controlled integral variabel
+      float old_dE[3];  //used for DDController
+      float e[3];       //control difference (W-Y) W = Sollwert Y = Istwert
 
-      //private Functions
       float PController(float e, float k);
       float IController(float e, float k, int i, float looptime);
       float DController(float dE, float k);
       float DDController(float dE, float k, int i, float looptime);
 
     public:
-      //Pitch and Roll
-      float K_P;
-      float T_I;
-      float T_D;
-      float T_DD;
+      //Roll
+      float K_P_ROLL;
+      float T_I_ROLL;
+      float T_D_ROLL;
+      float T_DD_ROLL;
+
+      //Pitch
+      float K_P_PITCH;
+      float T_I_PITCH;
+      float T_D_PITCH;
+      float T_DD_PITCH;
 
       //Jaw
       float K_P_JAW;
@@ -59,7 +61,7 @@ float POSITIONCONTROL::IController(float e, float k, int i, float looptime){
 }
 
 float POSITIONCONTROL::DController(float dE, float k){
-  return -k * dE; //sign has to match PController
+  return -k * dE; //sign always needs to inverse movement
 }
 
 float POSITIONCONTROL::DDController(float dE, float k, int i, float looptime){
@@ -70,7 +72,6 @@ float POSITIONCONTROL::DDController(float dE, float k, int i, float looptime){
 
 /*==================================================================*/
   //Public Functions
-
 void POSITIONCONTROL::begin(void){
   //initialize I_Controller
   iSum[0] = 0;
@@ -82,53 +83,62 @@ void POSITIONCONTROL::begin(void){
   old_dE[1] = 0;
   old_dE[2] = 0;
 
-  //initialize PID Constants
-  K_P = K_P_START;
-  T_I = T_I_START;
-  T_D = T_D_START;
-  T_DD = T_DD_START;
+  //initialize control constants
+  K_P_ROLL = K_P_START;
+  T_I_ROLL = T_I_START;
+  T_D_ROLL = T_D_START;
+  T_DD_ROLL = T_DD_START;
+
+  K_P_PITCH = K_P_START;
+  T_I_PITCH = T_I_START;
+  T_D_PITCH = T_D_START;
+  T_DD_PITCH = T_DD_START;
 
   K_P_JAW = K_P_JAW_START;
   T_I_JAW = T_I_JAW_START;
   T_D_JAW = T_D_JAW_START;
   T_DD_JAW = T_DD_JAW_START;
 
+  //initialize target position
   targetPosition[0]=0;
   targetPosition[1]=0;
   targetPosition[2]=TARGET_JAW;
 }
 
 void POSITIONCONTROL::update(float RotorSignal[4], float Y[3], float dE[3], float looptime){
-  //calculate control difference for PITCH & ROLL
+  //PITCH & ROLL control difference
   e[0] = targetPosition[0]-Y[0];
   e[1] = targetPosition[1]-Y[1];
 
   //JAW control difference
-  e[2] = targetPosition[2]-Y[2]; //usual case
+  e[2] = targetPosition[2]-Y[2];                //usual case
 
-  if (abs(targetPosition[2]-Y[2]) > 180){ //control Difference > 180
-    e[2] = 360 - abs(targetPosition[2]-Y[2]); //control difference if target < actual value
-    if (targetPosition[2] > Y[2]){ //reverse sign if target > actual value
+  if (abs(targetPosition[2]-Y[2]) > 180){       //control Difference > 180
+    e[2] = 360 - abs(targetPosition[2]-Y[2]);   //control difference if target < actual value
+    if (targetPosition[2] > Y[2]){              //reverse sign if target > actual value
       e[2] = -e[2];
     }
   }
+/*====================================*/
+  //cotrolled variable (CV)
+  //Roll
+  U[0] = K_P_ROLL*(PController(e[0], 1) + IController(e[0], T_I_ROLL, 0, looptime) + DController(dE[0], T_D_ROLL) + DDController(dE[0], T_DD_ROLL, 0, looptime));
 
-  //calculating cotrolled variable (CV)
-  //x-Axis
-  U[0] = K_P*(PController(e[0], 1) + IController(e[0], T_I, 0, looptime) + DController(dE[0], T_D) + DDController(dE[0], T_DD, 0, looptime));
+  //Pitch
+  U[1] = K_P_PITCH*(PController(e[1], 1) + IController(e[1], T_I_PITCH, 1, looptime) + DController(dE[1], T_D_PITCH) + DDController(dE[1], T_DD_PITCH, 1, looptime));
 
-  //y-Axis
-  U[1] = K_P*(PController(e[1], 1) + IController(e[1], T_I, 1, looptime) + DController(dE[1], T_D) + DDController(dE[1], T_DD, 1, looptime));
-
-  //z-Axis
+  //Jaw
   U[2] = K_P_JAW*(PController(e[2], 1) + IController(e[2], T_I_JAW, 2, looptime) + DController(dE[2], T_D_JAW) + DDController(dE[2], T_DD_JAW, 2, looptime));
 
-  //Multiplication with System_Matrice
+/*====================================*/
+  //Multiplication with System_Matrice if distance to S is different
   //U[0] = 1 * U[0];
   //U[1] = 1 * U[1];
   //U[2] = 49.271 * U[2];
-
-  //x_axis
+/*====================================*/
+  //change RotorSignals due to control variabels
+  //+-positioning
+  //x_Axis
   RotorSignal[0] = RotorSignal[0] + U[0]; //0 muss also in positiver Winkelrichtung liegen
   RotorSignal[1] = RotorSignal[1] - U[0];
   //y_axis
@@ -139,6 +149,27 @@ void POSITIONCONTROL::update(float RotorSignal[4], float Y[3], float dE[3], floa
   RotorSignal[1] = RotorSignal[1] + U[2];
   RotorSignal[2] = RotorSignal[2] - U[2];
   RotorSignal[3] = RotorSignal[3] - U[2];
+  /*
+  //X-positioning of sensors to rotors
+  //remember that controlDifference = target-real
+  //Roll
+  RotorSignal[1] -= U[0];
+  RotorSignal[2] -= U[0];
+  RotorSignal[0] += U[0];
+  RotorSignal[3] += U[0];
+
+  //Pitch
+  RotorSignal[2] -= U[1];
+  RotorSignal[3] -= U[1];
+  RotorSignal[0] += U[1];
+  RotorSignal[1] += U[1];
+
+  //Jaw
+  RotorSignal[0] -= U[2];
+  RotorSignal[2] -= U[2];
+  RotorSignal[1] += U[2];
+  RotorSignal[3] += U[2];
+  */
 }
 
 
@@ -168,7 +199,7 @@ void POSITIONCONTROL::setConstantsViaSerial(void){
             }
           }
         Serial.print("Your new K_P value is: ");
-        K_P = kString.toFloat();
+        K_P_ROLL = kString.toFloat();
         Serial.println(kString);
         break;
 
@@ -190,7 +221,7 @@ void POSITIONCONTROL::setConstantsViaSerial(void){
           }
         }
         Serial.print("Your new T_I value is: ");
-        T_I = kString.toFloat();
+        T_I_ROLL = kString.toFloat();
         Serial.println(kString);
         break;
 
@@ -212,7 +243,7 @@ void POSITIONCONTROL::setConstantsViaSerial(void){
           }
         }
         Serial.print("Your new T_D value is: ");
-        T_D = kString.toFloat();
+        T_D_ROLL = kString.toFloat();
         Serial.println(kString);
         break;
 
@@ -234,7 +265,7 @@ void POSITIONCONTROL::setConstantsViaSerial(void){
             }
           }
           Serial.print("Your new T_DD value is: ");
-          T_D = kString.toFloat();
+          T_DD_ROLL = kString.toFloat();
           Serial.println(kString);
           break;
 

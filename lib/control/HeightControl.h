@@ -11,12 +11,10 @@
   class HEIGHTCONTROL{
   private:
     //further variables
-    float U_height; //controlled variable (CV)
-    float iSum; //controlled integral variabel
-    float old_e_height; //used for DController
-    float e_height; //height difference (W_Y)
-    //W = Sollwert
-    //Y = Istwert
+    float U;       //controlled variable (CV)
+    float iSum;    //controlled integral variabel
+    float old_e;   //used for DController
+    float e;       //height difference (W-Y)=(Sollwert-Istwert)
 
     //private Functions
     float IController(float e, float looptime);
@@ -24,11 +22,12 @@
 
   public:
     //control constants
-    float K_P_HEIGHT;
-    float T_I_HEIGHT;
-    float T_D_HEIGHT;
+    float K_P;
+    float T_I;
+    float T_D;
 
     float targetHeight;
+
     void begin(void);
     void update(float RotorSignal[4], float height, float looptime);
     void setConstantsViaSerial(void);
@@ -39,42 +38,45 @@
   //Private Functions
   float HEIGHTCONTROL::IController(float e, float looptime){
     iSum = iSum + e;
-    return (1/T_I_HEIGHT)*iSum*(looptime/1000);
+    return (1/T_I)*iSum*(looptime/1000);
   }
 
   float HEIGHTCONTROL::DController(float e, float looptime){
-    float DValue = T_D_HEIGHT*(e-old_e_height)/(looptime/1000);
-    old_e_height = e;
+    float DValue = T_D*(e-old_e)/(looptime/1000);
+    old_e = e;
     return DValue;
   }
 
+/*==================================================================*/
   //Public Functions
   void HEIGHTCONTROL::begin(void){
     //initialize I_Controller that makes the copter take off and reacts to more weight
     iSum = 0;
 
     //initialize D_Controller
-    old_e_height = 0;
+    old_e = 0;
 
     //initialize PID Constants
-    K_P_HEIGHT = K_P_HEIGHT_START;
-    T_I_HEIGHT = T_I_HEIGHT_START;
-    T_D_HEIGHT = T_D_HEIGHT_START;
+    K_P = K_P_HEIGHT_START;
+    T_I = T_I_HEIGHT_START;
+    T_D = T_D_HEIGHT_START;
 
-    //initialize targetHeight
+    //initialize targetHeight (ReferenceHeight could be read from sensor)
     targetHeight = TARGETHEIGHTSTART+REFERENCEHEIGHT;
   }
 
 void HEIGHTCONTROL::update(float RotorSignal[4], float height, float looptime){
+  //height difference (W-Y)
+  e = targetHeight - height;
 
-  e_height = targetHeight - height; //get height difference (W-Y)
-  U_height = K_P_HEIGHT * (e_height + DController(e_height, looptime) + IController(e_height, looptime));
+  //controlled variabel (CV)
+  U = K_P * (e + DController(e, looptime) + IController(e, looptime));
 
   //add or subtract to RotorSignal
-  RotorSignal[0] = RotorSignal[0] + U_height;
-  RotorSignal[1] = RotorSignal[1] + U_height;
-  RotorSignal[2] = RotorSignal[2] + U_height;
-  RotorSignal[3] = RotorSignal[3] + U_height;
+  RotorSignal[0] = RotorSignal[0] + U;
+  RotorSignal[1] = RotorSignal[1] + U;
+  RotorSignal[2] = RotorSignal[2] + U;
+  RotorSignal[3] = RotorSignal[3] + U;
 }
 
 void HEIGHTCONTROL::setConstantsViaSerial(void){
@@ -101,7 +103,7 @@ void HEIGHTCONTROL::setConstantsViaSerial(void){
             }
           }
         Serial.print("Your new K_P value is: ");
-        K_P_HEIGHT = kString.toFloat();
+        K_P = kString.toFloat();
         Serial.println(kString);
         break;
 
@@ -123,7 +125,7 @@ void HEIGHTCONTROL::setConstantsViaSerial(void){
           }
         }
         Serial.print("Your new T_I value is: ");
-        T_I_HEIGHT = kString.toFloat();
+        T_I = kString.toFloat();
         Serial.println(kString);
         break;
 
@@ -145,7 +147,7 @@ void HEIGHTCONTROL::setConstantsViaSerial(void){
           }
         }
         Serial.print("Your new T_D value is: ");
-        T_D_HEIGHT = kString.toFloat();
+        T_D = kString.toFloat();
         Serial.println(kString);
         break;
 

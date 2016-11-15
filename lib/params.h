@@ -104,13 +104,13 @@
   #define USR_ECHO_PIN 12
 
   //SKM53 Skylab GPS Sensor
-  #define SKM53_PLUGGED_IN TRUE
+  #define SKM53_PLUGGED_IN FALSE
   #define SKM53_BAUDRATE 9600
   #define RX_PIN 4 //goes to TX at sensor
   #define TX_PIN 2 //goes to RX at sensor
 
   //Location Filter
-  #define LOCATIONFILTER_ON TRUE
+  #define LOCATIONFILTER_ON FALSE
   #define LOCATION_COMPLEMENTARY_WEIGHT 0.9
   #define RADIUSEQUATOR 6378137 //m
 

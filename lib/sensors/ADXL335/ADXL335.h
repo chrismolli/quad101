@@ -54,7 +54,7 @@
     accel[2] = (float)analogRead(zpin);  //read from zpin
 
     accel[0] = -(accel[0]-zero_Gx)/scale*GRAVITY;
-    accel[1] = -(accel[1]-zero_Gy)/scale*GRAVITY;
+    accel[1] = (accel[1]-zero_Gy)/scale*GRAVITY;
     accel[2] = (accel[2]-zero_Gz)/scale*GRAVITY;
 }
 
