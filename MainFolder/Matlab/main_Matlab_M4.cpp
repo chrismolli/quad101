@@ -9,16 +9,16 @@ Main for Testing and Changing PID Control during Runtime
   #include "../lib/sensors/sensors.h"
   #include "../lib/control/RotorControl.h"
   #include "../lib/params.h"
-  #include "../lib/ble_telemetrics/ble_telemetrics.h"
+  #include "../lib/ble_com/ble_com.h"
   #include "SoftwareSerial.h"
 
 /*==================================================================*/
-  //Declare needed objects
+  //needed objects
   Timer t;
   SENSORS sensors;
   ROTORCONTROL rotors;
-  BLE ble;
-  SoftwareSerial skm53Serial(RX_PIN, TX_PIN); //RX 4 geht zu TX im GPS Modul; TX 3 geht zu RX im GPS Modul
+  BLE_COM ble;
+  SoftwareSerial skm53Serial(RX_PIN, TX_PIN); //RX 4 geht zu TX im GPS Modul; TX 2 geht zu RX im GPS Modul
 
   //needed variables
   int charInput;
@@ -28,33 +28,29 @@ Main for Testing and Changing PID Control during Runtime
   //Functions
 void timerUpdate(){
   sensors.update();
-  rotors.update(sensors.imu.rot, sensors.imu.rot_vel);
+  rotors.update();
 }
 
 void slowTimerUpdate(){
   sensors.updateSlow();
-  rotors.updateSlow(sensors.imu.rot, sensors.imu.rot_vel, sensors.usr.height);
-  #if BLE_TELEMETRICS_ON
-    ble.update();
-  #endif
+  rotors.updateSlow();
+  if(BLE_TELEMETRICS_ON) ble.update();
 }
 
 void setup(){
   //Start Serial and wait for connection
   Serial.begin(38400);
-  while(!Serial);
+  if(FORCE_SERIAL) while(!Serial);
 
   //start and calibrate sensors
   sensors.begin(&skm53Serial);
 
   //set Rotors/ESCs to PINs and initialize
-  rotors.begin();
-  rotors.start(BEFORE_TAKE_OFF_SIGNAL);
+  rotors.begin(&sensors);
+  if(AUTOSTART) rotors.start(BEFORE_TAKE_OFF_SIGNAL);
 
   //Activate untethered communication
-  #if BLE_TELEMETRICS_ON
-    ble.begin(rotors,sensors);
-  #endif
+  if(BLE_TELEMETRICS_ON) ble.begin(&rotors);
 
   //Set timer event, that calls timerUpdate every SAMPLE_RATE milliseconds
   t.every(SAMPLE_RATE,timerUpdate);
@@ -67,28 +63,27 @@ void loop(){
 
 void serialEvent(){
   if (Serial.available() > 0){
-    charInput = Serial.read();
-
-    switch (charInput){
-      //step Response
-      //warum funktiniert step Response so nur noch bis 10 Grad??
-      case 'a':
+    char firstInput = (char)Serial.read();
+    //while(Serial.available()) Serial.read();
+    switch (firstInput) {
+      //change Angle of Testbed
+      case 97: //compares firstInput to 'a' to change angle
         if (rotors.positionController.targetPosition[0] == 0){
-          rotors.positionController.targetPosition[0] = 20;
-          Serial.println(20);
+          rotors.positionController.targetPosition[0] = 5;
+          Serial.println("angle of 5 degree has been set!");
         }
         else {
           rotors.positionController.targetPosition[0] = 0;
-          Serial.println(0);
+          Serial.println("angle of 0 degree has been set!");
         }
         break;
 
-      //send Deflection
+      //send Deflection of Roll
       case 'D':
         Serial.println(sensors.imu.rot[0]);
         break;
 
-      //send RotorSignal
+      //send RotorSignal of one Rotor
       case 'S':
         Serial.println(rotors.RotorSignal[1]);
         break;
@@ -130,11 +125,6 @@ void serialEvent(){
         Serial.println(T_D_HEIGHT_START);
         break;
 
-      //send height from heightController
-      case 'h':
-        Serial.println(sensors.usr.height);
-        break;
-
       //quit/stop Process
       case 'Q':
         rotors.stop();
@@ -143,6 +133,9 @@ void serialEvent(){
         /*char2 = Serial.read();
         if (char2 == 'D')
         rotors.start(TAKE_OFF_SIGNAL);*/
+        break;
+
+      default:
         break;
     }
   }

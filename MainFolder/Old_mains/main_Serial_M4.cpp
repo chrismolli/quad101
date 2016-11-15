@@ -18,47 +18,19 @@ Main for Testing and Changing PID Control during Runtime
   SENSORS sensors;
   ROTORCONTROL rotors;
   BLE_COM ble;
-  SoftwareSerial skm53Serial(RX_PIN, TX_PIN); //RX 4 geht zu TX im GPS Modul; TX 3 geht zu RX im GPS Modul
-
-  //Declare necessary variables
-  float t1, t2, t3, t4;
+  SoftwareSerial skm53Serial(RX_PIN, TX_PIN); //RX 4 geht zu TX im GPS Modul; TX 2 geht zu RX im GPS Modul
 
 /*==================================================================*/
   //Functions
 void timerUpdate(){
-  t1 = micros();
   sensors.update();
-  t2 = micros();
-  rotors.update(sensors.imu.rot, sensors.imu.rot_vel);
-  t3 = micros();
-
-  Serial.print("SensorsUpdate: ");
-  Serial.print(t2-t1);
-  Serial.print(" RotorControlUpdate: ");
-  Serial.print(t3-t2);
-  Serial.print(" TotalFastUpdate: ");
-  Serial.println(t3-t1);
+  rotors.update();
 }
 
 void slowTimerUpdate(){
-  t1 = micros();
   sensors.updateSlow();
-  t2 = micros();
-  rotors.updateSlow(sensors.imu.rot, sensors.imu.rot_vel, sensors.usr.height);
-  t3 = micros();
-  #if BLE_TELEMETRICS_ON
-    ble.update();
-  #endif
-  t4 = micros();
-
-  Serial.print("SensorsUpdate: ");
-  Serial.print(t2-t1);
-  Serial.print(" RotorControlUpdate: ");
-  Serial.print(t3-t2);
-  Serial.print(" BleUpdate: ");
-  Serial.print(t4-t3);
-  Serial.print(" TotalSlowUpdate: ");
-  Serial.println(t4-t1);
+  rotors.updateSlow();
+  if(BLE_TELEMETRICS_ON) ble.update();
 }
 
 void setup(){
@@ -70,19 +42,11 @@ void setup(){
   sensors.begin(&skm53Serial);
 
   //set Rotors/ESCs to PINs and initialize
-  rotors.begin();
-  rotors.start(BEFORE_TAKE_OFF_SIGNAL);
-
-  //Serial Communication
-  Serial.println("What would you like to update?");
-  Serial.println("controller: 'c'");
-  Serial.println("height: 'h'");
-  Serial.println("angle: 'a'");
+  rotors.begin(&sensors);
+  if(AUTOSTART) rotors.start(BEFORE_TAKE_OFF_SIGNAL);
 
   //Activate untethered communication
-  #if BLE_TELEMETRICS_ON
-    ble.begin(rotors);
-  #endif
+  if(BLE_TELEMETRICS_ON) ble.begin(&rotors);
 
   //Set timer event, that calls timerUpdate every SAMPLE_RATE milliseconds
   t.every(SAMPLE_RATE,timerUpdate);
@@ -99,41 +63,42 @@ void serialEvent(){
     //while(Serial.available()) Serial.read();
     switch (firstInput) {
 
-      case 99: // compares firstInput to 'c'
+      //Roll Constants
+      case 114: // compares firstInput to 'r' for roll constants
         rotors.stop();
-        rotors.positionController.setConstantsViaSerial();
+        rotors.positionController.setRollConstantsViaSerial();
         rotors.start(BEFORE_TAKE_OFF_SIGNAL);
         break;
 
-      case 67: // compares firstInput to 'C'
-          rotors.stop();
-          rotors.heightController.setConstantsViaSerial();
-          rotors.start(BEFORE_TAKE_OFF_SIGNAL);
-          break;
+      //Pitch Constants
+      case 112: // compares firstInput to 'p' for pitch constants
+      rotors.stop();
+      rotors.positionController.setPitchConstantsViaSerial();
+      rotors.start(BEFORE_TAKE_OFF_SIGNAL);
+      break;
 
+      //Height Control constants
       case 104: //compares firstInput to 'h'
         rotors.stop();
-        rotors.heightController.setTargetHeight();
+        rotors.heightController.setConstantsViaSerial();
         rotors.start(BEFORE_TAKE_OFF_SIGNAL);
         break;
 
-      case 97: //compares firstInput to 'a'
+      //change Angle of Testbed
+      case 97: //compares firstInput to 'a' to change angle
         if (rotors.positionController.targetPosition[0] == 0){
-          rotors.positionController.targetPosition[0] = 20;
-          Serial.println("angle of 20 degree has been set!");
+          rotors.positionController.targetPosition[0] = 5;
+          Serial.println("angle of 5 degree has been set!");
         }
         else {
           rotors.positionController.targetPosition[0] = 0;
           Serial.println("angle of 0 degree has been set!");
         }
-        /*Serial.println("Enter a 2-digit number! Maximum angle is 45 degree. ");
-        Serial.println("What angle would you like to see? ");
-        while (Serial.available()<2) {} //wating for Serial to have two digits
-        int angleInput;
-        angleInput = Serial.parseInt();
-        if(angleInput <= 40){
-          targetPosition[0] = angleInput;
-        }*/
+        break;
+
+      //landing the copter using heightController
+      case 108: //compares firstInput to 'l'
+        rotors.heightController.targetHeight = REFERENCEHEIGHT;
         break;
 
       default:
