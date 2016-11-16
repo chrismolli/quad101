@@ -165,7 +165,7 @@ void Compass::readHeading(){
    */
   Compass::read();
   //Calculate heading
-  Compass::heading=atan2f((float)Compass::rawMag[0],(float)Compass::rawMag[1])+declination;
+  Compass::heading=atan2f(-(float)Compass::rawMag[0],(float)Compass::rawMag[1])+declination;
   //Compensate sign reversing
   if(Compass::heading<0) Compass::heading +=2*PI;
   else if(Compass::heading>2*PI) Compass::heading -=2*PI;
@@ -183,7 +183,7 @@ void Compass::readTiltHeading(float rot[3]){
 
   //Precompute sin cos
   float roll = rot[0];
-  float pitch = rot[1];
+  float pitch = -rot[1];
   float sinRoll=sin(roll/180*PI);
   float cosRoll=cos(roll/180*PI);
   float sinPitch=sin(pitch/180*PI);
@@ -194,7 +194,7 @@ void Compass::readTiltHeading(float rot[3]){
   float y_comp=(-1)*(float)Compass::rawMag[0]*cosRoll - (float)Compass::rawMag[2]*sinRoll;
 
   //Calculate new heading
-  Compass::heading=atan2f(-y_comp,x_comp);
+  Compass::heading=atan2f(y_comp,x_comp);
 
   //Add magnetic declination
   Compass::heading+=declination;
@@ -228,7 +228,7 @@ void Compass::calibrate(void){
   Serial.println("Program will read 2000 datapoints in 60 seconds");
   Serial.println("Press any key to continue...");
   while(!Serial.available());
-
+  Serial.println("Start...");
   //III. Collecting data
   for(int i=0; i<calibrationPoints; i++){
     Compass::read();

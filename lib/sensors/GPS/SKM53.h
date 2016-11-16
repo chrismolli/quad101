@@ -30,8 +30,7 @@
     void updateCourse(void);
 
   public:
-    float latitude;
-    float longitude;
+    float location[2];        //[lat, lon]
     float speedOverGround;
     float courseOverGround;
 
@@ -65,15 +64,15 @@ void SKM53::begin(SoftwareSerial* ss){
   //GPSModule is a pointer to the SotwareSerial which has to be defined in the main file
   GPSModule = ss;
   GPSModule->begin(SKM53_BAUDRATE);
-  if (Serial) Serial.print("Wating for GPS Signal... ");
+  if(Serial) Serial.print("Wating for GPS Signal... ");
   while (!GPSModule->available());
   SKM53::update();
   if (Serial){
     Serial.println("GPS Signal received");
     Serial.print("Lat: ");
-    Serial.print(SKM53::latitude);
+    Serial.print(SKM53::location[0]);
     Serial.print(" Lon: ");
-    Serial.println(SKM53::longitude);
+    Serial.println(SKM53::location[1]);
   }
 }
 
@@ -93,7 +92,7 @@ String SKM53::formattedGPSOutput(void){
   //Return Lat and Lng ready to print to the Serial (lat, lng, speed, course)
   String returnString = "";
   char latChar[9];
-  dtostrf(latitude, 4, 6, latChar); //4, 6 not sure whatfor
+  dtostrf(location[0], 4, 6, latChar); //4, 6 not sure whatfor
   for (uint i = 0; i < sizeof(latChar); i++)
   {
     returnString += latChar[i];
@@ -101,7 +100,7 @@ String SKM53::formattedGPSOutput(void){
 
   returnString += ", ";
   char lngChar[8]; //should be increased to 9 or even 10 if the degrees of Lng increase
-  dtostrf(longitude, 4, 6, lngChar);
+  dtostrf(location[1], 4, 6, lngChar);
   for (uint i = 0; i < sizeof(lngChar); i++)
   {
     returnString += lngChar[i];
@@ -159,10 +158,10 @@ void SKM53::updateLat(void){
   //check if northern or southern hemisphere
   //calculate final latitude
   if (rmc[3] == "S") {
-    latitude = -latFirstDigits - latMinutes/60;
+    location[0] = -latFirstDigits - latMinutes/60;
   }
   else{
-    latitude = latFirstDigits + latMinutes/60;
+    location[0] = latFirstDigits + latMinutes/60;
   }
 }
 
@@ -181,10 +180,10 @@ void SKM53::updateLng(void){
   //check if eastern or western hemisphere
   //calculate final longitude
   if (rmc[5] == "W") {
-    longitude = -lngFirstDigits - lngMinutes/60;
+    location[1] = -lngFirstDigits - lngMinutes/60;
   }
   else{
-    longitude = lngFirstDigits + lngMinutes/60;
+    location[1] = lngFirstDigits + lngMinutes/60;
   }
 }
 

@@ -9,6 +9,7 @@
   #include "PositionControl.h"
   #include "HeightControl.h"
   #include "../sensors/sensors.h"
+  #include "LocationControl.h"
 
 /*==================================================================*/
   //Classdefinition
@@ -24,13 +25,14 @@
 
     POSITIONCONTROL positionController;
     HEIGHTCONTROL heightController;
+    LOCATIONCONTROL locationController;
 
     float RotorSignal[4];
     float RoundSignal[4];
 
     void begin(SENSORS* sensorPointer);
-    void update(void);
-    void updateSlow(void);
+    void updatePosition(void);
+    void updateHeight(void);
     void start(int startValue);
     void stop(void);
     int setRotorSignalViaSerial(void);
@@ -149,7 +151,7 @@ void ROTORCONTROL::stop(void){
 
 /*==================================================================*/
   //Update Functions
-void ROTORCONTROL::update(void){
+void ROTORCONTROL::updatePosition(void){
   if ((safetyModeOn == 0) && (safetyModeFlag = 0)){
     //update PositionControl
     positionController.update(RotorSignal, sensors->imu.rot, sensors->imu.rot_vel, SAMPLE_RATE);
@@ -221,7 +223,7 @@ void ROTORCONTROL::update(void){
 
 }
 
-  void ROTORCONTROL::updateSlow(void){
+  void ROTORCONTROL::updateHeight(void){
     if (safetyModeOn == 0){
       //update HeightControl
       heightController.update(RotorSignal, sensors->usr.height, SLOW_SAMPLE_RATE);

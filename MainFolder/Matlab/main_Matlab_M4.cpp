@@ -28,12 +28,12 @@ Main for Testing and Changing PID Control during Runtime
   //Functions
 void timerUpdate(){
   sensors.update();
-  rotors.update();
+  rotors.updatePosition();
 }
 
 void slowTimerUpdate(){
   sensors.updateSlow();
-  rotors.updateSlow();
+  rotors.updateHeight();
   if(BLE_TELEMETRICS_ON) ble.update();
 }
 

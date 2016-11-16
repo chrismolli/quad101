@@ -59,6 +59,10 @@
   /*--------------------------------------*/
 
 /*-----------------------------------------------------------------------*/
+  //Location Control
+  #define LOCATIONCONTROL_ON
+
+/*-----------------------------------------------------------------------*/
   //Rotor Control constants
   //define Output Pins for ESCs
   #define ESCPIN1 6
@@ -84,14 +88,15 @@
   #define ACCELRANGE 2
 
   //ADXL335 (accelerometer)
-  #define ADXL335_PLUGGED_IN TRUE
+    //Voltage goes to 3.3V
+  #define ADXL335_PLUGGED_IN FALSE
   #define GRAVITY 9.81
   #define XPIN A1
   #define YPIN A2
   #define ZPIN A3
 
   //Magnetometer
-  #define MAG_PLUGGED_IN FALSE
+  #define MAG_PLUGGED_IN TRUE
   #define DECLINATION_ANGLE_DEGREE 2.1664
 
   //BMP180 pressure sensor

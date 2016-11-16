@@ -6,48 +6,39 @@ Main for Testing accelerometer
   //Extern libraries
   #include "Arduino.h"
   #include <Timer.h>
-  #include "../lib/sensors/sensors.h"
+  #include "../lib/control/LocationControl.h"
   #include "../lib/params.h"
 
 /*-----------------------------------------------------------------------*/
   //Declare necessary objects
   Timer t;
-  SENSORS sensors;
+  LOCATIONCONTROL locationController;
 
 /*-----------------------------------------------------------------------*/
   //Declare necessary Variabels
-
+float x, y, erg, erg2;
 
 /*-----------------------------------------------------------------------*/
   //Functions
-  void timerUpdate(){
-    sensors.update();
-  }
-
-  void slowTimerUpdate(){
-    //sensors.adxl335.debug();
-    sensors.imu.debug();
-    Serial.println();
-  }
-
 void setup() {
   Serial.begin(38400);
   while (!Serial);
 
-  Serial.println("Initializing IMU...");
-  sensors.begin(NULL);
-  //sensors.imu.com.calibrate();
+  Serial.println("Initializing location controller...");
 
-  t.every(SAMPLE_RATE, timerUpdate);
-  t.every(100, slowTimerUpdate);
+  x = -1;
+  y = 2;
+
   Serial.println("Initialization complete.");
-
-  /*Serial.println(sensors.adxl335.scale);
-  Serial.print("z_Offset: ");
-  Serial.println(sensors.adxl335.zero_Gz);
-  Serial.println("X, Y, Z");*/
 }
 
 void loop() {
-  t.update();
+  erg = locationController.atan3(y, x);
+  erg2 = atan2f(y, x)*180/PI;
+  Serial.print("atan3 = ");
+  Serial.print(erg);
+  Serial.print(" atan2f = ");
+  Serial.println(erg2);
+  Serial.println();
+  delay(2000);
 }

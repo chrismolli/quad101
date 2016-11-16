@@ -21,12 +21,11 @@
 
 
   public:
-    float latitude;
-    float longitude;
-    float accel_local[2]; //accel in x and y direction of the quad
-    float accel_global[2]; //accel[lat, lon]
-    float speed[2]; //speed[lat, lon]
-    float distance[2]; //distance[lat, lon]
+    float location[2];      //[lat, lon]
+    float accel_local[2];   //accel in x and y direction of the quad
+    float accel_global[2];  //accel[lat, lon]
+    float speed[2];         //speed[lat, lon]
+    float distance[2];      //distance[lat, lon]
 
     void begin(SKM53* gpsObject, IMU* imuObject);
     void imuUpdate(float looptime);
@@ -40,8 +39,8 @@ void LOCATIONFILTER::begin(SKM53* gpsObject, IMU* imuObject){
     skm53 = gpsObject;
     imu = imuObject;
 
-    latitude = skm53->latitude;
-    longitude = skm53->longitude;
+    location[0] = skm53->location[0];
+    location[1] = skm53->location[1];
 
     accel_local[0] = 0;
     accel_local[1] = 0;
@@ -81,11 +80,11 @@ void LOCATIONFILTER::gpsUpdate(void){
       second: use complementary filter to include GPS signal
       third: reset distance to 0
     */
-    longitude += distance[1]/(RADIUSEQUATOR*cos(latitude*PI/180))*180/PI;
-    latitude += distance[0]/RADIUSEQUATOR*180/PI;
+    location[1] += distance[1]/(RADIUSEQUATOR*cos(location[0]*PI/180))*180/PI;
+    location[0] += distance[0]/RADIUSEQUATOR*180/PI;
 
-    longitude = LOCATION_COMPLEMENTARY_WEIGHT*longitude+(1-LOCATION_COMPLEMENTARY_WEIGHT)*skm53->longitude;
-    latitude = LOCATION_COMPLEMENTARY_WEIGHT*latitude+(1-LOCATION_COMPLEMENTARY_WEIGHT)*skm53->latitude;
+    location[1] = LOCATION_COMPLEMENTARY_WEIGHT*location[1]+(1-LOCATION_COMPLEMENTARY_WEIGHT)*skm53->location[1];
+    location[0] = LOCATION_COMPLEMENTARY_WEIGHT*location[0]+(1-LOCATION_COMPLEMENTARY_WEIGHT)*skm53->location[0];
 
     distance[0] = 0;
     distance[1] = 0;
@@ -94,13 +93,13 @@ void LOCATIONFILTER::gpsUpdate(void){
 void LOCATIONFILTER::debug(void){
     if (Serial){
       //lat, lon, latgps, longps, accelx, accely;
-      Serial.print(latitude);
+      Serial.print(location[0]);
       Serial.print(", ");
-      Serial.print(longitude);
+      Serial.print(location[1]);
       Serial.print(", ");
-      Serial.print(skm53->latitude);
+      Serial.print(skm53->location[0]);
       Serial.print(", ");
-      Serial.print(skm53->longitude);
+      Serial.print(skm53->location[1]);
       Serial.print(", ");
       Serial.print(accel_local[0]);
       Serial.print(", ");
