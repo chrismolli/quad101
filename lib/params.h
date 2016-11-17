@@ -83,7 +83,7 @@
 /*-----------------------------------------------------------------------*/
   //SENSORS
   //Main IMU
-  #define COMPLEMENTARY_WEIGHT 0.98
+  #define IMU_COMPLEMENTARY_WEIGHT 0.98
   #define GYRORANGE 2
   #define ACCELRANGE 2
 

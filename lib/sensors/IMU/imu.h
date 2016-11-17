@@ -130,18 +130,18 @@ void IMU::update(float looptime){
         && abs(IMU::rot[1]) < 75){
         //Turning around the X axis results in a vector on the Y-axis PITCH
         float acc_rot_x = atan2f((float)IMU::raw_Accel[1], (float)IMU::raw_Accel[2]) * 180 / PI;
-        IMU::rot[0] = COMPLEMENTARY_WEIGHT * IMU::rot[0] + (1-COMPLEMENTARY_WEIGHT) * acc_rot_x;
+        IMU::rot[0] = IMU_COMPLEMENTARY_WEIGHT * IMU::rot[0] + (1-IMU_COMPLEMENTARY_WEIGHT) * acc_rot_x;
 
         //Turning around the Y axis results in a vector on the X-axis ROLL
         float acc_rot_y = atan2f(-(float)IMU::raw_Accel[0], (float)IMU::raw_Accel[2]) * 180 / PI;
-        IMU::rot[1] = COMPLEMENTARY_WEIGHT * IMU::rot[1] - (1-COMPLEMENTARY_WEIGHT) * acc_rot_y;
+        IMU::rot[1] = IMU_COMPLEMENTARY_WEIGHT * IMU::rot[1] - (1-IMU_COMPLEMENTARY_WEIGHT) * acc_rot_y;
     }
 
   //III. Compensate JAW Gyro drift via Compass
   if(MAG_PLUGGED_IN){
       com.readTiltHeading(IMU::rot);
       if(abs(IMU::rot[0])<15.0 && abs(IMU::rot[1])<15.0 && IMU::rot[2] > 5.0 && IMU::rot[2] < 355.0){
-        IMU::rot[2] = COMPLEMENTARY_WEIGHT * IMU::rot[2] + (1-COMPLEMENTARY_WEIGHT) * (IMU::com.heading);
+        IMU::rot[2] = IMU_COMPLEMENTARY_WEIGHT * IMU::rot[2] + (1-IMU_COMPLEMENTARY_WEIGHT) * (IMU::com.heading);
 
         //Compensate sign reversing of JAW
         if(IMU::rot[2]<0.0) IMU::rot[2]+=360.0; //die zwei Zeilen könnten doch in die obere if-Schleife??
