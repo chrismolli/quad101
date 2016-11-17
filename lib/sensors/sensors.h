@@ -36,7 +36,7 @@
 
 /*==================================================================*/
   //Functions
-  void SENSORS::begin(SoftwareSerial* skm53Serial){
+  void SENSORS::begin(SoftwareSerial* skm53Serial = NULL){
     imu.begin();
     if(BMP_PLUGGED_IN) bmp.begin();
     if(USR_PLUGGED_IN) usr.begin();
