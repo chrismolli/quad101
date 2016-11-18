@@ -29,7 +29,7 @@ void timerUpdate(){
 
 void slowTimerUpdate(){
   sensors.updateSlow();
-  rotors.updateHeight();
+  if(HEIGHTCONTROL_ON) rotors.updateHeight();
   if(BLE_TELEMETRICS_ON) ble.update();
 }
 

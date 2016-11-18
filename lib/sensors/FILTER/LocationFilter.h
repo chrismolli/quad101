@@ -19,7 +19,6 @@
     SKM53* skm53;
     IMU* imu;
 
-
   public:
     float location[2];      //[lat, lon]
     float accel_local[2];   //accel in x and y direction of the quad
@@ -83,8 +82,13 @@ void LOCATIONFILTER::gpsUpdate(void){
     location[1] += distance[1]/(RADIUSEQUATOR*cos(location[0]*PI/180))*180/PI;
     location[0] += distance[0]/RADIUSEQUATOR*180/PI;
 
+    if (skm53->isValid()){
     location[1] = LOCATION_COMPLEMENTARY_WEIGHT*location[1]+(1-LOCATION_COMPLEMENTARY_WEIGHT)*skm53->location[1];
     location[0] = LOCATION_COMPLEMENTARY_WEIGHT*location[0]+(1-LOCATION_COMPLEMENTARY_WEIGHT)*skm53->location[0];
+
+    speed[0] = LOCATION_COMPLEMENTARY_WEIGHT*speed[0]+(1-LOCATION_COMPLEMENTARY_WEIGHT)*skm53->speedOverGround*cos(imu->rot[2]*PI/180);
+    speed[1] = LOCATION_COMPLEMENTARY_WEIGHT*speed[1]+(1-LOCATION_COMPLEMENTARY_WEIGHT)*skm53->speedOverGround*sin(imu->rot[2]*PI/180);
+    }
 
     distance[0] = 0;
     distance[1] = 0;
@@ -93,21 +97,21 @@ void LOCATIONFILTER::gpsUpdate(void){
 void LOCATIONFILTER::debug(void){
     if (Serial){
       //lat, lon, latgps, longps, accelx, accely;
-      Serial.print(location[0]);
+      Serial.print(location[0], 6);
       Serial.print(", ");
-      Serial.print(location[1]);
+      Serial.print(location[1], 6);
       Serial.print(", ");
-      Serial.print(skm53->location[0]);
+      Serial.print(skm53->location[0], 6);
       Serial.print(", ");
-      Serial.print(skm53->location[1]);
+      Serial.print(skm53->location[1], 6);
       Serial.print(", ");
-      Serial.print(accel_local[0]);
+      Serial.print(speed[0]);
       Serial.print(", ");
-      Serial.print(accel_local[1]);
-      Serial.println("; ");
-
+      Serial.print(speed[1]);
+      Serial.print(", ");
+      Serial.print(skm53->speedOverGround);
+      Serial.println(";");
     }
-
 }
 /*==================================================================*/
   //Private Functions

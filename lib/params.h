@@ -12,10 +12,15 @@
   #define MAX_E_FOR_I 45    //Maximum angle to contribute to I_Controller
   #define MIN_E_FOR_I 0.3   //Minimum angle to start I_controller
 
-  #define K_P_START   0.009         //Global gain on PIDControl
-  #define T_I_START   400           //T_N
-  #define T_D_START   250           //T_V
-  #define T_DD_START  200            //only used in PIDD2Control.h
+  #define K_P_ROLL_START   0.009         //Global gain on PIDControl
+  #define T_I_ROLL_START   400           //T_N
+  #define T_D_ROLL_START   250           //T_V
+  #define T_DD_ROLL_START  200
+
+  #define K_P_PITCH_START   0.009         //Global gain on PIDControl
+  #define T_I_PITCH_START   400           //T_N
+  #define T_D_PITCH_START   250           //T_V
+  #define T_DD_PITCH_START  200
 
   #define K_P_JAW_START  0
   #define T_I_JAW_START  200
@@ -41,6 +46,7 @@
 
 /*-----------------------------------------------------------------------*/
   //Height Control
+  #define HEIGHTCONTROL_ON FALSE
   #define K_P_HEIGHT_START 0.02
   #define T_I_HEIGHT_START 24
   #define T_D_HEIGHT_START 8
@@ -60,7 +66,9 @@
 
 /*-----------------------------------------------------------------------*/
   //Location Control
-  #define LOCATIONCONTROL_ON
+  #define LOCATIONCONTROL_ON FALSE
+  #define K_P_LOCATION_START 0
+  #define T_D_LOCATION_START 0
 
 /*-----------------------------------------------------------------------*/
   //Rotor Control constants
@@ -80,6 +88,12 @@
   #define BLE_TELEMETRICS_ON FALSE
   #define FORCE_SERIAL FALSE
 
+  //Radio Receiver
+  #define RADIO_CONTROL_ON FALSE
+  #define CHANNEL1PIN 10
+  #define CHANNEL2PIN 11
+  #define CHANNEL3PIN 12
+  #define CHANNEL4PIN 13
 /*-----------------------------------------------------------------------*/
   //SENSORS
   //Main IMU
@@ -109,14 +123,15 @@
   #define USR_ECHO_PIN 12
 
   //SKM53 Skylab GPS Sensor
-  #define SKM53_PLUGGED_IN FALSE
+  #define SKM53_PLUGGED_IN TRUE
   #define SKM53_BAUDRATE 9600
   #define RX_PIN 4 //goes to TX at sensor
   #define TX_PIN 2 //goes to RX at sensor
+  #define GPS_LED_PIN 0 //attach to Pin 13? put 220Ohm resistor before LED (inside LED space goes left down to right up)
 
   //Location Filter
-  #define LOCATIONFILTER_ON FALSE
-  #define LOCATION_COMPLEMENTARY_WEIGHT 0.9
+  #define LOCATIONFILTER_ON TRUE
+  #define LOCATION_COMPLEMENTARY_WEIGHT 0.95
   #define RADIUSEQUATOR 6378137 //m
 
 

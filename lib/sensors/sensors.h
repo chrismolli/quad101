@@ -28,6 +28,8 @@
       ADXL335 adxl335;
       LOCATIONFILTER locationFilter;
 
+      uint8_t in_USR_Range;
+
       void begin(SoftwareSerial* gpsSerial);
       void getActive(void);
       void update(void);
@@ -37,6 +39,7 @@
 /*==================================================================*/
   //Functions
   void SENSORS::begin(SoftwareSerial* skm53Serial = NULL){
+    in_USR_Range = 1;
     imu.begin();
     if(BMP_PLUGGED_IN) bmp.begin();
     if(USR_PLUGGED_IN) usr.begin();

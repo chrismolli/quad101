@@ -10,6 +10,7 @@
   #include "HeightControl.h"
   #include "../sensors/sensors.h"
   #include "LocationControl.h"
+  #include "../RadioControl/RadioControl.h"
 
 /*==================================================================*/
   //Classdefinition
@@ -19,13 +20,13 @@
     SENSORS* sensors;
 
   public:
-
     uint8_t safetyModeOn;
     uint8_t safetyModeFlag;
 
     POSITIONCONTROL positionController;
     HEIGHTCONTROL heightController;
     LOCATIONCONTROL locationController;
+    RADIOCONTROL radioControl;
 
     float RotorSignal[4];
     float RoundSignal[4];
@@ -86,14 +87,16 @@ void ROTORCONTROL::begin(SENSORS* sensorPointer){
 
   //Initialize PositionControl and HeightControl
   positionController.begin();
-  heightController.begin();
+  if (HEIGHTCONTROL_ON) heightController.begin();
+  if (LOCATIONCONTROL_ON) locationController.begin(sensors);
+
+  if(RADIO_CONTROL_ON) radioControl.begin(&positionController);
 
   if(AUTOSTART) safetyModeOn = 0;
   else safetyModeOn = 1;
 
   safetyModeFlag = 1;
   if(Serial) Serial.println(" Done");
-
 }
 
 void ROTORCONTROL::start(int startValue){
@@ -153,6 +156,7 @@ void ROTORCONTROL::stop(void){
   //Update Functions
 void ROTORCONTROL::updatePosition(void){
   if ((safetyModeOn == 0) && (safetyModeFlag = 0)){
+    radioControl.update(RotorSignal);
     //update PositionControl
     positionController.update(RotorSignal, sensors->imu.rot, sensors->imu.rot_vel, SAMPLE_RATE);
 
@@ -225,8 +229,14 @@ void ROTORCONTROL::updatePosition(void){
 
   void ROTORCONTROL::updateHeight(void){
     if (safetyModeOn == 0){
-      //update HeightControl
-      heightController.update(RotorSignal, sensors->usr.height, SLOW_SAMPLE_RATE);
+      //check which sensor needs to be used, then start height control
+      if (USR_PLUGGED_IN && sensors->in_USR_Range == 1){
+        heightController.update(RotorSignal, sensors->usr.height, SLOW_SAMPLE_RATE);
+      }
+
+      if (BMP_PLUGGED_IN && sensors->in_USR_Range == 0){
+        heightController.update(RotorSignal, sensors->bmp.altitude, SLOW_SAMPLE_RATE);
+      }
 
       //RotorSignal mustn't exceed limits
       //Rotor 0

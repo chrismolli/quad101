@@ -79,9 +79,9 @@
     ble_pcon_TD.setValue(p_con_address->T_D_ROLL);
     ble_pcon_TDD.setValue(p_con_address->T_DD_ROLL);
 
-    ble_hcon_KP.setValue(h_con_address->K_P_HEIGHT);
-    ble_hcon_TI.setValue(h_con_address->T_I_HEIGHT);
-    ble_hcon_TD.setValue(h_con_address->T_D_HEIGHT);
+    ble_hcon_KP.setValue(h_con_address->K_P);
+    ble_hcon_TI.setValue(h_con_address->T_I);
+    ble_hcon_TD.setValue(h_con_address->T_D);
     ble_hcon_HEIGHT.setValue(h_con_address->targetHeight);
 
     ble_startstop.setValue(0);
@@ -122,9 +122,9 @@
     if(ble_pcon_TDD.written()) p_con_address->T_DD_ROLL=ble_pcon_TDD.value();
 
     //h-controller
-    if(ble_hcon_KP.written()) h_con_address->K_P_HEIGHT=ble_hcon_KP.value();
-    if(ble_hcon_TI.written()) h_con_address->T_I_HEIGHT=ble_hcon_TI.value();
-    if(ble_hcon_TD.written()) h_con_address->T_D_HEIGHT=ble_hcon_TD.value();
+    if(ble_hcon_KP.written()) h_con_address->K_P=ble_hcon_KP.value();
+    if(ble_hcon_TI.written()) h_con_address->T_I=ble_hcon_TI.value();
+    if(ble_hcon_TD.written()) h_con_address->T_D=ble_hcon_TD.value();
     if(ble_hcon_HEIGHT.written()) h_con_address->targetHeight=ble_hcon_HEIGHT.value();
 
     //Manual startstop function

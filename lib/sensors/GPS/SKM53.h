@@ -22,6 +22,7 @@
     int rmcSection;
     String rmc[15];
     String totalRMCString;
+    uint8_t gpsLedOn;
 
     void updateRMCSections(void);
     void updateLat(void);
@@ -38,6 +39,7 @@
     void begin(SoftwareSerial* ss);
     String returnTotalRMCString(void);
     String formattedGPSOutput(void);
+    uint8_t isValid(void);
   };
 
 /*==================================================================*/
@@ -58,6 +60,14 @@ void SKM53::update(void){
   else {
     if (Serial) Serial.println("Didn't find $GPRMC,");
   }
+  if (SKM53::isValid() && gpsLedOn == 0 && GPS_LED_PIN != 0){
+    digitalWrite(GPS_LED_PIN, HIGH);
+    gpsLedOn = 1;
+  }
+  else if (!SKM53::isValid() && gpsLedOn == 1){
+    digitalWrite(GPS_LED_PIN, LOW);
+    gpsLedOn = 0;
+  }
 }
 
 void SKM53::begin(SoftwareSerial* ss){
@@ -65,8 +75,13 @@ void SKM53::begin(SoftwareSerial* ss){
   GPSModule = ss;
   GPSModule->begin(SKM53_BAUDRATE);
   if(Serial) Serial.print("Wating for GPS Signal... ");
+  if(GPS_LED_PIN != 0) pinMode(GPS_LED_PIN, OUTPUT);
+  gpsLedOn = 0;
+
   while (!GPSModule->available());
-  SKM53::update();
+
+  while (location[0] == 0) SKM53::update();
+
   if (Serial){
     Serial.println("GPS Signal received");
     Serial.print("Lat: ");
@@ -193,6 +208,11 @@ void SKM53::updateSpeed(void){
 
 void SKM53::updateCourse(void){
   courseOverGround = rmc[7].toFloat(); //in degree
+}
+
+uint8_t SKM53::isValid(void){
+  if (location[0] == 0 && location[1] == 0) return 0;
+  else return 1;
 }
 
 #endif
