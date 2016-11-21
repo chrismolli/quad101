@@ -82,12 +82,12 @@ void LOCATIONFILTER::gpsUpdate(void){
     location[1] += distance[1]/(RADIUSEQUATOR*cos(location[0]*PI/180))*180/PI;
     location[0] += distance[0]/RADIUSEQUATOR*180/PI;
 
-    if (skm53->isValid()){
+    if (skm53->isValid == 1){
     location[1] = LOCATION_COMPLEMENTARY_WEIGHT*location[1]+(1-LOCATION_COMPLEMENTARY_WEIGHT)*skm53->location[1];
     location[0] = LOCATION_COMPLEMENTARY_WEIGHT*location[0]+(1-LOCATION_COMPLEMENTARY_WEIGHT)*skm53->location[0];
 
-    speed[0] = LOCATION_COMPLEMENTARY_WEIGHT*speed[0]+(1-LOCATION_COMPLEMENTARY_WEIGHT)*skm53->speedOverGround*cos(imu->rot[2]*PI/180);
-    speed[1] = LOCATION_COMPLEMENTARY_WEIGHT*speed[1]+(1-LOCATION_COMPLEMENTARY_WEIGHT)*skm53->speedOverGround*sin(imu->rot[2]*PI/180);
+    speed[0] = LOCATION_COMPLEMENTARY_WEIGHT*speed[0]+(1-LOCATION_COMPLEMENTARY_WEIGHT)*skm53->speedOverGround*cos(skm53->courseOverGround*PI/180);
+    speed[1] = LOCATION_COMPLEMENTARY_WEIGHT*speed[1]+(1-LOCATION_COMPLEMENTARY_WEIGHT)*skm53->speedOverGround*sin(skm53->courseOverGround*PI/180);
     }
 
     distance[0] = 0;

@@ -127,7 +127,7 @@
   #define SKM53_BAUDRATE 9600
   #define RX_PIN 4 //goes to TX at sensor
   #define TX_PIN 2 //goes to RX at sensor
-  #define GPS_LED_PIN 0 //attach to Pin 13? put 220Ohm resistor before LED (inside LED space goes left down to right up)
+  #define GPS_LED_PIN 13 //attach to Pin 13? put 220Ohm resistor before LED (inside LED space goes left down to right up)
 
   //Location Filter
   #define LOCATIONFILTER_ON TRUE
