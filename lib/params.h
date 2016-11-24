@@ -73,20 +73,20 @@
 /*-----------------------------------------------------------------------*/
   //Rotor Control constants
   //define Output Pins for ESCs
-  #define ESCPIN1 6
-  #define ESCPIN2 5
-  #define ESCPIN3 3
-  #define ESCPIN4 9
+  #define ESCPIN0 3
+  #define ESCPIN1 5
+  #define ESCPIN2 9
+  #define ESCPIN3 6
 
   //RotorSignal limits (from 1012 until 2012 you have increase in F)
-  #define MAX_ROTOR_SIGNAL 1980
+  #define MAX_ROTOR_SIGNAL 1200
   #define MIN_ROTOR_SIGNAL 1015
-  #define BEFORE_TAKE_OFF_SIGNAL 1580
+  #define BEFORE_TAKE_OFF_SIGNAL 1100
 
 /*-----------------------------------------------------------------------*/
   //Communication
-  #define BLE_TELEMETRICS_ON FALSE
-  #define FORCE_SERIAL FALSE
+  #define BLE_TELEMETRICS_ON TRUE
+  #define FORCE_SERIAL TRUE
 
   //Radio Receiver
   #define RADIO_CONTROL_ON FALSE
@@ -110,7 +110,7 @@
   #define ZPIN A3
 
   //Magnetometer
-  #define MAG_PLUGGED_IN TRUE
+  #define MAG_PLUGGED_IN FALSE
   #define DECLINATION_ANGLE_DEGREE 2.1664
 
   //BMP180 pressure sensor
@@ -123,14 +123,14 @@
   #define USR_ECHO_PIN 12
 
   //SKM53 Skylab GPS Sensor
-  #define SKM53_PLUGGED_IN TRUE
+  #define SKM53_PLUGGED_IN FALSE
   #define SKM53_BAUDRATE 9600
   #define RX_PIN 4 //goes to TX at sensor
   #define TX_PIN 2 //goes to RX at sensor
   #define GPS_LED_PIN 13 //attach to Pin 13? put 220Ohm resistor before LED (inside LED space goes left down to right up)
 
   //Location Filter
-  #define LOCATIONFILTER_ON TRUE
+  #define LOCATIONFILTER_ON FALSE
   #define LOCATION_COMPLEMENTARY_WEIGHT 0.95
   #define RADIUSEQUATOR 6378137 //m
 

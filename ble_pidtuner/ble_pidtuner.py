@@ -112,32 +112,21 @@ def main():
 
         #Define LOOP Functions
         def print_constants():
-            stdscr.addstr(3,0,'POSITIONCONTROL')
+            stdscr.addstr(3,0,'ROLLCONTROL')
             stdscr.addstr(4,0,'KP'+'    '+str(characteristic_to_float(p_kp.read_value())),curses.color_pair(1))
             stdscr.addstr(5,0,'TI'+'    '+str(characteristic_to_float(p_ti.read_value())),curses.color_pair(1))
             stdscr.addstr(6,0,'TD'+'    '+str(characteristic_to_float(p_td.read_value())),curses.color_pair(1))
             stdscr.addstr(7,0,'TDD'+'    '+str(characteristic_to_float(p_tdd.read_value())),curses.color_pair(1))
 
-            stdscr.addstr(3,25,'HEIGHTCONTROL')
+            stdscr.addstr(3,25,'PITCHCONTROL')
             stdscr.addstr(4,25,'KP'+'    '+str(characteristic_to_float(h_kp.read_value())),curses.color_pair(1))
             stdscr.addstr(5,25,'TI'+'    '+str(characteristic_to_float(h_ti.read_value())),curses.color_pair(1))
             stdscr.addstr(6,25,'TD'+'    '+str(characteristic_to_float(h_td.read_value())),curses.color_pair(1))
-            stdscr.addstr(7,25,'HEIGHT'+'    '+str(characteristic_to_float(h_height.read_value())),curses.color_pair(1))
+            stdscr.addstr(7,25,'TDD'+'    '+str(characteristic_to_float(h_height.read_value())),curses.color_pair(1))
             stdscr.refresh()
-
-        def write_height():
-            stdscr.addstr(10,0,'Enter height, use a point for decimal separation:',curses.color_pair(1))
-            stdscr.refresh()
-            curses.nocbreak()
-            curses.echo()
-            height=float(stdscr.getstr(11,0))
-            h_height.write_value(float_to_characteristic(height))
-            curses.cbreak()
-            curses.noecho()
-            stdscr.clear()
 
         def write_pcon():
-            stdscr.addstr(10,0,'P-MODE: Enter (p),(i),(d) or (a).',curses.color_pair(1))
+            stdscr.addstr(10,0,'ROLL-MODE: Enter (p),(i),(d) or (a).',curses.color_pair(1))
             stdscr.refresh()
 
             key = stdscr.getkey()
@@ -190,7 +179,7 @@ def main():
                 stdscr.refresh()
 
         def write_hcon():
-            stdscr.addstr(10,0,'H-MODE: Enter (p),(i),(d).',curses.color_pair(1))
+            stdscr.addstr(10,0,'PITCH-MODE: Enter (p),(i),(d),(a)',curses.color_pair(1))
             stdscr.refresh()
 
             key = stdscr.getkey()
@@ -224,6 +213,17 @@ def main():
                 curses.echo()
                 val=float(stdscr.getstr(11,0))
                 h_td.write_value(float_to_characteristic(val))
+                curses.cbreak()
+                curses.noecho()
+                stdscr.clear()
+            elif key == 'a':
+                stdscr.clear()
+                stdscr.addstr(10,0,'Enter TDD, use a point for decimal separation:',curses.color_pair(1))
+                stdscr.refresh()
+                curses.nocbreak()
+                curses.echo()
+                val=float(stdscr.getstr(11,0))
+                h_height.write_value(float_to_characteristic(val))
                 curses.cbreak()
                 curses.noecho()
                 stdscr.clear()
@@ -273,13 +273,11 @@ def main():
                 #Write controller
                 stdscr.clear()
                 stdscr.addstr(0,0,'Connected',curses.color_pair(2))
-                stdscr.addstr(9,0,'Press (h) to change height, (1) to change p-con, (2) to change h-con',curses.color_pair(1))
+                stdscr.addstr(9,0,'(1) to change roll-con, (2) to change pitch-con',curses.color_pair(1))
                 stdscr.refresh()
 
                 key = stdscr.getkey()
-                if key == 'h':
-                    write_height()
-                elif key == '1':
+                if key == '1':
                     write_pcon()
                 elif key == '2':
                     write_hcon()

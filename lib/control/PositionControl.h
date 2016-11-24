@@ -138,6 +138,7 @@ void POSITIONCONTROL::update(float RotorSignal[4], float Y[3], float dE[3], floa
   //U[2] = 49.271 * U[2];
 /*====================================*/
   //change RotorSignals due to control variabels
+  /*
   //+-positioning
   //x_Axis
   RotorSignal[0] = RotorSignal[0] + U[0]; //0 muss also in positiver Winkelrichtung liegen
@@ -150,7 +151,7 @@ void POSITIONCONTROL::update(float RotorSignal[4], float Y[3], float dE[3], floa
   RotorSignal[1] = RotorSignal[1] + U[2];
   RotorSignal[2] = RotorSignal[2] - U[2];
   RotorSignal[3] = RotorSignal[3] - U[2];
-  /*
+  */
   //X-positioning of sensors to rotors
   //remember that controlDifference = target-real
   //Roll
@@ -170,7 +171,7 @@ void POSITIONCONTROL::update(float RotorSignal[4], float Y[3], float dE[3], floa
   RotorSignal[2] -= U[2];
   RotorSignal[1] += U[2];
   RotorSignal[3] += U[2];
-  */
+
 }
 
 

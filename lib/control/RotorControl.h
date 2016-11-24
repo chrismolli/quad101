@@ -48,10 +48,10 @@ void ROTORCONTROL::begin(SENSORS* sensorPointer){
   if(Serial) Serial.print("Starting Rotorcontrol...");
 
   //Establish Connection to ESCs
-  esc1.attach(ESCPIN1);
-  esc2.attach(ESCPIN2);
-  esc3.attach(ESCPIN3);
-  esc4.attach(ESCPIN4);
+  esc1.attach(ESCPIN0);
+  esc2.attach(ESCPIN1);
+  esc3.attach(ESCPIN2);
+  esc4.attach(ESCPIN3);
 
   //Initialize pointer to sensors
   sensors = sensorPointer;

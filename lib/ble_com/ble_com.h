@@ -24,7 +24,7 @@
       //BLECentralHelper _central;
 
       POSITIONCONTROL *p_con_address;
-      HEIGHTCONTROL *h_con_address;
+      //HEIGHTCONTROL *h_con_address;
       ROTORCONTROL *r_con_address;
 
   };
@@ -33,15 +33,15 @@
   BLEPeripheral quad101_peripheral;
   BLEService ble_telemetrics_service("2E8C6277-2DDE-4D80-8C4B-629876703C70");
   //Positional Controller
-  BLEFloatCharacteristic ble_pcon_KP("2E8C6277-2DDE-4D80-8C4B-629876703C71", BLERead | BLEWrite);
-  BLEFloatCharacteristic ble_pcon_TI("2E8C6277-2DDE-4D80-8C4B-629876703C72", BLERead | BLEWrite);
-  BLEFloatCharacteristic ble_pcon_TD("2E8C6277-2DDE-4D80-8C4B-629876703C73", BLERead | BLEWrite);
-  BLEFloatCharacteristic ble_pcon_TDD("2E8C6277-2DDE-4D80-8C4B-629876703C74", BLERead | BLEWrite);
+  BLEFloatCharacteristic ble_pcon_KP_ROLL("2E8C6277-2DDE-4D80-8C4B-629876703C71", BLERead | BLEWrite);
+  BLEFloatCharacteristic ble_pcon_TI_ROLL("2E8C6277-2DDE-4D80-8C4B-629876703C72", BLERead | BLEWrite);
+  BLEFloatCharacteristic ble_pcon_TD_ROLL("2E8C6277-2DDE-4D80-8C4B-629876703C73", BLERead | BLEWrite);
+  BLEFloatCharacteristic ble_pcon_TDD_ROLL("2E8C6277-2DDE-4D80-8C4B-629876703C74", BLERead | BLEWrite);
   //Height Controller
-  BLEFloatCharacteristic ble_hcon_KP("2E8C6277-2DDE-4D80-8C4B-629876703C75", BLERead | BLEWrite);
-  BLEFloatCharacteristic ble_hcon_TI("2E8C6277-2DDE-4D80-8C4B-629876703C76", BLERead | BLEWrite);
-  BLEFloatCharacteristic ble_hcon_TD("2E8C6277-2DDE-4D80-8C4B-629876703C77", BLERead | BLEWrite);
-  BLEFloatCharacteristic ble_hcon_HEIGHT("2E8C6277-2DDE-4D80-8C4B-629876703C78", BLERead | BLEWrite);
+  BLEFloatCharacteristic ble_pcon_KP_PITCH("2E8C6277-2DDE-4D80-8C4B-629876703C75", BLERead | BLEWrite);
+  BLEFloatCharacteristic ble_pcon_TI_PITCH("2E8C6277-2DDE-4D80-8C4B-629876703C76", BLERead | BLEWrite);
+  BLEFloatCharacteristic ble_pcon_TD_PITCH("2E8C6277-2DDE-4D80-8C4B-629876703C77", BLERead | BLEWrite);
+  BLEFloatCharacteristic ble_pcon_TDD_PITCH("2E8C6277-2DDE-4D80-8C4B-629876703C78", BLERead | BLEWrite);
   //
   BLEUnsignedCharCharacteristic ble_startstop("2E8C6277-2DDE-4D80-8C4B-629876703C79", BLERead | BLEWrite);
 
@@ -54,35 +54,35 @@
     // Set the data pointer
     r_con_address=rotors;
     p_con_address=&rotors->positionController;
-    h_con_address=&rotors->heightController;
+    //h_con_address=&rotors->heightController;
 
     // Initialize ble enviroment
     quad101_peripheral.setLocalName("quad101");
     quad101_peripheral.setAdvertisedServiceUuid(ble_telemetrics_service.uuid());
     quad101_peripheral.addAttribute(ble_telemetrics_service);
     //
-    quad101_peripheral.addAttribute(ble_pcon_KP);
-    quad101_peripheral.addAttribute(ble_pcon_TI);
-    quad101_peripheral.addAttribute(ble_pcon_TD);
-    quad101_peripheral.addAttribute(ble_pcon_TDD);
+    quad101_peripheral.addAttribute(ble_pcon_KP_ROLL);
+    quad101_peripheral.addAttribute(ble_pcon_TI_ROLL);
+    quad101_peripheral.addAttribute(ble_pcon_TD_ROLL);
+    quad101_peripheral.addAttribute(ble_pcon_TDD_ROLL);
     //
-    quad101_peripheral.addAttribute(ble_hcon_KP);
-    quad101_peripheral.addAttribute(ble_hcon_TI);
-    quad101_peripheral.addAttribute(ble_hcon_TD);
-    quad101_peripheral.addAttribute(ble_hcon_HEIGHT);
+    quad101_peripheral.addAttribute(ble_pcon_KP_PITCH);
+    quad101_peripheral.addAttribute(ble_pcon_TI_PITCH);
+    quad101_peripheral.addAttribute(ble_pcon_TD_PITCH);
+    quad101_peripheral.addAttribute(ble_pcon_TDD_PITCH);
     //
     quad101_peripheral.addAttribute(ble_startstop);
 
     //Set data for the first time
-    ble_pcon_KP.setValue(p_con_address->K_P_ROLL);
-    ble_pcon_TI.setValue(p_con_address->T_I_ROLL);
-    ble_pcon_TD.setValue(p_con_address->T_D_ROLL);
-    ble_pcon_TDD.setValue(p_con_address->T_DD_ROLL);
+    ble_pcon_KP_ROLL.setValue(p_con_address->K_P_ROLL);
+    ble_pcon_TI_ROLL.setValue(p_con_address->T_I_ROLL);
+    ble_pcon_TD_ROLL.setValue(p_con_address->T_D_ROLL);
+    ble_pcon_TDD_ROLL.setValue(p_con_address->T_DD_ROLL);
 
-    ble_hcon_KP.setValue(h_con_address->K_P);
-    ble_hcon_TI.setValue(h_con_address->T_I);
-    ble_hcon_TD.setValue(h_con_address->T_D);
-    ble_hcon_HEIGHT.setValue(h_con_address->targetHeight);
+    ble_pcon_KP_PITCH.setValue(p_con_address->K_P_PITCH);
+    ble_pcon_TI_PITCH.setValue(p_con_address->T_I_PITCH);
+    ble_pcon_TD_PITCH.setValue(p_con_address->T_D_PITCH);
+    ble_pcon_TDD_PITCH.setValue(p_con_address->T_DD_PITCH);
 
     ble_startstop.setValue(0);
 
@@ -116,16 +116,16 @@
 
     //Data download
     //p-controller
-    if(ble_pcon_KP.written()) p_con_address->K_P_ROLL=ble_pcon_KP.value();
-    if(ble_pcon_TI.written()) p_con_address->T_I_ROLL=ble_pcon_TI.value();
-    if(ble_pcon_TD.written()) p_con_address->T_D_ROLL=ble_pcon_TD.value();
-    if(ble_pcon_TDD.written()) p_con_address->T_DD_ROLL=ble_pcon_TDD.value();
+    if(ble_pcon_KP_ROLL.written()) p_con_address->K_P_ROLL=ble_pcon_KP_ROLL.value();
+    if(ble_pcon_TI_ROLL.written()) p_con_address->T_I_ROLL=ble_pcon_TI_ROLL.value();
+    if(ble_pcon_TD_ROLL.written()) p_con_address->T_D_ROLL=ble_pcon_TD_ROLL.value();
+    if(ble_pcon_TDD_ROLL.written()) p_con_address->T_DD_ROLL=ble_pcon_TDD_ROLL.value();
 
     //h-controller
-    if(ble_hcon_KP.written()) h_con_address->K_P=ble_hcon_KP.value();
-    if(ble_hcon_TI.written()) h_con_address->T_I=ble_hcon_TI.value();
-    if(ble_hcon_TD.written()) h_con_address->T_D=ble_hcon_TD.value();
-    if(ble_hcon_HEIGHT.written()) h_con_address->targetHeight=ble_hcon_HEIGHT.value();
+    if(ble_pcon_KP_PITCH.written()) p_con_address->K_P_PITCH=ble_pcon_KP_PITCH.value();
+    if(ble_pcon_TI_PITCH.written()) p_con_address->T_I_PITCH=ble_pcon_TI_PITCH.value();
+    if(ble_pcon_TD_PITCH.written()) p_con_address->T_D_PITCH=ble_pcon_TD_PITCH.value();
+    if(ble_pcon_TDD_PITCH.written()) p_con_address->T_DD_PITCH=ble_pcon_TDD_PITCH.value();
 
     //Manual startstop function
     if(ble_startstop.written()){
