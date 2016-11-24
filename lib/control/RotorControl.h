@@ -111,7 +111,7 @@ void ROTORCONTROL::start(int startValue){
     esc3.writeMicroseconds(s);
     esc4.writeMicroseconds(s);
     s = s + 40;
-    delay(20);
+    delay(40);
   }
 
   esc1.writeMicroseconds(startValue);
@@ -155,8 +155,8 @@ void ROTORCONTROL::stop(void){
 /*==================================================================*/
   //Update Functions
 void ROTORCONTROL::updatePosition(void){
-  if ((safetyModeOn == 0) && (safetyModeFlag = 0)){
-    radioControl.update(RotorSignal);
+  if ( !safetyModeOn && !safetyModeFlag ){
+    //radioControl.update(RotorSignal);
     //update PositionControl
     positionController.update(RotorSignal, sensors->imu.rot, sensors->imu.rot_vel, SAMPLE_RATE);
 
@@ -214,13 +214,13 @@ void ROTORCONTROL::updatePosition(void){
   }
 
   //stop Rotors in case of signal loss or emergency
-  else if((safetyModeOn) && (safetyModeFlag == 0)){
+  else if( safetyModeOn && !safetyModeFlag ){
     ROTORCONTROL::stop();
     safetyModeFlag = 1;
   }
 
   //start Rotors again as soon as user changes safetyModeOn to 0
-  else if((safetyModeOn == 0) && (safetyModeFlag == 1)){
+  else if( !safetyModeOn && safetyModeFlag ){
     ROTORCONTROL::start(BEFORE_TAKE_OFF_SIGNAL);
     safetyModeFlag = 0;
   }

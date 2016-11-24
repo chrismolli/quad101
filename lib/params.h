@@ -12,15 +12,15 @@
   #define MAX_E_FOR_I 45    //Maximum angle to contribute to I_Controller
   #define MIN_E_FOR_I 0.3   //Minimum angle to start I_controller
 
-  #define K_P_ROLL_START   0.009         //Global gain on PIDControl
-  #define T_I_ROLL_START   400           //T_N
-  #define T_D_ROLL_START   250           //T_V
-  #define T_DD_ROLL_START  200
+  #define K_P_ROLL_START   0.003         //Global gain on PIDControl
+  #define T_I_ROLL_START   4000           //T_N
+  #define T_D_ROLL_START   100           //T_V
+  #define T_DD_ROLL_START  60
 
-  #define K_P_PITCH_START   0.009         //Global gain on PIDControl
+  #define K_P_PITCH_START   0.003         //Global gain on PIDControl
   #define T_I_PITCH_START   400           //T_N
-  #define T_D_PITCH_START   250           //T_V
-  #define T_DD_PITCH_START  200
+  #define T_D_PITCH_START   100           //T_V
+  #define T_DD_PITCH_START  60
 
   #define K_P_JAW_START  0
   #define T_I_JAW_START  200
@@ -73,20 +73,20 @@
 /*-----------------------------------------------------------------------*/
   //Rotor Control constants
   //define Output Pins for ESCs
-  #define ESCPIN0 3
-  #define ESCPIN1 5
-  #define ESCPIN2 9
-  #define ESCPIN3 6
+  #define ESCPIN0 9
+  #define ESCPIN1 6
+  #define ESCPIN2 3
+  #define ESCPIN3 5
 
   //RotorSignal limits (from 1012 until 2012 you have increase in F)
-  #define MAX_ROTOR_SIGNAL 1200
+  #define MAX_ROTOR_SIGNAL 2000
   #define MIN_ROTOR_SIGNAL 1015
-  #define BEFORE_TAKE_OFF_SIGNAL 1100
+  #define BEFORE_TAKE_OFF_SIGNAL 1473
 
 /*-----------------------------------------------------------------------*/
   //Communication
   #define BLE_TELEMETRICS_ON TRUE
-  #define FORCE_SERIAL TRUE
+  #define FORCE_SERIAL FALSE
 
   //Radio Receiver
   #define RADIO_CONTROL_ON FALSE
