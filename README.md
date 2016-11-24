@@ -26,6 +26,14 @@ Right now, we are working on the implementation of positional control with a PID
 
 We did succed in building the first layer positional controller that stabilizes the pitch and roll rotation of the quad. 
 Next up is are flying tests with a RC-receiver. After that we will continue developing the autonomous flying features. 
+<ul>
+<li>Pitch & Roll controller (done)</li>
+<li>Jaw controller (beta)</li>
+<li>Height controller (beta)</li>
+<li>BLE PID tuner (beta)</li>
+<li>RC mode (next up)</li>
+<li>Location controller</li>
+</ul>
 
 The main goal is the process of learning and not really the final product. If we can however accomplish to build
 a good working prototype, we will consider making a usable quadcopter from it.
