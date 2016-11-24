@@ -103,7 +103,7 @@ void POSITIONCONTROL::begin(void){
   //initialize target position
   targetPosition[0]=0;
   targetPosition[1]=0;
-  targetPosition[2]=TARGET_JAW;
+  targetPosition[2]=TARGET_JAW_VEL;
 }
 
 void POSITIONCONTROL::update(float RotorSignal[4], float Y[3], float dE[3], float looptime){
@@ -112,7 +112,7 @@ void POSITIONCONTROL::update(float RotorSignal[4], float Y[3], float dE[3], floa
   e[1] = targetPosition[1]-Y[1];
 
   //JAW control difference
-  e[2] = targetPosition[2]-Y[2];                //usual case
+  //e[2] = targetPosition[2]-Y[2];                //usual case
 
   if (abs(targetPosition[2]-Y[2]) > 180){       //control Difference > 180
     e[2] = 360 - abs(targetPosition[2]-Y[2]);   //control difference if target < actual value
@@ -129,7 +129,8 @@ void POSITIONCONTROL::update(float RotorSignal[4], float Y[3], float dE[3], floa
   U[1] = K_P_PITCH*(PController(e[1], 1) + IController(e[1], T_I_PITCH, 1, looptime) + DController(dE[1], T_D_PITCH) + DDController(dE[1], T_DD_PITCH, 1, looptime));
 
   //Jaw
-  U[2] = K_P_JAW*(PController(e[2], 1) + IController(e[2], T_I_JAW, 2, looptime) + DController(dE[2], T_D_JAW) + DDController(dE[2], T_DD_JAW, 2, looptime));
+  //U[2] = K_P_JAW*(PController(e[2], 1) + IController(e[2], T_I_JAW, 2, looptime) + DController(dE[2], T_D_JAW) + DDController(dE[2], T_DD_JAW, 2, looptime));
+  U[2] = K_P_JAW*(targetPosition[2]-dE[2]);
 
 /*====================================*/
   //Multiplication with System_Matrice if distance to S is different

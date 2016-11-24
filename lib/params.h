@@ -1,19 +1,54 @@
 #ifndef PARAMS_H
 #define PARAMS_H
 
+/*
+ ________  ___  ___  ________  ________    _____  ________    _____
+|\   __  \|\  \|\  \|\   __  \|\   ___ \  / __  \|\   __  \  / __  \
+ \ \  \|\  \ \  \\\  \ \  \|\  \ \  \_|\ \|\/_|\  \ \  \|\  \|\/_|\  \
+  \ \  \\\  \ \  \\\  \ \   __  \ \  \ \\ \|/ \ \  \ \  \\\  \|/ \ \  \
+   \ \  \\\  \ \  \\\  \ \  \ \  \ \  \_\\ \   \ \  \ \  \\\  \   \ \  \
+    \ \_____  \ \_______\ \__\ \__\ \_______\   \ \__\ \_______\   \ \__\
+     \|___| \__\|_______|\|__|\|__|\|_______|    \|__|\|_______|    \|__|
+           \|__|
+*/
+
 /*-----------------------------------------------------------------------*/
-  //Global constants
+  //1.Global constants
   #define SAMPLE_RATE 5         //update every ...ms sensors and rotors
   #define SLOW_SAMPLE_RATE 25   //update every ...ms bluetooth and usr
   #define AUTOSTART FALSE
 
 /*-----------------------------------------------------------------------*/
-  //Position Control
+  //2.Communication
+  #define BLE_TELEMETRICS_ON TRUE
+  #define FORCE_SERIAL FALSE
+
+  //Radio Receiver
+  #define RADIO_CONTROL_ON FALSE
+  #define CHANNEL1PIN 10
+  #define CHANNEL2PIN 11
+  #define CHANNEL3PIN 12
+  #define CHANNEL4PIN 13
+
+/*-----------------------------------------------------------------------*/
+  //3.Rotor Control constants
+  #define ESCPIN0 9
+  #define ESCPIN1 6
+  #define ESCPIN2 3
+  #define ESCPIN3 5
+
+  //RotorSignal limits (from 1012 until 2012 you have increase in thrust)
+  #define MAX_ROTOR_SIGNAL 2000
+  #define MIN_ROTOR_SIGNAL 1015
+  #define BEFORE_TAKE_OFF_SIGNAL 1473
+
+/*-----------------------------------------------------------------------*/
+  //4.Position Control
   #define MAX_E_FOR_I 45    //Maximum angle to contribute to I_Controller
-  #define MIN_E_FOR_I 0.3   //Minimum angle to start I_controller
+  #define MIN_E_FOR_I 0.3   //Minimum angle to start I_Controller
 
   #define K_P_ROLL_START   0.003         //Global gain on PIDControl
-  #define T_I_ROLL_START   4000           //T_N
+  #define T_I_ROLL_START   400           //T_N
   #define T_D_ROLL_START   100           //T_V
   #define T_DD_ROLL_START  60
 
@@ -22,12 +57,12 @@
   #define T_D_PITCH_START   100           //T_V
   #define T_DD_PITCH_START  60
 
-  #define K_P_JAW_START  0
-  #define T_I_JAW_START  200
-  #define T_D_JAW_START  3
-  #define T_DD_JAW_START 1
+  #define K_P_JAW_START  1
+  #define T_I_JAW_START  0
+  #define T_D_JAW_START  0
+  #define T_DD_JAW_START 0
 
-  #define TARGET_JAW 283
+  #define TARGET_JAW_VEL 0
 
   /*--------------------------------------*/
   /*PositionControl setups
@@ -45,7 +80,7 @@
   /*--------------------------------------*/
 
 /*-----------------------------------------------------------------------*/
-  //Height Control
+  //5.Height Control
   #define HEIGHTCONTROL_ON FALSE
   #define K_P_HEIGHT_START 0.02
   #define T_I_HEIGHT_START 24
@@ -65,49 +100,17 @@
   /*--------------------------------------*/
 
 /*-----------------------------------------------------------------------*/
-  //Location Control
+  //6.Location Control
   #define LOCATIONCONTROL_ON FALSE
   #define K_P_LOCATION_START 0
   #define T_D_LOCATION_START 0
 
 /*-----------------------------------------------------------------------*/
-  //Rotor Control constants
-  //define Output Pins for ESCs
-  #define ESCPIN0 9
-  #define ESCPIN1 6
-  #define ESCPIN2 3
-  #define ESCPIN3 5
-
-  //RotorSignal limits (from 1012 until 2012 you have increase in F)
-  #define MAX_ROTOR_SIGNAL 2000
-  #define MIN_ROTOR_SIGNAL 1015
-  #define BEFORE_TAKE_OFF_SIGNAL 1473
-
-/*-----------------------------------------------------------------------*/
-  //Communication
-  #define BLE_TELEMETRICS_ON TRUE
-  #define FORCE_SERIAL FALSE
-
-  //Radio Receiver
-  #define RADIO_CONTROL_ON FALSE
-  #define CHANNEL1PIN 10
-  #define CHANNEL2PIN 11
-  #define CHANNEL3PIN 12
-  #define CHANNEL4PIN 13
-/*-----------------------------------------------------------------------*/
-  //SENSORS
-  //Main IMU
+  //7.Sensor constants
+  //Onboard IMU
   #define IMU_COMPLEMENTARY_WEIGHT 0.98
   #define GYRORANGE 2
   #define ACCELRANGE 2
-
-  //ADXL335 (accelerometer)
-    //Voltage goes to 3.3V
-  #define ADXL335_PLUGGED_IN FALSE
-  #define GRAVITY 9.81
-  #define XPIN A1
-  #define YPIN A2
-  #define ZPIN A3
 
   //Magnetometer
   #define MAG_PLUGGED_IN FALSE
@@ -128,6 +131,16 @@
   #define RX_PIN 4 //goes to TX at sensor
   #define TX_PIN 2 //goes to RX at sensor
   #define GPS_LED_PIN 13 //attach to Pin 13? put 220Ohm resistor before LED (inside LED space goes left down to right up)
+
+  //ADXL335 (accelerometer) (Voltage goes to 3.3V)
+  #define ADXL335_PLUGGED_IN FALSE
+  #define GRAVITY 9.81
+  #define XPIN A1
+  #define YPIN A2
+  #define ZPIN A3
+
+/*-----------------------------------------------------------------------*/
+  //8.Filter
 
   //Location Filter
   #define LOCATIONFILTER_ON FALSE
