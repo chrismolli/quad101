@@ -130,7 +130,7 @@ void ROTORCONTROL::start(int startValue){
 
 void ROTORCONTROL::stop(void){
   //stop procedure testbed
-  int s = BEFORE_TAKE_OFF_SIGNAL;
+  int s = STARTUP_SIGNAL;
   while (s > MIN_ROTOR_SIGNAL){
     esc1.writeMicroseconds(s);
     esc2.writeMicroseconds(s);
@@ -221,7 +221,7 @@ void ROTORCONTROL::updatePosition(void){
 
   //start Rotors again as soon as user changes safetyModeOn to 0
   else if( !safetyModeOn && safetyModeFlag ){
-    ROTORCONTROL::start(BEFORE_TAKE_OFF_SIGNAL);
+    ROTORCONTROL::start(STARTUP_SIGNAL);
     safetyModeFlag = 0;
   }
 

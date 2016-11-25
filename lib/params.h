@@ -32,15 +32,15 @@
 
 /*-----------------------------------------------------------------------*/
   //3.Rotor Control constants
-  #define ESCPIN0 9
-  #define ESCPIN1 6
-  #define ESCPIN2 3
-  #define ESCPIN3 5
+  #define ESCPIN0 9   //TOP LEFT              9-----------6
+  #define ESCPIN1 6   //TOP RIGHT                  |^|
+  #define ESCPIN2 3   //BOTTOM RIGHT               |||
+  #define ESCPIN3 5   //BOTTOM LEFT           5-----------3
 
   //RotorSignal limits (from 1012 until 2012 you have increase in thrust)
   #define MAX_ROTOR_SIGNAL 2000
   #define MIN_ROTOR_SIGNAL 1015
-  #define BEFORE_TAKE_OFF_SIGNAL 1473
+  #define STARTUP_SIGNAL 1473
 
 /*-----------------------------------------------------------------------*/
   //4.Position Control
@@ -58,9 +58,9 @@
   #define T_DD_PITCH_START  60
 
   #define K_P_JAW_START  1
-  #define T_I_JAW_START  0
-  #define T_D_JAW_START  0
-  #define T_DD_JAW_START 0
+  //#define T_I_JAW_START  0
+  //#define T_D_JAW_START  0
+  //#define T_DD_JAW_START 0
 
   #define TARGET_JAW_VEL 0
 
