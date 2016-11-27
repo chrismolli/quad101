@@ -96,9 +96,9 @@ void POSITIONCONTROL::begin(void){
   T_DD_PITCH = T_DD_PITCH_START;
 
   K_P_JAW = K_P_JAW_START;
-  T_I_JAW = T_I_JAW_START;
-  T_D_JAW = T_D_JAW_START;
-  T_DD_JAW = T_DD_JAW_START;
+  //T_I_JAW = T_I_JAW_START;
+  //T_D_JAW = T_D_JAW_START;
+  //T_DD_JAW = T_DD_JAW_START;
 
   //initialize target position
   targetPosition[0]=0;

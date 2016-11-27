@@ -25,10 +25,8 @@
 
   //Radio Receiver
   #define RADIO_CONTROL_ON FALSE
-  #define CHANNEL1PIN 10
-  #define CHANNEL2PIN 11
-  #define CHANNEL3PIN 12
-  #define CHANNEL4PIN 13
+  #define RC_CPPM_PIN 10
+  #define RC_START_BLOCKLENGTH 4 //~ms
 
 /*-----------------------------------------------------------------------*/
   //3.Rotor Control constants
