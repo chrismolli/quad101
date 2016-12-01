@@ -27,23 +27,33 @@
     static uint32_t pulseStart;
     static uint32_t pulseEnd;
     static uint8_t fillMode;
-    static uint8_t rcDataRdy;
-    //Channels are filled with signal block length in microseconds
-    static uint32_t ch1, ch2, ch3, ch4, ch5, ch6;
     static void fillChannels();
     static void collectCPPMcallback();
 
     //SignalMapping
-    POSITIONCONTROL* p_con_address;
+    POSITIONCONTROL* positionController;
     int throttle_old;
-    int throttle_difference;
+    int throttle;
     float mapf(int x, float in_min, float in_max, float out_min, float out_max);
 
   public:
     void begin(POSITIONCONTROL* pControllerPointer);
     void update(float RotorSignal[4]);
+    void debug();
+
+    //Channels are filled with signal block length in microseconds
+    static uint32_t ch1, ch2, ch3, ch4, ch5, ch6;
   };
 
+  uint8_t RADIOCONTROL::fillMode=0;
+  uint32_t RADIOCONTROL::pulseStart=0;
+  uint32_t RADIOCONTROL::ch1=0;
+  uint32_t RADIOCONTROL::ch2=0;
+  uint32_t RADIOCONTROL::ch3=0;
+  uint32_t RADIOCONTROL::ch4=0;
+  uint32_t RADIOCONTROL::ch5=0;
+  uint32_t RADIOCONTROL::ch6=0;
+  uint32_t RADIOCONTROL::pulseEnd=0;
   /*
     TODO: Maybe initialize STATIC variables. Has to be tested. (Compare to USR interrupt)
   */
@@ -62,7 +72,7 @@
 
   void RADIOCONTROL::fillChannels(){
     uint32_t rcPulseTime= pulseEnd-pulseStart;
-    if(rcPulseTime/1000>=RC_START_BLOCKLENGTH) fillMode=RC_START;
+    if(rcPulseTime>=RC_START_BLOCKLENGTH) fillMode=RC_START;
     switch (fillMode) {
       case RC_CH1:
         ch1=rcPulseTime;
@@ -101,42 +111,31 @@
 /*==================================================================*/
   //Public functions
   void RADIOCONTROL::begin(POSITIONCONTROL* pControllerPointer){
-      p_con_address = pControllerPointer;
+      positionController = pControllerPointer;
       pinMode(RC_CPPM_PIN, INPUT);
-      fillMode=RC_START;
+      RADIOCONTROL::fillMode=RC_START;
       attachInterrupt(RC_CPPM_PIN,&RADIOCONTROL::collectCPPMcallback,CHANGE);
+      throttle=MIN_ROTOR_SIGNAL;
   }
 
-  /*
+
   void RADIOCONTROL::update(float RotorSignal[4]){
+      throttle_old = throttle;
+      throttle = map(ch3, RC_MIN, RC_MAX, MIN_ROTOR_SIGNAL, MAX_ROTOR_SIGNAL);
+      positionController->targetPosition[1] = mapf(ch2, RC_MIN, RC_MAX, -45, 45);
+      positionController->targetPosition[0] = mapf(ch4, RC_MIN, RC_MAX, -45, 45);
+      positionController->targetPosition[2] = mapf(ch1, RC_MIN, RC_MAX, -3, 3);
 
-    //TODO: Implement SignalMapping
-    //Channel1 for Throttle
-    //Channel2 for Pitch
-    //Channel3 for Roll
-    //Channel4 for JAW
-    //Channel5 for TurnOff
-
-    Map channel1 Input (1000-2000)
-    Map channel2/channel3 Input (1000-2000) to degrees (-45°-45°)
-    Map channel4 Input (1000-2000) to degrees (0°-360°)
-
-      ch1 = pulseIn(CHANNEL1PIN, HIGH, 5);
-      ch2 = pulseIn(CHANNEL2PIN, HIGH, 5);
-      ch3 = pulseIn(CHANNEL3PIN, HIGH, 5);
-      ch4 = pulseIn(CHANNEL4PIN, HIGH, 5);
-
-      throttle_difference = map(ch1, 1000, 2000, 1000, 2000)-throttle_old;
-      positionController->targetPosition[1] = mapf(ch2, 1000, 2000, -45, 45);
-      positionController->targetPosition[0] = mapf(ch3, 1000, 2000, -45, 45);
-      positionController->targetPosition[2] = mapf(ch4, 1000, 2000, 0, 360);
-
-      RotorSignal[0] += throttle_difference;
-      RotorSignal[1] += throttle_difference;
-      RotorSignal[2] += throttle_difference;
-      RotorSignal[3] += throttle_difference;
+      int dif = throttle-throttle_old;
+      RotorSignal[0] += dif;
+      RotorSignal[1] += dif;
+      RotorSignal[2] += dif;
+      RotorSignal[3] += dif;
     }
-    */
+
+  void RADIOCONTROL::debug(){
+    Serial.println(ch5);
+  };
 
 
 #endif
