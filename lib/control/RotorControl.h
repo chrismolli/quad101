@@ -10,7 +10,7 @@
   #include "HeightControl.h"
   #include "../sensors/sensors.h"
   #include "LocationControl.h"
-  #include "../RadioControl/RadioControl.h"
+  #include "../radiocontrol/radiocontrol.h"
 
 /*==================================================================*/
   //Classdefinition
@@ -89,7 +89,6 @@ void ROTORCONTROL::begin(SENSORS* sensorPointer){
   positionController.begin();
   if (HEIGHTCONTROL_ON) heightController.begin();
   if (LOCATIONCONTROL_ON) locationController.begin(sensors);
-
   if(RADIO_CONTROL_ON) radioControl.begin(&positionController);
 
   if(AUTOSTART) safetyModeOn = 0;
@@ -155,8 +154,16 @@ void ROTORCONTROL::stop(void){
 /*==================================================================*/
   //Update Functions
 void ROTORCONTROL::updatePosition(void){
+  //Check if radiostart is on
+  if(RADIO_CONTROL_ON){
+    if(radioControl.ch5>1400) safetyModeOn=0;
+    else safetyModeOn=1;
+  }
+
   if ( !safetyModeOn && !safetyModeFlag ){
-    //radioControl.update(RotorSignal);
+    //Activate RC
+    if(RADIO_CONTROL_ON) radioControl.update(RotorSignal);
+
     //update PositionControl
     positionController.update(RotorSignal, sensors->imu.rot, sensors->imu.rot_vel, SAMPLE_RATE);
 

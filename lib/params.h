@@ -24,9 +24,11 @@
   #define FORCE_SERIAL FALSE
 
   //Radio Receiver
-  #define RADIO_CONTROL_ON FALSE
-  #define RC_CPPM_PIN 10
-  #define RC_START_BLOCKLENGTH 4 //~ms
+  #define RADIO_CONTROL_ON TRUE
+  #define RC_CPPM_PIN 2
+  #define RC_START_BLOCKLENGTH 4000 //~µs
+  #define RC_MIN 600
+  #define RC_MAX 1600
 
 /*-----------------------------------------------------------------------*/
   //3.Rotor Control constants
@@ -37,25 +39,25 @@
 
   //RotorSignal limits (from 1012 until 2012 you have increase in thrust)
   #define MAX_ROTOR_SIGNAL 2000
-  #define MIN_ROTOR_SIGNAL 1015
-  #define STARTUP_SIGNAL 1473
+  #define MIN_ROTOR_SIGNAL 1000
+  #define STARTUP_SIGNAL 1000
 
 /*-----------------------------------------------------------------------*/
   //4.Position Control
   #define MAX_E_FOR_I 45    //Maximum angle to contribute to I_Controller
   #define MIN_E_FOR_I 0.3   //Minimum angle to start I_Controller
 
-  #define K_P_ROLL_START   0.003         //Global gain on PIDControl
+  #define K_P_ROLL_START   0.012         //Global gain on PIDControl
   #define T_I_ROLL_START   400           //T_N
-  #define T_D_ROLL_START   100           //T_V
-  #define T_DD_ROLL_START  60
+  #define T_D_ROLL_START   43           //T_V
+  #define T_DD_ROLL_START  19
 
-  #define K_P_PITCH_START   0.003         //Global gain on PIDControl
+  #define K_P_PITCH_START   0.012         //Global gain on PIDControl
   #define T_I_PITCH_START   400           //T_N
-  #define T_D_PITCH_START   100           //T_V
-  #define T_DD_PITCH_START  60
+  #define T_D_PITCH_START   43           //T_V
+  #define T_DD_PITCH_START  19
 
-  #define K_P_JAW_START  1
+  #define K_P_JAW_START  1.2
   //#define T_I_JAW_START  0
   //#define T_D_JAW_START  0
   //#define T_DD_JAW_START 0

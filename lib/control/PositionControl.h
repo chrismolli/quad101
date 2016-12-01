@@ -112,14 +112,11 @@ void POSITIONCONTROL::update(float RotorSignal[4], float Y[3], float dE[3], floa
   e[1] = targetPosition[1]-Y[1];
 
   //JAW control difference
-  //e[2] = targetPosition[2]-Y[2];                //usual case
-
-  if (abs(targetPosition[2]-Y[2]) > 180){       //control Difference > 180
-    e[2] = 360 - abs(targetPosition[2]-Y[2]);   //control difference if target < actual value
-    if (targetPosition[2] > Y[2]){              //reverse sign if target > actual value
-      e[2] = -e[2];
-    }
-  }
+  /*e[2] = targetPosition[2]-Y[2];                     //usual case
+  if (abs(targetPosition[2]-Y[2]) > 180){              //control Difference > 180
+    e[2] = 360 - abs(targetPosition[2]-Y[2]);          //control difference if target < actual value
+    if (targetPosition[2] > Y[2]) e[2] = -e[2];        //reverse sign if target > actual value
+  }*/
 /*====================================*/
   //cotrolled variable (CV)
   //Roll
@@ -168,10 +165,10 @@ void POSITIONCONTROL::update(float RotorSignal[4], float Y[3], float dE[3], floa
   RotorSignal[1] += U[1];
 
   //Jaw
-  RotorSignal[0] -= U[2];
-  RotorSignal[2] -= U[2];
-  RotorSignal[1] += U[2];
-  RotorSignal[3] += U[2];
+  RotorSignal[0] += U[2];
+  RotorSignal[2] += U[2];
+  RotorSignal[1] -= U[2];
+  RotorSignal[3] -= U[2];
 
 }
 
