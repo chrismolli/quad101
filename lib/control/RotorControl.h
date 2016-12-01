@@ -10,7 +10,7 @@
   #include "HeightControl.h"
   #include "../sensors/sensors.h"
   #include "LocationControl.h"
-  #include "../radiocontrol/radiocontrol.h"
+  #include "../RadioControl/RadioControl.h"
 
 /*==================================================================*/
   //Classdefinition

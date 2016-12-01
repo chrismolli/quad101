@@ -22,6 +22,7 @@ Main for Testing and Changing PID Control during Runtime
 
   String inputString;
   char inChar;
+  int x1,x2,x3,x4;
 /*==================================================================*/
   //Functions
 void timerUpdate(){
@@ -37,8 +38,8 @@ void slowTimerUpdate(){
 
 void setup(){
   //Start Serial and wait for connection
-  Serial.begin(38400);
-  if(FORCE_SERIAL) while(!Serial);
+  Serial.begin(9600);
+  if(FORCE_SERIAL) while(Serial.available() < 1);
 
   //start and calibrate sensors
   sensors.begin(&skm53Serial);
@@ -60,22 +61,59 @@ void loop(){
 }
 
 void serialEvent(){
-  //Serial.flush();
-    inChar = Serial.read();
-    if (inChar == 'k'){
-      Serial.println("roll found");
-      inputString = Serial.readStringUntil('\n');
-      rotors.positionController.K_P_ROLL = inputString.toFloat();
-      Serial.println(inputString);
-    }
-  
+  x1 = micros();
+  if (Serial.find("kproll")){
+    inputString = Serial.readStringUntil('\n');
+    rotors.positionController.K_P_ROLL = inputString.toFloat();
+  }
+  x2 = micros();
   if (Serial.find("kppitch")) {
     inputString = Serial.readStringUntil('\n');
     rotors.positionController.K_P_PITCH = inputString.toFloat();
-    Serial.println("PITCH got overwritten");
   }
+
+  if (Serial.find("kpjaw")){
+    inputString = Serial.readStringUntil('\n');
+    rotors.positionController.K_P_JAW = inputString.toFloat();
+  }
+
+  if (Serial.find("tiroll")) {
+    inputString = Serial.readStringUntil('\n');
+    rotors.positionController.T_I_ROLL = inputString.toFloat();
+  }
+
+  if (Serial.find("tipitch")) {
+    inputString = Serial.readStringUntil('\n');
+    rotors.positionController.T_I_PITCH = inputString.toFloat();
+  }
+
+  if (Serial.find("tdroll")) {
+    inputString = Serial.readStringUntil('\n');
+    rotors.positionController.T_D_ROLL = inputString.toFloat();
+  }
+
+  if (Serial.find("tdpitch")) {
+    inputString = Serial.readStringUntil('\n');
+    rotors.positionController.T_D_PITCH = inputString.toFloat();
+  }
+
+  if (Serial.find("tddroll")) {
+    inputString = Serial.readStringUntil('\n');
+    rotors.positionController.T_DD_ROLL = inputString.toFloat();
+  }
+
+  if (Serial.find("tddpitch")) {
+    inputString = Serial.readStringUntil('\n');
+    rotors.positionController.T_DD_PITCH = inputString.toFloat();
+  }
+
+  x3 = micros();
 
   Serial.print(rotors.positionController.K_P_ROLL);
   Serial.print(", ");
   Serial.println(rotors.positionController.K_P_PITCH);
+
+  Serial.print(x2-x1);
+  Serial.print(", ");
+  Serial.println(x3-x1);
 }

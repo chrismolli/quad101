@@ -43,7 +43,7 @@ void setup(){
 
   //set Rotors/ESCs to PINs and initialize
   rotors.begin(&sensors);
-  if(AUTOSTART) rotors.start(BEFORE_TAKE_OFF_SIGNAL);
+  if(AUTOSTART) rotors.start(STARTUP_SIGNAL);
 
   //Activate untethered communication
   if(BLE_TELEMETRICS_ON) ble.begin(&rotors);
