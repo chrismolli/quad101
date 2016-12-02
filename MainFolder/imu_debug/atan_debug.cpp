@@ -6,7 +6,7 @@ Main for Testing accelerometer
   //Extern libraries
   #include "Arduino.h"
   #include <Timer.h>
-  #include "../lib/control/LocationControl.h"
+  #include "../lib/Control/LocationControl.h"
   #include "../lib/params.h"
 
 /*-----------------------------------------------------------------------*/

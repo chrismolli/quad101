@@ -6,10 +6,10 @@ Main for Testing and Changing PID Control during Runtime
   //Extern libraries
   #include "Arduino.h"
   #include <Timer.h>
-  #include "../lib/sensors/sensors.h"
-  #include "../lib/control/RotorControl.h"
+  #include "../lib/Sensors/sensors.h"
+  #include "../lib/Control/RotorControl.h"
   #include "../lib/params.h"
-  #include "../lib/ble_com/ble_com.h"
+  #include "../lib/Ble_com/ble_com.h"
   #include "SoftwareSerial.h"
 
 /*==================================================================*/
@@ -90,23 +90,23 @@ void serialEvent(){
 
       //send K_P
       case 'W':
-        x = 10000*K_P_START;
+        x = 10000*K_P_ROLL_START;
         Serial.println(x);
         break;
 
       //send T_D
       case 'X':
-        Serial.println(T_I_START);
+        Serial.println(T_I_ROLL_START);
         break;
 
       //send T_I
       case 'Y':
-        Serial.println(T_D_START);
+        Serial.println(T_D_ROLL_START);
         break;
 
       //send T_DD
       case 'Z':
-        Serial.println(T_DD_START);
+        Serial.println(T_DD_ROLL_START);
         break;
 
       //send K_P for heightController

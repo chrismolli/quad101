@@ -1,6 +1,16 @@
 #ifndef POSITIONCONTROL_H
 #define POSITIONCONTROL_H
 
+/*
+  PositionControl takes IMU measurements and calculates the control signal for
+  the attitude of the Copter.
+  Depending on Rotor set up you need to (un)comment the required RotorSignal
+  writings and eventually include a...
+  ...system matrix: In case two Rotors on the same Axis (spinning the same
+   direction) have different positions to the center of mass, you need to include
+   a matrix to get equal force and momentum
+*/
+
 /*==================================================================*/
   //Extern librarys
   #include "../params.h"
@@ -96,14 +106,15 @@ void POSITIONCONTROL::begin(void){
   T_DD_PITCH = T_DD_PITCH_START;
 
   K_P_JAW = K_P_JAW_START;
-  //T_I_JAW = T_I_JAW_START;
-  //T_D_JAW = T_D_JAW_START;
-  //T_DD_JAW = T_DD_JAW_START;
+  T_I_JAW = T_I_JAW_START;
+  T_D_JAW = T_D_JAW_START;
+  T_DD_JAW = T_DD_JAW_START;
 
   //initialize target position
   targetPosition[0]=0;
   targetPosition[1]=0;
-  targetPosition[2]=TARGET_JAW_VEL;
+  if (RADIO_CONTROL_ON) targetPosition[2]=TARGET_JAW_VEL;
+  else targetPosition[2]=TARGET_JAW;
 }
 
 void POSITIONCONTROL::update(float RotorSignal[4], float Y[3], float dE[3], float looptime){
@@ -112,13 +123,15 @@ void POSITIONCONTROL::update(float RotorSignal[4], float Y[3], float dE[3], floa
   e[1] = targetPosition[1]-Y[1];
 
   //JAW control difference
-  /*e[2] = targetPosition[2]-Y[2];                     //usual case
-  if (abs(targetPosition[2]-Y[2]) > 180){              //control Difference > 180
-    e[2] = 360 - abs(targetPosition[2]-Y[2]);          //control difference if target < actual value
-    if (targetPosition[2] > Y[2]) e[2] = -e[2];        //reverse sign if target > actual value
-  }*/
+  if (!RADIO_CONTROL_ON){
+    e[2] = targetPosition[2]-Y[2];                       //usual case
+    if (abs(targetPosition[2]-Y[2]) > 180){              //control Difference > 180
+      e[2] = 360 - abs(targetPosition[2]-Y[2]);          //control difference if target < actual value
+      if (targetPosition[2] > Y[2]) e[2] = -e[2];        //reverse sign if target > actual value
+    }
+  }
 /*====================================*/
-  //cotrolled variable (CV)
+  //Calculating cotrolled variable (CV)
   //Roll
   U[0] = K_P_ROLL*(PController(e[0], 1) + IController(e[0], T_I_ROLL, 0, looptime) + DController(dE[0], T_D_ROLL) + DDController(dE[0], T_DD_ROLL, 0, looptime));
 
@@ -126,32 +139,19 @@ void POSITIONCONTROL::update(float RotorSignal[4], float Y[3], float dE[3], floa
   U[1] = K_P_PITCH*(PController(e[1], 1) + IController(e[1], T_I_PITCH, 1, looptime) + DController(dE[1], T_D_PITCH) + DDController(dE[1], T_DD_PITCH, 1, looptime));
 
   //Jaw
-  //U[2] = K_P_JAW*(PController(e[2], 1) + IController(e[2], T_I_JAW, 2, looptime) + DController(dE[2], T_D_JAW) + DDController(dE[2], T_DD_JAW, 2, looptime));
-  U[2] = K_P_JAW*(targetPosition[2]-dE[2]);
+  if (RADIO_CONTROL_ON) U[2] = K_P_JAW*(targetPosition[2]-dE[2]);
+  else U[2] = K_P_JAW*(PController(e[2], 1) + IController(e[2], T_I_JAW, 2, looptime) + DController(dE[2], T_D_JAW) + DDController(dE[2], T_DD_JAW, 2, looptime));
+
 
 /*====================================*/
-  //Multiplication with System_Matrice if distance to S is different
+  //Multiplication with system matrix
   //U[0] = 1 * U[0];
   //U[1] = 1 * U[1];
   //U[2] = 49.271 * U[2];
 /*====================================*/
-  //change RotorSignals due to control variabels
-  /*
-  //+-positioning
-  //x_Axis
-  RotorSignal[0] = RotorSignal[0] + U[0]; //0 muss also in positiver Winkelrichtung liegen
-  RotorSignal[1] = RotorSignal[1] - U[0];
-  //y_axis
-  RotorSignal[2] = RotorSignal[2] + U[1];
-  RotorSignal[3] = RotorSignal[3] - U[1];
-  //z-axis; counterclockwise = positive; Moment wirkt entgegen der Drehrichtung der Rotoren
-  RotorSignal[0] = RotorSignal[0] + U[2]; //0 und 1 müssen sich counterclockwise drehen --> Moment clockwise
-  RotorSignal[1] = RotorSignal[1] + U[2];
-  RotorSignal[2] = RotorSignal[2] - U[2];
-  RotorSignal[3] = RotorSignal[3] - U[2];
-  */
-  //X-positioning of sensors to rotors
+  //change RotorSignals due to controlled variabels
   //remember that controlDifference = target-real
+  //X positioning of sensors to rotors
   //Roll
   RotorSignal[1] -= U[0];
   RotorSignal[2] -= U[0];
@@ -170,6 +170,20 @@ void POSITIONCONTROL::update(float RotorSignal[4], float Y[3], float dE[3], floa
   RotorSignal[1] -= U[2];
   RotorSignal[3] -= U[2];
 
+  /*
+  //+ positioning
+  //x_Axis
+  RotorSignal[0] = RotorSignal[0] + U[0];
+  RotorSignal[1] = RotorSignal[1] - U[0];
+  //y_axis
+  RotorSignal[2] = RotorSignal[2] + U[1];
+  RotorSignal[3] = RotorSignal[3] - U[1];
+  //z-axis
+  RotorSignal[0] = RotorSignal[0] + U[2];
+  RotorSignal[1] = RotorSignal[1] + U[2];
+  RotorSignal[2] = RotorSignal[2] - U[2];
+  RotorSignal[3] = RotorSignal[3] - U[2];
+  */
 }
 
 

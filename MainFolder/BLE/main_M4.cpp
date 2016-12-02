@@ -6,10 +6,10 @@ Main for Testing and Changing PID Control during Runtime
   //Extern libraries
   #include "Arduino.h"
   #include <Timer.h>
-  #include "../lib/sensors/sensors.h"
-  #include "../lib/control/RotorControl.h"
+  #include "../lib/Sensors/sensors.h"
+  #include "../lib/Control/RotorControl.h"
   #include "../lib/params.h"
-  #include "../lib/ble_com/ble_com.h"
+  #include "../lib/Ble_com/ble_com.h"
   #include "SoftwareSerial.h"
 
 /*==================================================================*/
@@ -43,7 +43,7 @@ void setup(){
 
   //set Rotors/ESCs to PINs and initialize
   rotors.begin(&sensors);
-  if(AUTOSTART) rotors.start(BEFORE_TAKE_OFF_SIGNAL);
+  if(AUTOSTART) rotors.start(STARTUP_SIGNAL);
 
   //Activate untethered communication
   if(BLE_TELEMETRICS_ON) ble.begin(&rotors);

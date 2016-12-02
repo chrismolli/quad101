@@ -1,16 +1,15 @@
 #ifndef BLE_TELEMETRICS_H
 #define BLE_TELEMETRICS_H
 /*
-    Lib for using the integrated BLE module on the Arduino 101 to send
-    telemtrics and read commands for PID tuning.
+    Lib for using the integrated BLE module on the Arduino 101 to read
+    commands for PID tuning.
 */
-
 
 /*==================================================================*/
   //Extern libraries
   #include "../params.h"
-  #include "../sensors/sensors.h"
-  #include "../control/RotorControl.h"
+  #include "../Sensors/sensors.h"
+  #include "../Control/RotorControl.h"
   #include <CurieBLE.h>
 
 /*==================================================================*/
@@ -26,25 +25,23 @@
       POSITIONCONTROL *p_con_address;
       //HEIGHTCONTROL *h_con_address;
       ROTORCONTROL *r_con_address;
-
   };
 
   //BLE UUIDS have to be defined externally to work properly
   BLEPeripheral quad101_peripheral;
   BLEService ble_telemetrics_service("2E8C6277-2DDE-4D80-8C4B-629876703C70");
-  //Positional Controller
+  //Roll constants
   BLEFloatCharacteristic ble_pcon_KP_ROLL("2E8C6277-2DDE-4D80-8C4B-629876703C71", BLERead | BLEWrite);
   BLEFloatCharacteristic ble_pcon_TI_ROLL("2E8C6277-2DDE-4D80-8C4B-629876703C72", BLERead | BLEWrite);
   BLEFloatCharacteristic ble_pcon_TD_ROLL("2E8C6277-2DDE-4D80-8C4B-629876703C73", BLERead | BLEWrite);
   BLEFloatCharacteristic ble_pcon_TDD_ROLL("2E8C6277-2DDE-4D80-8C4B-629876703C74", BLERead | BLEWrite);
-  //Height Controller
+  //Pitch constants
   BLEFloatCharacteristic ble_pcon_KP_PITCH("2E8C6277-2DDE-4D80-8C4B-629876703C75", BLERead | BLEWrite);
   BLEFloatCharacteristic ble_pcon_TI_PITCH("2E8C6277-2DDE-4D80-8C4B-629876703C76", BLERead | BLEWrite);
   BLEFloatCharacteristic ble_pcon_TD_PITCH("2E8C6277-2DDE-4D80-8C4B-629876703C77", BLERead | BLEWrite);
   BLEFloatCharacteristic ble_pcon_TDD_PITCH("2E8C6277-2DDE-4D80-8C4B-629876703C78", BLERead | BLEWrite);
-  //
+  //Safety mode
   BLEUnsignedCharCharacteristic ble_startstop("2E8C6277-2DDE-4D80-8C4B-629876703C79", BLERead | BLEWrite);
-
 
 /*==================================================================*/
   //Functions
@@ -132,7 +129,6 @@
       r_con_address->safetyModeOn=ble_startstop.value();
       if(Serial && r_con_address->safetyModeOn) Serial.println("!!! Emergency stop initiated !!!");
     }
-
   }
 
 #endif

@@ -6,7 +6,7 @@ Main for Sending GPS Data to Serial Port (Mac)
   //Extern libraries
   #include "Arduino.h"
   #include <Timer.h>
-  #include "../lib/sensors/sensors.h"
+  #include "../lib/Sensors/sensors.h"
   #include "../lib/params.h"
   #include "SoftwareSerial.h"
 

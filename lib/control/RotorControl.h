@@ -1,6 +1,11 @@
 #ifndef ROTORCONTROL_H
 #define ROTORCONTROL_H
 
+/*
+  RotorControl takes care of writing Signals to the ESCs, organizes different
+  controls needed and inherits the on/off implementation.
+*/
+
 /*==================================================================*/
   //Extern librarys
   #include "Arduino.h"
@@ -8,7 +13,7 @@
   #include "../params.h"
   #include "PositionControl.h"
   #include "HeightControl.h"
-  #include "../sensors/sensors.h"
+  #include "../Sensors/sensors.h"
   #include "LocationControl.h"
   #include "../RadioControl/RadioControl.h"
 
@@ -36,7 +41,6 @@
     void updateHeight(void);
     void start(int startValue);
     void stop(void);
-    int setRotorSignalViaSerial(void);
     void debug(void);
     void setESC1(int input);
   };
@@ -85,12 +89,13 @@ void ROTORCONTROL::begin(SENSORS* sensorPointer){
   RoundSignal[2] = 0;
   RoundSignal[3] = 0;
 
-  //Initialize PositionControl and HeightControl
+  //Initialize PositionControl, HeightControl and RadioControl
   positionController.begin();
   if (HEIGHTCONTROL_ON) heightController.begin();
   if (LOCATIONCONTROL_ON) locationController.begin(sensors);
   if(RADIO_CONTROL_ON) radioControl.begin(&positionController);
 
+  //Autostart TRUE would arm Copter immediately
   if(AUTOSTART) safetyModeOn = 0;
   else safetyModeOn = 1;
 
@@ -100,7 +105,7 @@ void ROTORCONTROL::begin(SENSORS* sensorPointer){
 
 void ROTORCONTROL::start(int startValue){
   //accelerate motors to startValue
-  //can be used as the first start before take Off via HeightControl
+  //can be used as the first start before Take Off via HeightControl
   if(Serial) Serial.print("Starting Rotors...");
   int s = MIN_ROTOR_SIGNAL;
 
@@ -128,8 +133,9 @@ void ROTORCONTROL::start(int startValue){
 }
 
 void ROTORCONTROL::stop(void){
-  //stop procedure testbed
+  //stop procedure for testbed
   int s = STARTUP_SIGNAL;
+
   while (s > MIN_ROTOR_SIGNAL){
     esc1.writeMicroseconds(s);
     esc2.writeMicroseconds(s);
@@ -139,12 +145,12 @@ void ROTORCONTROL::stop(void){
     delay(20);
   }
 
-  esc1.writeMicroseconds(1012);
-  esc2.writeMicroseconds(1012);
-  esc3.writeMicroseconds(1012);
-  esc4.writeMicroseconds(1012);
+  esc1.writeMicroseconds(MIN_ROTOR_SIGNAL);
+  esc2.writeMicroseconds(MIN_ROTOR_SIGNAL);
+  esc3.writeMicroseconds(MIN_ROTOR_SIGNAL);
+  esc4.writeMicroseconds(MIN_ROTOR_SIGNAL);
 
-  //reset rotorsignals
+  //reset RotorSignals
   RotorSignal[0] = 0;
   RotorSignal[1] = 0;
   RotorSignal[2] = 0;
@@ -154,26 +160,27 @@ void ROTORCONTROL::stop(void){
 /*==================================================================*/
   //Update Functions
 void ROTORCONTROL::updatePosition(void){
-  //Check if radiostart is on
+  //Check if RadioControl is on
   if(RADIO_CONTROL_ON){
+    //Check if RadioControl is armed
     if(radioControl.ch5>1400) safetyModeOn=0;
     else safetyModeOn=1;
   }
 
   if ( !safetyModeOn && !safetyModeFlag ){
-    //Activate RC
+    //Update RadioControl Signals
     if(RADIO_CONTROL_ON) radioControl.update(RotorSignal);
 
     //update PositionControl
     positionController.update(RotorSignal, sensors->imu.rot, sensors->imu.rot_vel, SAMPLE_RATE);
 
-    //rotorSignal mustn't exceed limits
+    //RotorSignal mustn't exceed limits
     //Rotor 0
-    if (RotorSignal[0] > MAX_ROTOR_SIGNAL){ //Maximum Value
+    if (RotorSignal[0] > MAX_ROTOR_SIGNAL){
       RotorSignal[0] = MAX_ROTOR_SIGNAL;
       //Serial.println("R0 > MAX\n");
     }
-    if (RotorSignal[0] < MIN_ROTOR_SIGNAL){ //Minimum Value
+    if (RotorSignal[0] < MIN_ROTOR_SIGNAL){
       RotorSignal[0] = MIN_ROTOR_SIGNAL;
       //Serial.println("R0 < MIN\n");
     }
@@ -208,7 +215,7 @@ void ROTORCONTROL::updatePosition(void){
       //Serial.println("R1 < MIN\n");
     }
 
-    //write RotorSignal to ESCs
+    //Round, then write RotorSignal to ESCs
       RoundSignal[0] = roundf(RotorSignal[0]);
       RoundSignal[1] = roundf(RotorSignal[1]);
       RoundSignal[2] = roundf(RotorSignal[2]);
@@ -302,9 +309,7 @@ void ROTORCONTROL::updatePosition(void){
 /*==================================================================*/
   //Debug Functions
 void ROTORCONTROL::debug(void){
-    //Prints the time and RotorSignals to serial
-    Serial.println("Time: ");
-    Serial.print(millis());
+    //Prints RotorSignals to serial
     Serial.print(" R0: ");
     Serial.print(RotorSignal[0]);
     Serial.print(" R1: ");
@@ -312,7 +317,7 @@ void ROTORCONTROL::debug(void){
     Serial.print(" R2: ");
     Serial.print(RotorSignal[2]);
     Serial.print(" R3: ");
-    Serial.print(RotorSignal[3]);
+    Serial.println(RotorSignal[3]);
   }
 
 #endif

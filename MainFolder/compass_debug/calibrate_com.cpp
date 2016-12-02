@@ -4,7 +4,7 @@ Debuging script for tilt compensated compass
 
 #include "Arduino.h"
 #include "Timer.h"
-#include "../lib/sensors/IMU/imu.h"
+#include "../lib/Sensors/IMU/imu.h"
 
 #define SAMPLE_RATE_X 10
 

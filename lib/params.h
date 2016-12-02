@@ -16,7 +16,7 @@
   //1.Global constants
   #define SAMPLE_RATE 5         //update every ...ms sensors and rotors
   #define SLOW_SAMPLE_RATE 25   //update every ...ms bluetooth and usr
-  #define AUTOSTART FALSE
+  #define AUTOSTART FALSE       //turn on to immediately arm the Copter
 
 /*-----------------------------------------------------------------------*/
   //2.Communication
@@ -47,22 +47,24 @@
   #define MAX_E_FOR_I 45    //Maximum angle to contribute to I_Controller
   #define MIN_E_FOR_I 0.3   //Minimum angle to start I_Controller
 
-  #define K_P_ROLL_START   0.012         //Global gain on PIDControl
+  #define K_P_ROLL_START   0.012         //Global gain
   #define T_I_ROLL_START   400           //T_N
-  #define T_D_ROLL_START   43           //T_V
+  #define T_D_ROLL_START   43            //T_V
   #define T_DD_ROLL_START  19
 
-  #define K_P_PITCH_START   0.012         //Global gain on PIDControl
-  #define T_I_PITCH_START   400           //T_N
+  #define K_P_PITCH_START   0.012        //Global gain
+  #define T_I_PITCH_START   400          //T_N
   #define T_D_PITCH_START   43           //T_V
   #define T_DD_PITCH_START  19
 
   #define K_P_JAW_START  1.2
-  //#define T_I_JAW_START  0
-  //#define T_D_JAW_START  0
-  //#define T_DD_JAW_START 0
+  #define T_I_JAW_START  100000
+  #define T_D_JAW_START  0
+  #define T_DD_JAW_START 0
 
+  //To initialize Jaw
   #define TARGET_JAW_VEL 0
+  #define TARGET_JAW 0
 
   /*--------------------------------------*/
   /*PositionControl setups
@@ -130,7 +132,7 @@
   #define SKM53_BAUDRATE 9600
   #define RX_PIN 4 //goes to TX at sensor
   #define TX_PIN 2 //goes to RX at sensor
-  #define GPS_LED_PIN 13 //attach to Pin 13? put 220Ohm resistor before LED (inside LED space goes left down to right up)
+  #define GPS_LED_PIN 0 //attach to Pin 13? put 220 Ohm resistor before LED
 
   //ADXL335 (accelerometer) (Voltage goes to 3.3V)
   #define ADXL335_PLUGGED_IN FALSE

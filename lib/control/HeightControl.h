@@ -1,6 +1,12 @@
 #ifndef HEIGHTCONTROL_H
 #define HEIGHTCONTROL_H
 
+/*
+  Class to control the height of the multicopter.
+  It uses either the pressure sensor (BMP) for greater heights or the USR for
+  start and landing.
+*/
+
 /*==================================================================*/
   //Extern librarys
   #include "../params.h"

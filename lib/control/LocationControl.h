@@ -10,8 +10,8 @@
   //Extern librarys
   #include "../params.h"
   #include "Arduino.h"
-  #include "../sensors/GPS/SKM53.h"
-  #include "../sensors/sensors.h"
+  #include "../Sensors/GPS/SKM53.h"
+  #include "../Sensors/sensors.h"
 
 /*==================================================================*/
   //Classdefinition

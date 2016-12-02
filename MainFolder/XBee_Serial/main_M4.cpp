@@ -6,10 +6,10 @@ Main for Testing and Changing PID Control during Runtime
   //Extern libraries
   #include "Arduino.h"
   #include <Timer.h>
-  #include "../lib/sensors/sensors.h"
-  #include "../lib/control/RotorControl.h"
+  #include "../lib/Sensors/sensors.h"
+  #include "../lib/Control/RotorControl.h"
   #include "../lib/params.h"
-  #include "../lib/ble_com/ble_com.h"
+  #include "../lib/Ble_com/ble_com.h"
   #include "SoftwareSerial.h"
 
 /*==================================================================*/
@@ -46,7 +46,7 @@ void setup(){
 
   //set Rotors/ESCs to PINs and initialize
   rotors.begin(&sensors);
-  if(AUTOSTART) rotors.start(BEFORE_TAKE_OFF_SIGNAL);
+  if(AUTOSTART) rotors.start(STARTUP_SIGNAL);
 
   //Activate untethered communication
   if(BLE_TELEMETRICS_ON) ble.begin(&rotors);
@@ -67,42 +67,42 @@ void serialEvent(){
     rotors.positionController.K_P_ROLL = inputString.toFloat();
   }
   x2 = micros();
-  if (Serial.find("kppitch")) {
+  else if (Serial.find("kppitch")) {
     inputString = Serial.readStringUntil('\n');
     rotors.positionController.K_P_PITCH = inputString.toFloat();
   }
 
-  if (Serial.find("kpjaw")){
+  else if (Serial.find("kpjaw")){
     inputString = Serial.readStringUntil('\n');
     rotors.positionController.K_P_JAW = inputString.toFloat();
   }
 
-  if (Serial.find("tiroll")) {
+  else if (Serial.find("tiroll")) {
     inputString = Serial.readStringUntil('\n');
     rotors.positionController.T_I_ROLL = inputString.toFloat();
   }
 
-  if (Serial.find("tipitch")) {
+  else if (Serial.find("tipitch")) {
     inputString = Serial.readStringUntil('\n');
     rotors.positionController.T_I_PITCH = inputString.toFloat();
   }
 
-  if (Serial.find("tdroll")) {
+  else if (Serial.find("tdroll")) {
     inputString = Serial.readStringUntil('\n');
     rotors.positionController.T_D_ROLL = inputString.toFloat();
   }
 
-  if (Serial.find("tdpitch")) {
+  else if (Serial.find("tdpitch")) {
     inputString = Serial.readStringUntil('\n');
     rotors.positionController.T_D_PITCH = inputString.toFloat();
   }
 
-  if (Serial.find("tddroll")) {
+  else if (Serial.find("tddroll")) {
     inputString = Serial.readStringUntil('\n');
     rotors.positionController.T_DD_ROLL = inputString.toFloat();
   }
 
-  if (Serial.find("tddpitch")) {
+  else if (Serial.find("tddpitch")) {
     inputString = Serial.readStringUntil('\n');
     rotors.positionController.T_DD_PITCH = inputString.toFloat();
   }
