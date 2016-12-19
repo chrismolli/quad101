@@ -47,20 +47,20 @@
   #define MAX_E_FOR_I 45    //Maximum angle to contribute to I_Controller
   #define MIN_E_FOR_I 0.3   //Minimum angle to start I_Controller
 
-  #define K_P_ROLL_START   0.012         //Global gain
+  #define K_P_ROLL_START   0.03         //Global gain
   #define T_I_ROLL_START   400           //T_N
-  #define T_D_ROLL_START   43            //T_V
-  #define T_DD_ROLL_START  19
+  #define T_D_ROLL_START   6            //T_V
+  #define T_DD_ROLL_START  5.2
 
-  #define K_P_PITCH_START   0.012        //Global gain
+  #define K_P_PITCH_START   0.03        //Global gain
   #define T_I_PITCH_START   400          //T_N
-  #define T_D_PITCH_START   43           //T_V
-  #define T_DD_PITCH_START  19
+  #define T_D_PITCH_START   6           //T_V
+  #define T_DD_PITCH_START  5.2
 
-  #define K_P_JAW_START  1.2
+  #define K_P_JAW_START  0.01
   #define T_I_JAW_START  100000
   #define T_D_JAW_START  0
-  #define T_DD_JAW_START 0
+  #define T_DD_JAW_START 3
 
   //To initialize Jaw
   #define TARGET_JAW_VEL 0

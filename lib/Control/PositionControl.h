@@ -130,6 +130,7 @@ void POSITIONCONTROL::update(float RotorSignal[4], float Y[3], float dE[3], floa
       if (targetPosition[2] > Y[2]) e[2] = -e[2];        //reverse sign if target > actual value
     }
   }
+  else e[2] = targetPosition[2]-dE[2];
 /*====================================*/
   //Calculating cotrolled variable (CV)
   //Roll
@@ -139,7 +140,7 @@ void POSITIONCONTROL::update(float RotorSignal[4], float Y[3], float dE[3], floa
   U[1] = K_P_PITCH*(PController(e[1], 1) + IController(e[1], T_I_PITCH, 1, looptime) + DController(dE[1], T_D_PITCH) + DDController(dE[1], T_DD_PITCH, 1, looptime));
 
   //Jaw
-  if (RADIO_CONTROL_ON) U[2] = K_P_JAW*(targetPosition[2]-dE[2]);
+  if (RADIO_CONTROL_ON) U[2] = K_P_JAW*(e[2]+DDController(dE[2], T_DD_JAW, 2, looptime));
   else U[2] = K_P_JAW*(PController(e[2], 1) + IController(e[2], T_I_JAW, 2, looptime) + DController(dE[2], T_D_JAW) + DDController(dE[2], T_DD_JAW, 2, looptime));
 
 
