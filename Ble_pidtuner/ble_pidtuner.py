@@ -41,20 +41,20 @@ def char_to_characteristic(char_value):
 
 # III. quad ble service uuids
 SERVICE_UUID=uuid.UUID('2E8C6277-2DDE-4D80-8C4B-629876703C70')
-#Positional
-P_KP_UUID=uuid.UUID('2E8C6277-2DDE-4D80-8C4B-629876703C71')
-P_TI_UUID=uuid.UUID('2E8C6277-2DDE-4D80-8C4B-629876703C72')
-P_TD_UUID=uuid.UUID('2E8C6277-2DDE-4D80-8C4B-629876703C73')
-P_TDD_UUID=uuid.UUID('2E8C6277-2DDE-4D80-8C4B-629876703C74')
-#Height
-H_KP_UUID=uuid.UUID('2E8C6277-2DDE-4D80-8C4B-629876703C75')
-H_TI_UUID=uuid.UUID('2E8C6277-2DDE-4D80-8C4B-629876703C76')
-H_TD_UUID=uuid.UUID('2E8C6277-2DDE-4D80-8C4B-629876703C77')
-H_HEIGHT_UUID=uuid.UUID('2E8C6277-2DDE-4D80-8C4B-629876703C78')
+#ROLL
+ROLL_KP_UUID=uuid.UUID('2E8C6277-2DDE-4D80-8C4B-629876703C71')
+ROLL_TI_UUID=uuid.UUID('2E8C6277-2DDE-4D80-8C4B-629876703C72')
+ROLL_TD_UUID=uuid.UUID('2E8C6277-2DDE-4D80-8C4B-629876703C73')
+ROLL_TDD_UUID=uuid.UUID('2E8C6277-2DDE-4D80-8C4B-629876703C74')
+#PITCH
+PITCH_KP_UUID=uuid.UUID('2E8C6277-2DDE-4D80-8C4B-629876703C75')
+PITCH_TI_UUID=uuid.UUID('2E8C6277-2DDE-4D80-8C4B-629876703C76')
+PITCH_TD_UUID=uuid.UUID('2E8C6277-2DDE-4D80-8C4B-629876703C77')
+PITCH_TDD_UUID=uuid.UUID('2E8C6277-2DDE-4D80-8C4B-629876703C78')
 #startstop
 START_STOP_UUID=uuid.UUID('2E8C6277-2DDE-4D80-8C4B-629876703C79')
 
-characteristic_uuids=[P_KP_UUID,P_TI_UUID,P_TD_UUID,P_TDD_UUID,H_KP_UUID,H_TI_UUID,H_TD_UUID,H_HEIGHT_UUID,START_STOP_UUID]
+characteristic_uuids=[ROLL_KP_UUID,ROLL_TI_UUID,ROLL_TD_UUID,ROLL_TDD_UUID,PITCH_KP_UUID,PITCH_TI_UUID,PITCH_TD_UUID,PITCH_TDD_UUID,START_STOP_UUID]
 
 # IV. mainroutine
 ble = Adafruit_BluefruitLE.get_provider()
@@ -93,15 +93,15 @@ def main():
         # Find the UART service and its characteristics.
         quad101 = device.find_service(SERVICE_UUID)
 
-        p_kp = quad101.find_characteristic(P_KP_UUID)
-        p_ti = quad101.find_characteristic(P_TI_UUID)
-        p_td = quad101.find_characteristic(P_TD_UUID)
-        p_tdd = quad101.find_characteristic(P_TDD_UUID)
+        roll_kp = quad101.find_characteristic(ROLL_KP_UUID)
+        roll_ti = quad101.find_characteristic(ROLL_TI_UUID)
+        roll_td = quad101.find_characteristic(ROLL_TD_UUID)
+        roll_tdd = quad101.find_characteristic(ROLL_TDD_UUID)
 
-        h_kp = quad101.find_characteristic(H_KP_UUID)
-        h_ti = quad101.find_characteristic(H_TI_UUID)
-        h_td = quad101.find_characteristic(H_TD_UUID)
-        h_height = quad101.find_characteristic(H_HEIGHT_UUID)
+        pitch_kp = quad101.find_characteristic(PITCH_KP_UUID)
+        pitch_ti = quad101.find_characteristic(PITCH_TI_UUID)
+        pitch_td = quad101.find_characteristic(PITCH_TD_UUID)
+        pitch_tdd = quad101.find_characteristic(PITCH_TDD_UUID)
 
         start_stop = quad101.find_characteristic(START_STOP_UUID)
 
@@ -113,19 +113,19 @@ def main():
         #Define LOOP Functions
         def print_constants():
             stdscr.addstr(3,0,'ROLLCONTROL')
-            stdscr.addstr(4,0,'KP'+'    '+str(characteristic_to_float(p_kp.read_value())),curses.color_pair(1))
-            stdscr.addstr(5,0,'TI'+'    '+str(characteristic_to_float(p_ti.read_value())),curses.color_pair(1))
-            stdscr.addstr(6,0,'TD'+'    '+str(characteristic_to_float(p_td.read_value())),curses.color_pair(1))
-            stdscr.addstr(7,0,'TDD'+'    '+str(characteristic_to_float(p_tdd.read_value())),curses.color_pair(1))
+            stdscr.addstr(4,0,'KP'+'    '+str(characteristic_to_float(roll_kp.read_value())),curses.color_pair(1))
+            stdscr.addstr(5,0,'TI'+'    '+str(characteristic_to_float(roll_ti.read_value())),curses.color_pair(1))
+            stdscr.addstr(6,0,'TD'+'    '+str(characteristic_to_float(roll_td.read_value())),curses.color_pair(1))
+            stdscr.addstr(7,0,'TDD'+'    '+str(characteristic_to_float(roll_tdd.read_value())),curses.color_pair(1))
 
             stdscr.addstr(3,25,'PITCHCONTROL')
-            stdscr.addstr(4,25,'KP'+'    '+str(characteristic_to_float(h_kp.read_value())),curses.color_pair(1))
-            stdscr.addstr(5,25,'TI'+'    '+str(characteristic_to_float(h_ti.read_value())),curses.color_pair(1))
-            stdscr.addstr(6,25,'TD'+'    '+str(characteristic_to_float(h_td.read_value())),curses.color_pair(1))
-            stdscr.addstr(7,25,'TDD'+'    '+str(characteristic_to_float(h_height.read_value())),curses.color_pair(1))
+            stdscr.addstr(4,25,'KP'+'    '+str(characteristic_to_float(pitch_kp.read_value())),curses.color_pair(1))
+            stdscr.addstr(5,25,'TI'+'    '+str(characteristic_to_float(pitch_ti.read_value())),curses.color_pair(1))
+            stdscr.addstr(6,25,'TD'+'    '+str(characteristic_to_float(pitch_td.read_value())),curses.color_pair(1))
+            stdscr.addstr(7,25,'TDD'+'    '+str(characteristic_to_float(pitch_tdd.read_value())),curses.color_pair(1))
             stdscr.refresh()
 
-        def write_pcon():
+        def write_roll_con():
             stdscr.addstr(10,0,'ROLL-MODE: Enter (p),(i),(d) or (a).',curses.color_pair(1))
             stdscr.refresh()
 
@@ -137,7 +137,7 @@ def main():
                 curses.nocbreak()
                 curses.echo()
                 val=float(stdscr.getstr(11,0))
-                p_kp.write_value(float_to_characteristic(val))
+                roll_kp.write_value(float_to_characteristic(val))
                 curses.cbreak()
                 curses.noecho()
                 stdscr.clear()
@@ -148,7 +148,7 @@ def main():
                 curses.nocbreak()
                 curses.echo()
                 val=float(stdscr.getstr(11,0))
-                p_ti.write_value(float_to_characteristic(val))
+                roll_ti.write_value(float_to_characteristic(val))
                 curses.cbreak()
                 curses.noecho()
                 stdscr.clear()
@@ -159,7 +159,7 @@ def main():
                 curses.nocbreak()
                 curses.echo()
                 val=float(stdscr.getstr(11,0))
-                p_td.write_value(float_to_characteristic(val))
+                roll_td.write_value(float_to_characteristic(val))
                 curses.cbreak()
                 curses.noecho()
                 stdscr.clear()
@@ -170,7 +170,7 @@ def main():
                 curses.nocbreak()
                 curses.echo()
                 val=float(stdscr.getstr(11,0))
-                p_tdd.write_value(float_to_characteristic(val))
+                roll_tdd.write_value(float_to_characteristic(val))
                 curses.cbreak()
                 curses.noecho()
                 stdscr.clear()
@@ -178,7 +178,7 @@ def main():
                 stdscr.addstr(11,0,'Invalid choice, returning to update loop.',curses.color_pair(1))
                 stdscr.refresh()
 
-        def write_hcon():
+        def write_pitch_con():
             stdscr.addstr(10,0,'PITCH-MODE: Enter (p),(i),(d),(a)',curses.color_pair(1))
             stdscr.refresh()
 
@@ -190,7 +190,7 @@ def main():
                 curses.nocbreak()
                 curses.echo()
                 val=float(stdscr.getstr(11,0))
-                h_kp.write_value(float_to_characteristic(val))
+                pitch_kp.write_value(float_to_characteristic(val))
                 curses.cbreak()
                 curses.noecho()
                 stdscr.clear()
@@ -201,7 +201,7 @@ def main():
                 curses.nocbreak()
                 curses.echo()
                 val=float(stdscr.getstr(11,0))
-                h_ti.write_value(float_to_characteristic(val))
+                pitch_ti.write_value(float_to_characteristic(val))
                 curses.cbreak()
                 curses.noecho()
                 stdscr.clear()
@@ -212,7 +212,7 @@ def main():
                 curses.nocbreak()
                 curses.echo()
                 val=float(stdscr.getstr(11,0))
-                h_td.write_value(float_to_characteristic(val))
+                pitch_td.write_value(float_to_characteristic(val))
                 curses.cbreak()
                 curses.noecho()
                 stdscr.clear()
@@ -223,7 +223,7 @@ def main():
                 curses.nocbreak()
                 curses.echo()
                 val=float(stdscr.getstr(11,0))
-                h_height.write_value(float_to_characteristic(val))
+                pitch_tdd.write_value(float_to_characteristic(val))
                 curses.cbreak()
                 curses.noecho()
                 stdscr.clear()
@@ -278,9 +278,9 @@ def main():
 
                 key = stdscr.getkey()
                 if key == '1':
-                    write_pcon()
+                    write_roll_con()
                 elif key == '2':
-                    write_hcon()
+                    write_pitch_con()
                 else:
                     stdscr.addstr(10,0,'Invalid choice, returning to update loop.',curses.color_pair(1))
                     stdscr.refresh()

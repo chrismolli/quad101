@@ -32,8 +32,8 @@ Main for Testing accelerometer
 
 void setup() {
   Serial.begin(38400);
-  while (!Serial);
-
+  while (Serial.available() < 1);
+  delay(2000);
   Serial.println("Initializing IMU...");
   sensors.begin(NULL);
   //sensors.imu.com.calibrate();

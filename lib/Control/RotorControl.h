@@ -155,6 +155,9 @@ void ROTORCONTROL::stop(void){
   RotorSignal[1] = 0;
   RotorSignal[2] = 0;
   RotorSignal[3] = 0;
+
+  //reset Controllers
+  positionController.reset();
 }
 
 /*==================================================================*/
@@ -167,12 +170,12 @@ void ROTORCONTROL::updatePosition(void){
     else safetyModeOn=1;
   }
 
-  if ( !safetyModeOn && !safetyModeFlag ){
+  if ( !safetyModeOn && !safetyModeFlag && !sensors->imu.rotationLimitExceeded){
     //Update RadioControl Signals
-    if(RADIO_CONTROL_ON) radioControl.update(RotorSignal);
+    if(RADIO_CONTROL_ON) radioControl.update(RotorSignal, sensors->imu.rot);
 
     //update PositionControl
-    positionController.update(RotorSignal, sensors->imu.rot, sensors->imu.rot_vel, SAMPLE_RATE);
+    if (radioControl.throttle >= MINIMUM_THROTTLE_FOR_POSITIONCONTROL) positionController.update(RotorSignal, sensors->imu.rot, sensors->imu.rot_vel, SAMPLE_RATE);
 
     //RotorSignal mustn't exceed limits
     //Rotor 0
@@ -227,6 +230,8 @@ void ROTORCONTROL::updatePosition(void){
       esc4.writeMicroseconds((int)RoundSignal[3]);
   }
 
+  else if(sensors->imu.rotationLimitExceeded) ROTORCONTROL::stop();
+
   //stop Rotors in case of signal loss or emergency
   else if( safetyModeOn && !safetyModeFlag ){
     ROTORCONTROL::stop();
@@ -234,7 +239,7 @@ void ROTORCONTROL::updatePosition(void){
   }
 
   //start Rotors again as soon as user changes safetyModeOn to 0
-  else if( !safetyModeOn && safetyModeFlag ){
+  else if( !safetyModeOn && safetyModeFlag && !sensors->imu.rotationLimitExceeded ){
     ROTORCONTROL::start(STARTUP_SIGNAL);
     safetyModeFlag = 0;
   }

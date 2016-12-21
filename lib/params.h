@@ -29,6 +29,8 @@
   #define RC_START_BLOCKLENGTH 4000 //~µs
   #define RC_MIN 600
   #define RC_MAX 1600
+  #define MAXIMUM_ANGLE 30
+  #define MAXIMUM_JAW_SPEED 5
 
 /*-----------------------------------------------------------------------*/
   //3.Rotor Control constants
@@ -41,26 +43,27 @@
   #define MAX_ROTOR_SIGNAL 2000
   #define MIN_ROTOR_SIGNAL 1000
   #define STARTUP_SIGNAL 1000
+  #define MINIMUM_THROTTLE_FOR_POSITIONCONTROL 675
 
 /*-----------------------------------------------------------------------*/
   //4.Position Control
   #define MAX_E_FOR_I 45    //Maximum angle to contribute to I_Controller
   #define MIN_E_FOR_I 0.3   //Minimum angle to start I_Controller
 
-  #define K_P_ROLL_START   0.03         //Global gain
+  #define K_P_ROLL_START   0.024         //Global gain
   #define T_I_ROLL_START   400           //T_N
   #define T_D_ROLL_START   6            //T_V
-  #define T_DD_ROLL_START  5.2
+  #define T_DD_ROLL_START  5.1
 
   #define K_P_PITCH_START   0.03        //Global gain
   #define T_I_PITCH_START   400          //T_N
   #define T_D_PITCH_START   6           //T_V
-  #define T_DD_PITCH_START  5.2
+  #define T_DD_PITCH_START  5.1
 
-  #define K_P_JAW_START  0.01
+  #define K_P_JAW_START  2.2
   #define T_I_JAW_START  100000
   #define T_D_JAW_START  0
-  #define T_DD_JAW_START 3
+  #define T_DD_JAW_START 0.7
 
   //To initialize Jaw
   #define TARGET_JAW_VEL 0
@@ -113,6 +116,7 @@
   #define IMU_COMPLEMENTARY_WEIGHT 0.98
   #define GYRORANGE 2
   #define ACCELRANGE 2
+  #define MAX_ROTATION 60
 
   //Magnetometer
   #define MAG_PLUGGED_IN FALSE

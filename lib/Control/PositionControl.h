@@ -51,6 +51,7 @@
 
       float targetPosition[3];
 
+      void reset(void);
       void begin(void);
       void update(float RotorSignal[4], float Y[3], float dE[3], float looptime);
       void setRollConstantsViaSerial(void);
@@ -83,7 +84,8 @@ float POSITIONCONTROL::DDController(float dE, float k, int i, float looptime){
 
 /*==================================================================*/
   //Public Functions
-void POSITIONCONTROL::begin(void){
+
+void POSITIONCONTROL::reset(void){
   //initialize I_Controller
   iSum[0] = 0;
   iSum[1] = 0;
@@ -93,6 +95,11 @@ void POSITIONCONTROL::begin(void){
   old_dE[0] = 0;
   old_dE[1] = 0;
   old_dE[2] = 0;
+  }
+
+void POSITIONCONTROL::begin(void){
+
+  POSITIONCONTROL::reset();
 
   //initialize control constants
   K_P_ROLL = K_P_ROLL_START;
@@ -186,212 +193,5 @@ void POSITIONCONTROL::update(float RotorSignal[4], float Y[3], float dE[3], floa
   RotorSignal[3] = RotorSignal[3] - U[2];
   */
 }
-
-
-void POSITIONCONTROL::setRollConstantsViaSerial(void){
-  Serial.println("Tell me which k_Value you want to update ");
-  while (!Serial.available()) {}
-
-  String kString = "";
-  char inChar = (char)Serial.read();
-
-  switch (inChar) {
-    case 112: // compares input to 'p'
-      Serial.println("Set new K_P value: ");
-        while(inChar != '\n'){
-            if (Serial.available()){
-              inChar = (char)Serial.read();
-              if(inChar == 'c'){ // 'c' resets kString so you can input value again
-                kString = "";
-                //while(Serial.available()) Serial.read();
-                Serial.println("K_P value got reset!");
-                Serial.println("Set new K_P value: ");
-              }
-              else if (inChar != '\n'){
-                kString += inChar;
-                Serial.println(kString);
-              }
-            }
-          }
-        Serial.print("Your new K_P value is: ");
-        K_P_ROLL = kString.toFloat();
-        Serial.println(kString);
-        break;
-
-      case 105: // compares input to 'i'
-        Serial.println("Set new T_I value: ");
-        while(inChar!='\n'){
-          if (Serial.available()){
-            inChar = (char)Serial.read();
-            if(inChar == 'c'){ // 'c' resets kString so you can input value again
-              kString = "";
-              //while(Serial.available()) Serial.read();
-              Serial.println("T_I value got reset!");
-              Serial.println("Set new T_I value: ");
-            }
-            else if (inChar != '\n'){
-              kString += inChar;
-              Serial.println(kString);
-            }
-          }
-        }
-        Serial.print("Your new T_I value is: ");
-        T_I_ROLL = kString.toFloat();
-        Serial.println(kString);
-        break;
-
-      case 100: // compares input to 'd'
-        Serial.println("Set new T_D value: ");
-        while(inChar!='\n'){
-          if (Serial.available()){
-            inChar = (char)Serial.read();
-            if(inChar == 'c'){ // 'c' resets kString so you can input value again
-              kString = "";
-              //while(Serial.available()) Serial.read();
-              Serial.println("T_D value got reset!");
-              Serial.println("Set new T_D value: ");
-            }
-            else if (inChar != '\n'){
-              kString += inChar;
-              Serial.println(kString);
-            }
-          }
-        }
-        Serial.print("Your new T_D value is: ");
-        T_D_ROLL = kString.toFloat();
-        Serial.println(kString);
-        break;
-
-        case 97: // compares input to 'a'
-          Serial.println("Set new T_DD value: ");
-          while(inChar!='\n'){
-            if (Serial.available()){
-              inChar = (char)Serial.read();
-              if(inChar == 'c'){ // 'c' resets kString so you can input value again
-                kString = "";
-                //while(Serial.available()) Serial.read();
-                Serial.println("T_DD value got reset!");
-                Serial.println("Set new T_DD value: ");
-              }
-              else if (inChar != '\n'){
-                kString += inChar;
-                Serial.println(kString);
-              }
-            }
-          }
-          Serial.print("Your new T_DD value is: ");
-          T_DD_ROLL = kString.toFloat();
-          Serial.println(kString);
-          break;
-
-      default:
-        Serial.println("This constant doesn't exist. Start over again");
-        //while(Serial.available()) Serial.read();
-        break;
-    }
-  }
-
-  void POSITIONCONTROL::setPitchConstantsViaSerial(void){
-    Serial.println("Tell me which k_Value you want to update ");
-    while (!Serial.available()) {}
-
-    String kString = "";
-    char inChar = (char)Serial.read();
-
-    switch (inChar) {
-      case 112: // compares input to 'p'
-        Serial.println("Set new K_P value: ");
-          while(inChar != '\n'){
-              if (Serial.available()){
-                inChar = (char)Serial.read();
-                if(inChar == 'c'){ // 'c' resets kString so you can input value again
-                  kString = "";
-                  //while(Serial.available()) Serial.read();
-                  Serial.println("K_P value got reset!");
-                  Serial.println("Set new K_P value: ");
-                }
-                else if (inChar != '\n'){
-                  kString += inChar;
-                  Serial.println(kString);
-                }
-              }
-            }
-          Serial.print("Your new K_P value is: ");
-          K_P_PITCH = kString.toFloat();
-          Serial.println(kString);
-          break;
-
-        case 105: // compares input to 'i'
-          Serial.println("Set new T_I value: ");
-          while(inChar!='\n'){
-            if (Serial.available()){
-              inChar = (char)Serial.read();
-              if(inChar == 'c'){ // 'c' resets kString so you can input value again
-                kString = "";
-                //while(Serial.available()) Serial.read();
-                Serial.println("T_I value got reset!");
-                Serial.println("Set new T_I value: ");
-              }
-              else if (inChar != '\n'){
-                kString += inChar;
-                Serial.println(kString);
-              }
-            }
-          }
-          Serial.print("Your new T_I value is: ");
-          T_I_PITCH = kString.toFloat();
-          Serial.println(kString);
-          break;
-
-        case 100: // compares input to 'd'
-          Serial.println("Set new T_D value: ");
-          while(inChar!='\n'){
-            if (Serial.available()){
-              inChar = (char)Serial.read();
-              if(inChar == 'c'){ // 'c' resets kString so you can input value again
-                kString = "";
-                //while(Serial.available()) Serial.read();
-                Serial.println("T_D value got reset!");
-                Serial.println("Set new T_D value: ");
-              }
-              else if (inChar != '\n'){
-                kString += inChar;
-                Serial.println(kString);
-              }
-            }
-          }
-          Serial.print("Your new T_D value is: ");
-          T_D_PITCH = kString.toFloat();
-          Serial.println(kString);
-          break;
-
-          case 97: // compares input to 'a'
-            Serial.println("Set new T_DD value: ");
-            while(inChar!='\n'){
-              if (Serial.available()){
-                inChar = (char)Serial.read();
-                if(inChar == 'c'){ // 'c' resets kString so you can input value again
-                  kString = "";
-                  //while(Serial.available()) Serial.read();
-                  Serial.println("T_DD value got reset!");
-                  Serial.println("Set new T_DD value: ");
-                }
-                else if (inChar != '\n'){
-                  kString += inChar;
-                  Serial.println(kString);
-                }
-              }
-            }
-            Serial.print("Your new T_DD value is: ");
-            T_DD_PITCH = kString.toFloat();
-            Serial.println(kString);
-            break;
-
-        default:
-          Serial.println("This constant doesn't exist. Start over again");
-          //while(Serial.available()) Serial.read();
-          break;
-      }
-    }
 
 #endif

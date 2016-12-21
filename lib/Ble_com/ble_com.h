@@ -70,16 +70,27 @@
     //
     quad101_peripheral.addAttribute(ble_startstop);
 
-    //Set data for the first time
+    //Set data for the first time (only two axes can be changed during the same period)
+
+    //ROLL
     ble_pcon_KP_ROLL.setValue(p_con_address->K_P_ROLL);
     ble_pcon_TI_ROLL.setValue(p_con_address->T_I_ROLL);
     ble_pcon_TD_ROLL.setValue(p_con_address->T_D_ROLL);
     ble_pcon_TDD_ROLL.setValue(p_con_address->T_DD_ROLL);
 
+    /*
+    //PITCH
     ble_pcon_KP_PITCH.setValue(p_con_address->K_P_PITCH);
     ble_pcon_TI_PITCH.setValue(p_con_address->T_I_PITCH);
     ble_pcon_TD_PITCH.setValue(p_con_address->T_D_PITCH);
     ble_pcon_TDD_PITCH.setValue(p_con_address->T_DD_PITCH);
+    */
+
+    //JAW
+    ble_pcon_KP_PITCH.setValue(p_con_address->K_P_JAW);
+    ble_pcon_TI_PITCH.setValue(p_con_address->T_I_JAW);
+    ble_pcon_TD_PITCH.setValue(p_con_address->T_D_JAW);
+    ble_pcon_TDD_PITCH.setValue(p_con_address->T_DD_JAW);
 
     ble_startstop.setValue(0);
 
@@ -112,17 +123,25 @@
     */
 
     //Data download
-    //p-controller
+    //ROLL
     if(ble_pcon_KP_ROLL.written()) p_con_address->K_P_ROLL=ble_pcon_KP_ROLL.value();
     if(ble_pcon_TI_ROLL.written()) p_con_address->T_I_ROLL=ble_pcon_TI_ROLL.value();
     if(ble_pcon_TD_ROLL.written()) p_con_address->T_D_ROLL=ble_pcon_TD_ROLL.value();
     if(ble_pcon_TDD_ROLL.written()) p_con_address->T_DD_ROLL=ble_pcon_TDD_ROLL.value();
 
-    //h-controller
+    /*
+    //PITCH
     if(ble_pcon_KP_PITCH.written()) p_con_address->K_P_PITCH=ble_pcon_KP_PITCH.value();
     if(ble_pcon_TI_PITCH.written()) p_con_address->T_I_PITCH=ble_pcon_TI_PITCH.value();
     if(ble_pcon_TD_PITCH.written()) p_con_address->T_D_PITCH=ble_pcon_TD_PITCH.value();
     if(ble_pcon_TDD_PITCH.written()) p_con_address->T_DD_PITCH=ble_pcon_TDD_PITCH.value();
+    */
+    
+    //JAW
+    if(ble_pcon_KP_PITCH.written()) p_con_address->K_P_JAW=ble_pcon_KP_PITCH.value();
+    if(ble_pcon_TI_PITCH.written()) p_con_address->T_I_JAW=ble_pcon_TI_PITCH.value();
+    if(ble_pcon_TD_PITCH.written()) p_con_address->T_D_JAW=ble_pcon_TD_PITCH.value();
+    if(ble_pcon_TDD_PITCH.written()) p_con_address->T_DD_JAW=ble_pcon_TDD_PITCH.value();
 
     //Manual startstop function
     if(ble_startstop.written()){
