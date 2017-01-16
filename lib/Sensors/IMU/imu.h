@@ -56,9 +56,9 @@ void IMU::begin(){
   */
   Serial.println("IMU calibration starts in 3 sec. Make sure your board is stable and upright");
   delay(3000);
-
-  // The board must be resting in a horizontal position for the following calibration procedure to work correctly!
+  
   /*
+  // The board must be resting in a horizontal position for the following calibration procedure to work correctly!
   Serial.print("Starting Gyroscope calibration and enabling offset compensation...");
   CurieIMU.autoCalibrateGyroOffset();
   Serial.println(" Done");
@@ -68,30 +68,28 @@ void IMU::begin(){
   CurieIMU.autoCalibrateAccelerometerOffset(Y_AXIS, 0);
   CurieIMU.autoCalibrateAccelerometerOffset(Z_AXIS, 1);
   Serial.println(" Done");
-  */
 
-  CurieIMU.setAccelerometerOffset(X_AXIS, 66.3);
-  CurieIMU.setAccelerometerOffset(Y_AXIS, 46.8);
-  CurieIMU.setAccelerometerOffset(Z_AXIS, -54.6);
-
-  CurieIMU.setGyroOffset(X_AXIS, 0.06);
-  CurieIMU.setGyroOffset(Y_AXIS, 0);
-  CurieIMU.setGyroOffset(Z_AXIS, -0.73);
-
-  /*
-  Serial.println("IMU sensor offsets after calibration...");
-  Serial.print(CurieIMU.getAccelerometerOffset(X_AXIS));   //66.3
+  Serial.println("IMU sensor offsets after calibration...");  // Arduino1; Arduino2
+  Serial.print(CurieIMU.getAccelerometerOffset(X_AXIS));      // 66.3; 124.8
   Serial.print("\t");
-  Serial.print(CurieIMU.getAccelerometerOffset(Y_AXIS));   //46.8
+  Serial.print(CurieIMU.getAccelerometerOffset(Y_AXIS));      // 46.8; 35.1
   Serial.print("\t"); // -2359
-  Serial.print(CurieIMU.getAccelerometerOffset(Z_AXIS));   //-54.6
+  Serial.print(CurieIMU.getAccelerometerOffset(Z_AXIS));      // -54.6; -113.1
   Serial.print("\t"); // 1688
-  Serial.print(CurieIMU.getGyroOffset(X_AXIS));            //0.06
+  Serial.print(CurieIMU.getGyroOffset(X_AXIS));               // 0.06; 2.68/2.74
   Serial.print("\t");
-  Serial.print(CurieIMU.getGyroOffset(Y_AXIS));            //0
+  Serial.print(CurieIMU.getGyroOffset(Y_AXIS));               // 0; -1.59
   Serial.print("\t");
-  Serial.println(CurieIMU.getGyroOffset(Z_AXIS));          //-0.73
+  Serial.println(CurieIMU.getGyroOffset(Z_AXIS));             // -0.73, 0.12
   */
+
+  CurieIMU.setAccelerometerOffset(X_AXIS, 124.8);
+  CurieIMU.setAccelerometerOffset(Y_AXIS, 35.1);
+  CurieIMU.setAccelerometerOffset(Z_AXIS, -113.1);
+
+  CurieIMU.setGyroOffset(X_AXIS, 2.68);
+  CurieIMU.setGyroOffset(Y_AXIS, -1.59);
+  CurieIMU.setGyroOffset(Z_AXIS, 0.12);
 
   CurieIMU.setGyroRange(GYRORANGE);
   CurieIMU.setAccelerometerRange(ACCELRANGE);

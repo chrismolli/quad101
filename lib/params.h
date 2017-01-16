@@ -43,7 +43,7 @@
   #define MAX_ROTOR_SIGNAL 2000
   #define MIN_ROTOR_SIGNAL 1000
   #define STARTUP_SIGNAL 1000
-  #define MINIMUM_THROTTLE_FOR_POSITIONCONTROL 675
+  #define MINIMUM_THROTTLE_FOR_POSITIONCONTROL 590
 
 /*-----------------------------------------------------------------------*/
   //4.Position Control
@@ -116,7 +116,7 @@
   #define IMU_COMPLEMENTARY_WEIGHT 0.98
   #define GYRORANGE 2
   #define ACCELRANGE 2
-  #define MAX_ROTATION 60
+  #define MAX_ROTATION 60 //to enable safety mode
 
   //Magnetometer
   #define MAG_PLUGGED_IN FALSE
