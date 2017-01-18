@@ -175,7 +175,7 @@ void ROTORCONTROL::updatePosition(void){
     if(RADIO_CONTROL_ON) radioControl.update(RotorSignal, sensors->imu.rot);
 
     //update PositionControl
-    if (radioControl.throttle >= MINIMUM_THROTTLE_FOR_POSITIONCONTROL) positionController.update(RotorSignal, sensors->imu.rot, sensors->imu.rot_vel, SAMPLE_RATE);
+    positionController.update(RotorSignal, sensors->imu.rot, sensors->imu.rot_vel, SAMPLE_RATE);
 
     //RotorSignal mustn't exceed limits
     //Rotor 0

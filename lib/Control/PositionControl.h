@@ -173,11 +173,12 @@ void POSITIONCONTROL::update(float RotorSignal[4], float Y[3], float dE[3], floa
   RotorSignal[1] += U[1];
 
   //Jaw
-  RotorSignal[0] += U[2];
-  RotorSignal[2] += U[2];
-  RotorSignal[1] -= U[2];
-  RotorSignal[3] -= U[2];
-
+  if (RotorSignal[0] >= MINIMUM_THROTTLE_FOR_POSITIONCONTROL){
+    RotorSignal[0] += U[2];
+    RotorSignal[2] += U[2];
+    RotorSignal[1] -= U[2];
+    RotorSignal[3] -= U[2];
+  }
   /*
   //+ positioning
   //x_Axis

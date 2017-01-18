@@ -29,7 +29,7 @@
   #define RC_START_BLOCKLENGTH 4000 //~µs
   #define RC_MIN 600
   #define RC_MAX 1600
-  #define MAXIMUM_ANGLE 30
+  #define MAXIMUM_ANGLE 35
   #define MAXIMUM_JAW_SPEED 5
 
 /*-----------------------------------------------------------------------*/
@@ -43,7 +43,7 @@
   #define MAX_ROTOR_SIGNAL 2000
   #define MIN_ROTOR_SIGNAL 1000
   #define STARTUP_SIGNAL 1000
-  #define MINIMUM_THROTTLE_FOR_POSITIONCONTROL 590
+  #define MINIMUM_THROTTLE_FOR_POSITIONCONTROL 1100
 
 /*-----------------------------------------------------------------------*/
   //4.Position Control
@@ -51,12 +51,12 @@
   #define MIN_E_FOR_I 0.3   //Minimum angle to start I_Controller
 
   #define K_P_ROLL_START   0.024         //Global gain
-  #define T_I_ROLL_START   400           //T_N
+  #define T_I_ROLL_START   20           //T_N
   #define T_D_ROLL_START   6            //T_V
   #define T_DD_ROLL_START  5.1
 
   #define K_P_PITCH_START   0.03        //Global gain
-  #define T_I_PITCH_START   400          //T_N
+  #define T_I_PITCH_START   20          //T_N
   #define T_D_PITCH_START   6           //T_V
   #define T_DD_PITCH_START  5.1
 
@@ -72,15 +72,15 @@
   /*--------------------------------------*/
   /*PositionControl setups
 
-    Setup         K_P       T_I       T_D   T_DD    SampleRate  TakeOff  Rotor    ESCPIN1     ESCPIN2
+    Setup         K_P_R   T_I  T_D  T_DD  K_P_P   T_I  T_D  T_DD  K_P_J   T_I  T_D  T_DD
 
-    Testbed M2    0.006     400       100   20      5           1250     Red      3           5
-    Testbed M2    0.0085    400       70    15      5/3         1250/1350 Red     3           5
+    Testbed M2;5  0.006   400  100  20
+    Testbed M2;5  0.0085  400  70   15
     für SR = 200HZ ist so 0.007/8 das Maximum für Kp. Gutes Verhältnis für T_D/T_DD = 5
 
-    Frame M2      0.007     400       121   103     5           1200     Red      6           5
-    Frame M2      0.0085    400       100   86      5           1200     Red      6           5
-    Frame M4      0.0085    400       155   125     5           1200     Red
+    Frame_big M2  0.0085  400  100  86
+    Frame_big M4  0.0085  400  155  125
+    Frame_small   0.024   20   6    5.1  0.03    20   6    5.1   2.2     -    -    0.7
   */
   /*--------------------------------------*/
 
@@ -98,9 +98,9 @@
   /*--------------------------------------*/
   /*HeightControl setups
 
-    Setup         K_P       T_I    T_D   T_DD    SampleRate  TakeOff  Rotor    ESCPIN1     ESCPIN2
+    Setup         K_P       T_I    T_D   T_DD
 
-    Frame M4      0.01975   24     4     0       20          1200
+    Frame M4      0.01975   24     4     0  
   */
   /*--------------------------------------*/
 
