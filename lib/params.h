@@ -29,7 +29,7 @@
   #define RC_START_BLOCKLENGTH 4000 //~µs
   #define RC_MIN 600
   #define RC_MAX 1600
-  #define MAXIMUM_ANGLE 35
+  #define MAXIMUM_ANGLE 25
   #define MAXIMUM_JAW_SPEED 5
 
 /*-----------------------------------------------------------------------*/
@@ -100,7 +100,7 @@
 
     Setup         K_P       T_I    T_D   T_DD
 
-    Frame M4      0.01975   24     4     0  
+    Frame M4      0.01975   24     4     0
   */
   /*--------------------------------------*/
 

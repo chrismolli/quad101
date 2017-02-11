@@ -230,16 +230,16 @@ void ROTORCONTROL::updatePosition(void){
       esc4.writeMicroseconds((int)RoundSignal[3]);
   }
 
-  else if(sensors->imu.rotationLimitExceeded) ROTORCONTROL::stop();
+  //else if(sensors->imu.rotationLimitExceeded) ROTORCONTROL::stop();
 
   //stop Rotors in case of signal loss or emergency
-  else if( safetyModeOn && !safetyModeFlag ){
+  else if((sensors->imu.rotationLimitExceeded || safetyModeOn) && !safetyModeFlag){
     ROTORCONTROL::stop();
     safetyModeFlag = 1;
   }
 
   //start Rotors again as soon as user changes safetyModeOn to 0
-  else if( !safetyModeOn && safetyModeFlag && !sensors->imu.rotationLimitExceeded ){
+  else if(!safetyModeOn && safetyModeFlag && !sensors->imu.rotationLimitExceeded){
     ROTORCONTROL::start(STARTUP_SIGNAL);
     safetyModeFlag = 0;
   }
