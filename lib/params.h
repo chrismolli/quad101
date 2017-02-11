@@ -50,15 +50,15 @@
   #define MAX_E_FOR_I 45    //Maximum angle to contribute to I_Controller
   #define MIN_E_FOR_I 0.3   //Minimum angle to start I_Controller
 
-  #define K_P_ROLL_START   0.024         //Global gain
+  #define K_P_ROLL_START   0.015         //Global gain
   #define T_I_ROLL_START   20           //T_N
-  #define T_D_ROLL_START   6            //T_V
-  #define T_DD_ROLL_START  5.1
+  #define T_D_ROLL_START   10            //T_V
+  #define T_DD_ROLL_START  6
 
-  #define K_P_PITCH_START   0.03        //Global gain
+  #define K_P_PITCH_START   0.02        //Global gain
   #define T_I_PITCH_START   20          //T_N
-  #define T_D_PITCH_START   6           //T_V
-  #define T_DD_PITCH_START  5.1
+  #define T_D_PITCH_START   10           //T_V
+  #define T_DD_PITCH_START  6
 
   #define K_P_JAW_START  2.2
   #define T_I_JAW_START  100000
@@ -81,6 +81,7 @@
     Frame_big M2  0.0085  400  100  86
     Frame_big M4  0.0085  400  155  125
     Frame_small   0.024   20   6    5.1  0.03    20   6    5.1   2.2     -    -    0.7
+    Frame_small   0.015   20   10   6    0.02    20   10   6     2.2     -    -    0.7 (with cake)
   */
   /*--------------------------------------*/
 
