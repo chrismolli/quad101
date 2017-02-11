@@ -166,7 +166,7 @@ void ROTORCONTROL::updatePosition(void){
   //Check if RadioControl is on
   if(RADIO_CONTROL_ON){
     //Check if RadioControl is armed
-    if(radioControl.ch5>1400) safetyModeOn=0;
+    if(radioControl.ch5>1400 && radioControl.ch3>RC_MIN+2) safetyModeOn=0;
     else safetyModeOn=1;
   }
 
