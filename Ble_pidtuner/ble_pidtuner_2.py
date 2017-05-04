@@ -3,6 +3,8 @@
 # Since BLE has a really short range, it should just
 # be used for testing and PID tuning.
 
+# Only tested on MAC, not sure if it will work on Windows or Linux aswell
+
 # I. import dependencies
 import time
 import uuid
