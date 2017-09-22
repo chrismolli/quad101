@@ -31,7 +31,7 @@ Next up is are flying tests with a RC-receiver. After that we will continue deve
 <li>Jaw controller (beta)</li>
 <li>Height controller (beta)</li>
 <li>BLE PID tuner (beta)</li>
-<li>RC mode (next up)</li>
+<li>RC mode (done)</li>
 <li>Location controller</li>
 </ul>
 
